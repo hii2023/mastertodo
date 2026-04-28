@@ -87,10 +87,10 @@ body.light .topbar { background:rgba(240,244,248,.97); }
 
 /* FILTER BAR */
 .fb { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
-.sep { width:1px; height:14px; background:var(--b1); flex-shrink:0; margin:0 1px; }
+.sep { width:1px; height:22px; background:var(--b1); flex-shrink:0; margin:0 3px; }
 .chip {
-  padding:3px 9px; border-radius:5px;
-  font-size:10px; font-weight:700;
+  padding:7px 14px; border-radius:7px;
+  font-size:12px; font-weight:700;
   cursor:pointer; border:1px solid var(--b1);
   background:var(--s1); color:var(--sub);
   transition:all .12s; user-select:none; white-space:nowrap;
@@ -1207,11 +1207,13 @@ function createCard(t, rank) {
       '<div class="cname">' + t.name + '</div>' +
       dueLineHTML +
       (cc || true ? '<div class="ccat" style="display:flex;align-items:center;margin-top:4px">' + (cc ? '<span class="ccatpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '30">' + t.category + '</span>' : '') + ownerLineHTML + '</div>' : '') +
-      '<span class="crank">#' + rank + '</span>' +
     '</div>' +
     '<button class="clog">' + ICON_LOG + logBadgeHTML + '</button>';
   card.appendChild(crow);
-  document.createElement('div'); // padding
+  var wmDiv = document.createElement('div');
+  wmDiv.className = 'cwm';
+  wmDiv.textContent = rank;
+  card.appendChild(wmDiv);
   var padDiv = document.createElement('div');
   padDiv.className = 'cpad';
   card.appendChild(padDiv);

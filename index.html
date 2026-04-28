@@ -704,7 +704,6 @@ function setTheme(t) {
   document.getElementById('theme-meta').content = mc;
   render();
 }
-setTheme(currentTheme);
 
 /* ── VIEW MODE ── */
 var isCompact = true;
@@ -1424,6 +1423,9 @@ document.getElementById('inp-name').addEventListener('keydown', function(e) {
     document.getElementById(id).classList.remove('open');
   });
 });
+
+/* ── INIT: called last so all vars are declared ── */
+setTheme(currentTheme);
 
 </script>
 </body>

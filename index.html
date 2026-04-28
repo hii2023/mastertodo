@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NOSH7 Action Board (Firebase v2)</title>
+<title>NOSH7 Action Board (Firebase Compat)</title>
 
 <style>
 body { font-family: Arial; margin:0; display:flex; height:100vh; }
@@ -12,7 +12,7 @@ body { font-family: Arial; margin:0; display:flex; height:100vh; }
 .task { background:#f4f4f4; padding:10px; margin-bottom:10px; border-radius:8px; cursor:grab; }
 .task.done { opacity:0.5; text-decoration:line-through; }
 button { padding:6px; margin-top:5px; }
-input, textarea { width:100%; padding:6px; margin:5px 0; }
+input { width:100%; padding:6px; margin:5px 0; }
 .logs { background:#fff; padding:5px; margin-top:5px; font-size:12px; }
 </style>
 </head>
@@ -35,45 +35,50 @@ input, textarea { width:100%; padding:6px; margin:5px 0; }
 <div id="list"></div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!-- Firebase Compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+<script>
+// 🔥 PASTE YOUR FIREBASE CONFIG HERE
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyBMG8nGe1Oa-_oycA5zgipy4oLMGpBq6WQ",
+  authDomain: "nosh7-2f0a3.firebaseapp.com",
+  projectId: "nosh7-2f0a3",
+  storageBucket: "nosh7-2f0a3.firebasestorage.app",
+  messagingSenderId: "726990430722",
+  appId: "1:726990430722:web:874f212689909eec36bd1b"
 };
 
-if (firebaseConfig.apiKey === "YOUR_KEY") alert("Add Firebase config");
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 let tasks = [];
 let dragId = null;
 
-window.addTask = async () => {
-  const name = nameEl.value;
+function addTask() {
+  const name = document.getElementById('name').value;
   if (!name) return alert("Enter task");
 
-  await addDoc(collection(db, "tasks"), {
+  db.collection("tasks").add({
     name,
-    owner: ownerEl.value,
-    deadline: deadlineEl.value,
+    owner: document.getElementById('owner').value,
+    deadline: document.getElementById('deadline').value,
     done: false,
     order: Date.now(),
     logs: []
   });
 
-  nameEl.value = ownerEl.value = deadlineEl.value = "";
-};
+  document.getElementById('name').value = "";
+  document.getElementById('owner').value = "";
+  document.getElementById('deadline').value = "";
+}
 
-window.toggleDone = async (id, val) => {
-  await updateDoc(doc(db, "tasks", id), { done: !val });
-};
+function toggleDone(id, val) {
+  db.collection("tasks").doc(id).update({ done: !val });
+}
 
-window.addLog = async (id) => {
+function addLog(id) {
   const text = prompt("Update / Comment");
   if (!text) return;
 
@@ -81,13 +86,13 @@ window.addLog = async (id) => {
   const logs = t.logs || [];
   logs.push({ text, time: new Date().toLocaleString() });
 
-  await updateDoc(doc(db, "tasks", id), { logs });
-};
+  db.collection("tasks").doc(id).update({ logs });
+}
 
 function render() {
   const list = document.getElementById('list');
-  const filter = filterOwner.value.toLowerCase();
-  const showDone = showDoneEl.checked;
+  const filter = document.getElementById('filterOwner').value.toLowerCase();
+  const showDone = document.getElementById('showDone').checked;
 
   list.innerHTML = "";
 
@@ -102,18 +107,7 @@ function render() {
 
       div.ondragstart = () => dragId = t.id;
       div.ondragover = (e) => e.preventDefault();
-      div.ondrop = async () => {
-        const target = t.id;
-        const dragged = tasks.find(x=>x.id===dragId);
-        const targetTask = tasks.find(x=>x.id===target);
-
-        const temp = dragged.order;
-        dragged.order = targetTask.order;
-        targetTask.order = temp;
-
-        await updateDoc(doc(db, "tasks", dragged.id), { order: dragged.order });
-        await updateDoc(doc(db, "tasks", targetTask.id), { order: targetTask.order });
-      };
+      div.ondrop = () => reorder(t.id);
 
       div.innerHTML = `
         <b>${t.name}</b><br>
@@ -130,19 +124,26 @@ function render() {
     });
 }
 
-// realtime
-const q = query(collection(db, "tasks"), orderBy("order"));
-onSnapshot(q, snap => {
-  tasks = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+function reorder(targetId) {
+  const dragged = tasks.find(x=>x.id===dragId);
+  const target = tasks.find(x=>x.id===targetId);
+
+  const temp = dragged.order;
+  dragged.order = target.order;
+  target.order = temp;
+
+  db.collection("tasks").doc(dragged.id).update({ order: dragged.order });
+  db.collection("tasks").doc(target.id).update({ order: target.order });
+}
+
+// 🔄 Real-time sync
+db.collection("tasks").orderBy("order")
+.onSnapshot(snapshot => {
+  tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   render();
 });
 
-const nameEl = document.getElementById('name');
-const ownerEl = document.getElementById('owner');
-const deadlineEl = document.getElementById('deadline');
-const filterOwner = document.getElementById('filterOwner');
-const showDoneEl = document.getElementById('showDone');
-
 </script>
+
 </body>
 </html>

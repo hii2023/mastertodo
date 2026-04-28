@@ -2,170 +2,810 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NOSH7 Action Board (v6 Final UX)</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>NOSH7 Action Board</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 <style>
-body { margin:0; font-family: system-ui; background:#f6f7fb; }
-.topbar { display:flex; gap:8px; padding:10px; background:#0f172a; color:#fff; flex-wrap:wrap; }
-.chip { padding:6px 10px; background:#1e293b; border-radius:20px; cursor:pointer; }
-.chip.active { background:#22c55e; color:#000; }
-.container { padding:10px; }
-.task { background:#fff; padding:12px; margin-bottom:10px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
-.task.done { opacity:0.5; }
-.header { display:flex; justify-content:space-between; }
-.desc { font-size:13px; color:#555; }
-.log { font-size:12px; color:#888; }
-.fab { position:fixed; bottom:20px; right:20px; width:60px; height:60px; background:#22c55e; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; }
-.modal { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:15px; display:none; border-radius:20px 20px 0 0; }
-input, select { width:100%; padding:10px; margin:5px 0; border-radius:8px; border:1px solid #ddd; }
-button { padding:8px; border:none; border-radius:8px; background:#22c55e; }
+:root {
+  --bg:       #0d1117;
+  --s1:       #161b22;
+  --s2:       #21262d;
+  --border:   #30363d;
+  --text:     #e6edf3;
+  --muted:    #7d8590;
+  --green:    #22c55e;
+  --amber:    #f59e0b;
+  --red:      #ef4444;
+  --blue:     #3b82f6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* ---- TOPBAR ---- */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px 8px;
+}
+
+.topbar-row1 {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.topbar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 800;
+  color: var(--green); letter-spacing: 2px;
+}
+
+.stats-badge {
+  font-size: 10px; color: var(--muted);
+  background: var(--s2); border: 1px solid var(--border);
+  padding: 3px 8px; border-radius: 20px;
+}
+
+.chips-row {
+  display: flex; gap: 5px; flex-wrap: wrap; align-items: center;
+}
+
+.divider-v {
+  width: 1px; height: 18px;
+  background: var(--border); flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.chip {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--s1);
+  color: var(--muted);
+  transition: all 0.15s;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+  user-select: none;
+}
+.chip:hover { border-color: #555; color: var(--text); }
+.chip.active-owner { background: var(--blue); border-color: var(--blue); color: #fff; }
+.chip.active-date  { background: var(--amber); border-color: var(--amber); color: #000; }
+
+/* ---- CONTAINER ---- */
+.container {
+  padding: 8px 12px 90px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 9px; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin: 14px 0 6px; padding: 0 2px;
+}
+
+/* ---- TASK CARD ---- */
+.task-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 5px;
+  transition: border-color 0.15s, opacity 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.task-card:hover { border-color: #444; }
+.task-card.done  { opacity: 0.42; }
+.task-card.dragging   { opacity: 0.25; border-style: dashed; }
+.task-card.drag-over  { border-color: var(--green) !important; box-shadow: 0 0 0 1px var(--green); }
+
+/* ---- MAIN ROW ---- */
+.task-row {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 10px 8px 6px;
+  min-height: 40px;
+}
+
+.drag-handle {
+  color: var(--muted); cursor: grab;
+  font-size: 13px; flex-shrink: 0;
+  padding: 4px 3px; border-radius: 4px;
+  touch-action: none; user-select: none;
+  line-height: 1; width: 20px; text-align: center;
+}
+.drag-handle:active { cursor: grabbing; color: var(--text); }
+
+.task-num {
+  font-size: 9px; color: var(--muted);
+  flex-shrink: 0; width: 16px; text-align: right;
+}
+
+.owner-tag {
+  font-size: 9px; font-weight: 500;
+  padding: 2px 6px; border-radius: 4px;
+  flex-shrink: 0; letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.task-name {
+  flex: 1; font-size: 13px; line-height: 1.35;
+  outline: none; min-width: 0; word-break: break-word;
+  border-radius: 4px; padding: 1px 4px; margin: -1px -4px;
+  transition: background 0.1s;
+}
+.task-name:focus {
+  background: var(--s2);
+  box-shadow: 0 0 0 1px var(--green);
+}
+.task-card.done .task-name { text-decoration: line-through; }
+
+.due-badge {
+  font-size: 10px; flex-shrink: 0; white-space: nowrap;
+}
+.due-badge.overdue { color: var(--red); }
+.due-badge.soon    { color: var(--amber); }
+.due-badge.ok      { color: var(--muted); }
+
+.btn-icon {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 26px; height: 26px;
+  border-radius: 6px; cursor: pointer;
+  font-size: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s; font-family: inherit;
+  padding: 0; line-height: 1;
+}
+.btn-icon:hover { border-color: var(--green); color: var(--green); }
+.btn-done-active { border-color: var(--green) !important; color: var(--green) !important; background: rgba(34,197,94,0.1) !important; }
+.btn-icon.btn-log-icon:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ---- DESC ROW ---- */
+.desc-row {
+  padding: 0 10px 7px 50px;
+}
+.task-desc {
+  font-size: 11px; color: var(--muted);
+  outline: none; border-radius: 4px;
+  padding: 1px 4px; margin: -1px -4px;
+  min-height: 14px; line-height: 1.4;
+  transition: background 0.1s, color 0.1s;
+  display: block;
+}
+.task-desc:empty::before {
+  content: attr(data-ph);
+  color: #3a404a;
+}
+.task-desc:focus {
+  background: var(--s2);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+/* ---- LOG CHIPS ---- */
+.logs-strip {
+  padding: 0 10px 6px 50px;
+  display: flex; flex-wrap: wrap; gap: 3px;
+}
+.log-chip {
+  font-size: 10px; color: var(--muted);
+  background: var(--s2); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 4px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ---- FAB ---- */
+.fab {
+  position: fixed; bottom: 22px; right: 18px;
+  width: 50px; height: 50px;
+  background: var(--green); border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; cursor: pointer; color: #000;
+  box-shadow: 0 4px 18px rgba(34,197,94,0.3);
+  transition: transform 0.12s; z-index: 200;
+  font-weight: 700; user-select: none;
+}
+.fab:active { transform: scale(0.93); }
+
+/* ---- MODAL OVERLAY ---- */
+.modal-ov {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 500;
+  display: none;
+  align-items: flex-end;
+  transition: background 0.2s;
+}
+.modal-ov.open {
+  display: flex;
+  background: rgba(0,0,0,0.65);
+}
+
+.modal-sheet {
+  width: 100%;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 0 0;
+  padding: 18px 16px 28px;
+  animation: slideUp 0.22s cubic-bezier(0.4,0,0.2,1);
+  max-height: 80dvh;
+  overflow-y: auto;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 800;
+  color: var(--green); letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+
+.field { margin-bottom: 10px; }
+.field label {
+  display: block; font-size: 9px; color: var(--muted);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--s2); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 11px;
+  border-radius: 7px; font-family: 'DM Mono', monospace;
+  font-size: 12px; outline: none;
+  transition: border-color 0.15s;
+  appearance: none; -webkit-appearance: none;
+}
+.field input:focus, .field select:focus { border-color: var(--green); }
+.field select option { background: var(--s2); color: var(--text); }
+.field input[type="date"] { color-scheme: dark; }
+
+.modal-btns {
+  display: flex; gap: 8px; margin-top: 14px;
+}
+.btn-primary {
+  flex: 1; padding: 10px;
+  background: var(--green); border: none;
+  border-radius: 8px; color: #000;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: transform 0.1s;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-secondary {
+  padding: 10px 14px; background: none;
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--muted); font-family: 'DM Mono', monospace;
+  font-size: 12px; cursor: pointer;
+}
+
+/* ---- LOG MODAL ---- */
+.log-list { margin-bottom: 12px; }
+.log-entry {
+  display: flex; gap: 10px; font-size: 11px;
+  padding: 5px 0; border-bottom: 1px solid var(--s2);
+}
+.log-entry:last-child { border: none; }
+.log-ts  { color: var(--muted); flex-shrink: 0; }
+.log-txt { color: var(--text); }
+.log-empty { font-size: 11px; color: var(--muted); padding: 6px 0; }
+
+/* ---- EMPTY ---- */
+.empty {
+  text-align: center; padding: 50px 20px;
+  color: var(--muted); font-size: 11px;
+}
 </style>
 </head>
 <body>
 
-<div class="topbar" id="ownerChips"></div>
-
-<div class="container" id="list"></div>
-
-<div class="fab" onclick="openModal()">+</div>
-
-<div class="modal" id="modal">
-<input id="name" placeholder="Task" />
-<input id="desc" placeholder="Description" />
-<select id="owner">
-<option>Altaf</option><option>Sapna</option><option>Parking</option><option>Nope</option>
-</select>
-<button onclick="addTask()">Add</button>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div class="topbar-title">N7 BOARD</div>
+    <div class="stats-badge" id="statsBadge">0 active</div>
+  </div>
+  <div class="chips-row" id="filterRow"></div>
 </div>
 
-<div class="modal" id="detailModal"></div>
+<!-- LIST -->
+<div class="container" id="list"></div>
+
+<!-- FAB -->
+<div class="fab" onclick="openAdd()">+</div>
+
+<!-- ADD TASK MODAL -->
+<div class="modal-ov" id="addModal">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-title">NEW TASK</div>
+    <div class="field">
+      <label>Task Name</label>
+      <input id="inp-name" placeholder="What needs to be done?" />
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <input id="inp-desc" placeholder="Optional details..." />
+    </div>
+    <div class="field">
+      <label>Owner</label>
+      <select id="inp-owner">
+        <option>Altaf</option>
+        <option>Sapna</option>
+        <option>Parking</option>
+        <option>Nope</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Due Date</label>
+      <input id="inp-due" type="date" />
+    </div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeAdd()">Cancel</button>
+      <button class="btn-primary" onclick="addTask()">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOG MODAL -->
+<div class="modal-ov" id="logModal">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-title" id="log-title">UPDATES</div>
+    <div class="log-list" id="log-list"></div>
+    <div class="field">
+      <label>New Update</label>
+      <input id="inp-log" placeholder="What happened?" />
+    </div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeLog()">Close</button>
+      <button class="btn-primary" onclick="submitLog()">Add Update</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <script>
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyBMG8nGe1Oa-_oycA5zgipy4oLMGpBq6WQ",
   authDomain: "nosh7-2f0a3.firebaseapp.com",
   projectId: "nosh7-2f0a3"
-};
-
-firebase.initializeApp(firebaseConfig);
+});
 const db = firebase.firestore();
 
-let tasks=[];
-let ownerFilter='';
-let dragId=null;
+/* ==============================
+   STATE
+============================== */
+let tasks       = [];
+let ownerFilter = '';
+let dateFilter  = '';
+let logTaskId   = null;
 
-function openModal(){ modal.style.display='block'; }
+/* ==============================
+   DATE HELPERS
+============================== */
+function getRange(key) {
+  const now  = new Date();
+  const sod  = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+  const eod  = d => { const x = new Date(d); x.setHours(23,59,59,999); return x; };
+  if (key === 'week') {
+    const s = new Date(now); s.setDate(now.getDate() - now.getDay());
+    const e = new Date(s);   e.setDate(s.getDate() + 6);
+    return [sod(s), eod(e)];
+  }
+  if (key === 'nextweek') {
+    const s = new Date(now); s.setDate(now.getDate() - now.getDay() + 7);
+    const e = new Date(s);   e.setDate(s.getDate() + 6);
+    return [sod(s), eod(e)];
+  }
+  if (key === 'month') {
+    return [sod(new Date(now.getFullYear(), now.getMonth(), 1)),
+            eod(new Date(now.getFullYear(), now.getMonth() + 1, 0))];
+  }
+  return null;
+}
 
-function addTask(){
-  const name=nameEl.value;
-  if(!name) return;
+function formatDue(str) {
+  if (!str) return null;
+  const d   = new Date(str + 'T00:00:00');
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.ceil((d - now) / 86400000);
+  const M    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const label = d.getDate() + ' ' + M[d.getMonth()];
+  const cls   = diff < 0 ? 'overdue' : diff <= 3 ? 'soon' : 'ok';
+  return { label, cls };
+}
 
-  db.collection("tasks").add({
-    name,
-    desc:descEl.value,
-    owner:ownerEl.value,
-    done:false,
-    order:Date.now(),
-    logs:[]
+/* ==============================
+   FILTER
+============================== */
+function filtered() {
+  let r = tasks.slice();
+  if (ownerFilter) r = r.filter(t => t.owner === ownerFilter);
+  if (dateFilter) {
+    const rng = getRange(dateFilter);
+    if (rng) r = r.filter(t => {
+      if (!t.dueDate) return false;
+      const d = new Date(t.dueDate + 'T00:00:00');
+      return d >= rng[0] && d <= rng[1];
+    });
+  }
+  return r.sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+/* ==============================
+   ADD TASK
+============================== */
+function openAdd() {
+  document.getElementById('addModal').classList.add('open');
+  document.getElementById('inp-due').value = new Date().toISOString().slice(0,10);
+  setTimeout(() => document.getElementById('inp-name').focus(), 250);
+}
+function closeAdd() {
+  document.getElementById('addModal').classList.remove('open');
+}
+async function addTask() {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) { document.getElementById('inp-name').focus(); return; }
+  await db.collection('tasks').add({
+    name, desc:    document.getElementById('inp-desc').value.trim(),
+    owner:         document.getElementById('inp-owner').value,
+    dueDate:       document.getElementById('inp-due').value || '',
+    done: false,   order: Date.now(),   logs: []
+  });
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-desc').value = '';
+  closeAdd();
+}
+
+document.getElementById('inp-name').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+/* ==============================
+   TOGGLE DONE
+============================== */
+function toggleDone(id, cur) {
+  db.collection('tasks').doc(id).update({ done: !cur });
+}
+
+/* ==============================
+   INLINE SAVE
+============================== */
+function saveField(id, field, val) {
+  db.collection('tasks').doc(id).update({ [field]: val });
+}
+
+/* ==============================
+   LOG MODAL
+============================== */
+function openLog(id) {
+  logTaskId = id;
+  const t = tasks.find(x => x.id === id);
+  document.getElementById('log-title').textContent = t.name.toUpperCase();
+  renderLogList(t.logs || []);
+  document.getElementById('logModal').classList.add('open');
+  setTimeout(() => document.getElementById('inp-log').focus(), 250);
+}
+function closeLog() {
+  document.getElementById('logModal').classList.remove('open');
+  document.getElementById('inp-log').value = '';
+  logTaskId = null;
+}
+function renderLogList(logs) {
+  const el = document.getElementById('log-list');
+  if (!logs.length) { el.innerHTML = '<div class="log-empty">No updates yet.</div>'; return; }
+  el.innerHTML = logs.slice().reverse().map(l =>
+    `<div class="log-entry"><span class="log-ts">${l.time}</span><span class="log-txt">${l.text}</span></div>`
+  ).join('');
+}
+async function submitLog() {
+  const text = document.getElementById('inp-log').value.trim();
+  if (!text || !logTaskId) return;
+  const t    = tasks.find(x => x.id === logTaskId);
+  const logs = [...(t.logs || [])];
+  const now  = new Date();
+  const time = `${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  logs.push({ text, time });
+  await db.collection('tasks').doc(logTaskId).update({ logs });
+  document.getElementById('inp-log').value = '';
+  renderLogList(logs);
+}
+document.getElementById('inp-log').addEventListener('keydown', e => { if (e.key === 'Enter') submitLog(); });
+
+/* ==============================
+   DRAG AND DROP
+============================== */
+let dragSrcId  = null;
+let dragOverId = null;
+
+function swapOrder(srcId, tgtId) {
+  if (!srcId || !tgtId || srcId === tgtId) return;
+  const a = tasks.find(x => x.id === srcId);
+  const b = tasks.find(x => x.id === tgtId);
+  if (!a || !b) return;
+  const batch = db.batch();
+  batch.update(db.collection('tasks').doc(srcId), { order: b.order });
+  batch.update(db.collection('tasks').doc(tgtId), { order: a.order });
+  batch.commit();
+}
+
+function clearDragState() {
+  document.querySelectorAll('.task-card').forEach(c => {
+    c.classList.remove('dragging', 'drag-over');
+  });
+  dragSrcId = dragOverId = null;
+}
+
+/* ==============================
+   OWNER COLOR MAP
+============================== */
+const OWNER_COLORS = {
+  'Altaf':   { bg: 'rgba(59,130,246,0.15)',  color: '#93c5fd' },
+  'Sapna':   { bg: 'rgba(236,72,153,0.15)',  color: '#f9a8d4' },
+  'Parking': { bg: 'rgba(245,158,11,0.15)',  color: '#fcd34d' },
+  'Nope':    { bg: 'rgba(107,114,128,0.15)', color: '#9ca3af' }
+};
+function ownerStyle(o) {
+  const c = OWNER_COLORS[o] || { bg: 'rgba(255,255,255,0.08)', color: '#9ca3af' };
+  return `background:${c.bg};color:${c.color}`;
+}
+
+/* ==============================
+   RENDER CHIPS
+============================== */
+function renderChips() {
+  const owners  = [...new Set(tasks.map(t => t.owner).filter(Boolean))];
+  const dates   = [
+    { key: 'week',     label: 'This Week' },
+    { key: 'nextweek', label: 'Next Week' },
+    { key: 'month',    label: 'This Month' }
+  ];
+
+  let html = `<span class="chip${!ownerFilter ? ' active-owner' : ''}" onclick="setOwner('')">All</span>`;
+  owners.forEach(o => {
+    html += `<span class="chip${o === ownerFilter ? ' active-owner' : ''}" onclick="setOwner('${o}')">${o}</span>`;
+  });
+  html += `<div class="divider-v"></div>`;
+  dates.forEach(d => {
+    html += `<span class="chip${d.key === dateFilter ? ' active-date' : ''}" onclick="setDate('${d.key}')">${d.label}</span>`;
+  });
+  if (dateFilter) {
+    html += `<span class="chip active-date" onclick="setDate('')">x</span>`;
+  }
+
+  document.getElementById('filterRow').innerHTML = html;
+}
+
+function setOwner(o) { ownerFilter = o; render(); }
+function setDate(d)  { dateFilter  = d; render(); }
+
+/* ==============================
+   CREATE CARD
+============================== */
+function createCard(t, idx) {
+  const card = document.createElement('div');
+  card.className = 'task-card' + (t.done ? ' done' : '');
+  card.dataset.id = t.id;
+
+  const due = formatDue(t.dueDate);
+
+  /* --- ROW HTML --- */
+  card.innerHTML = `
+    <div class="task-row">
+      <div class="drag-handle" title="Hold to drag">&#9776;</div>
+      <div class="task-num">${idx}</div>
+      <span class="owner-tag" style="${ownerStyle(t.owner)}">${t.owner}</span>
+      <div class="task-name"
+           contenteditable="true"
+           spellcheck="false"
+           data-id="${t.id}"
+           data-field="name">${t.name}</div>
+      ${due ? `<span class="due-badge ${due.cls}">${due.label}</span>` : ''}
+      <button class="btn-icon${t.done ? ' btn-done-active' : ''}"
+              onclick="toggleDone('${t.id}', ${t.done})"
+              title="${t.done ? 'Reopen' : 'Done'}">
+        ${t.done ? '&#8617;' : '&#10003;'}
+      </button>
+      <button class="btn-icon btn-log-icon"
+              onclick="openLog('${t.id}')"
+              title="Updates">
+        &#8984;
+      </button>
+    </div>
+    <div class="desc-row">
+      <div class="task-desc"
+           contenteditable="true"
+           spellcheck="false"
+           data-id="${t.id}"
+           data-field="desc"
+           data-ph="add note...">${t.desc || ''}</div>
+    </div>
+    ${t.logs && t.logs.length ? `
+    <div class="logs-strip">
+      ${t.logs.slice(-2).map(l => `<span class="log-chip">${l.time} - ${l.text}</span>`).join('')}
+    </div>` : ''}
+  `;
+
+  /* --- INLINE EDIT HANDLERS --- */
+  card.querySelectorAll('[contenteditable]').forEach(el => {
+    let original = el.innerText.trim();
+
+    el.addEventListener('focus', () => { original = el.innerText.trim(); });
+    el.addEventListener('blur',  () => {
+      const val = el.innerText.trim();
+      if (val !== original) saveField(el.dataset.id, el.dataset.field, val);
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+      if (e.key === 'Escape') { el.innerText = original; el.blur(); }
+    });
+    /* stop drag from firing while editing */
+    el.addEventListener('mousedown', e => e.stopPropagation());
+    el.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
   });
 
-  modal.style.display='none';
-  nameEl.value=descEl.value='';
+  /* --- WEB DRAG (HTML5 Drag API) --- */
+  const handle = card.querySelector('.drag-handle');
+
+  handle.addEventListener('mousedown', () => {
+    card.setAttribute('draggable', 'true');
+  });
+  card.addEventListener('dragstart', e => {
+    dragSrcId = t.id;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => card.classList.add('dragging'), 0);
+  });
+  card.addEventListener('dragend', () => {
+    card.setAttribute('draggable', 'false');
+    clearDragState();
+  });
+  card.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (t.id === dragSrcId) return;
+    document.querySelectorAll('.task-card.drag-over').forEach(c => c.classList.remove('drag-over'));
+    card.classList.add('drag-over');
+    dragOverId = t.id;
+  });
+  card.addEventListener('drop', e => {
+    e.preventDefault();
+    swapOrder(dragSrcId, t.id);
+    clearDragState();
+    card.setAttribute('draggable', 'false');
+  });
+
+  /* --- MOBILE TOUCH DRAG --- */
+  let ghost = null;
+  let touchActive = false;
+
+  handle.addEventListener('touchstart', e => {
+    touchActive = true;
+    dragSrcId   = t.id;
+    card.classList.add('dragging');
+
+    ghost = card.cloneNode(true);
+    ghost.style.cssText = [
+      `position:fixed`,
+      `width:${card.offsetWidth}px`,
+      `left:${e.touches[0].clientX - 20}px`,
+      `top:${e.touches[0].clientY - 20}px`,
+      `opacity:0.85`,
+      `pointer-events:none`,
+      `z-index:9999`,
+      `border:1px solid var(--green)`,
+      `border-radius:8px`,
+      `background:var(--s2)`,
+      `transition:none`
+    ].join(';');
+    document.body.appendChild(ghost);
+    e.preventDefault();
+  }, { passive: false });
+
+  handle.addEventListener('touchmove', e => {
+    if (!touchActive) return;
+    const touch = e.touches[0];
+    if (ghost) {
+      ghost.style.left = (touch.clientX - 20) + 'px';
+      ghost.style.top  = (touch.clientY - 20) + 'px';
+    }
+    /* detect card under finger */
+    ghost.style.display = 'none';
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    ghost.style.display = '';
+
+    document.querySelectorAll('.task-card.drag-over').forEach(c => c.classList.remove('drag-over'));
+    const tgtCard = el && el.closest('.task-card');
+    if (tgtCard && tgtCard.dataset.id !== dragSrcId) {
+      tgtCard.classList.add('drag-over');
+      dragOverId = tgtCard.dataset.id;
+    } else {
+      dragOverId = null;
+    }
+    e.preventDefault();
+  }, { passive: false });
+
+  handle.addEventListener('touchend', () => {
+    if (!touchActive) return;
+    touchActive = false;
+    if (ghost) { ghost.remove(); ghost = null; }
+    if (dragSrcId && dragOverId) swapOrder(dragSrcId, dragOverId);
+    clearDragState();
+  });
+
+  return card;
 }
 
-function toggleDone(id,val){
-  db.collection("tasks").doc(id).update({done:!val});
-}
-
-function addLog(id){
-  const text=prompt("Add update");
-  if(!text) return;
-
-  const t=tasks.find(x=>x.id===id);
-  const logs=t.logs||[];
-
-  const now=new Date();
-  const time=`${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-  logs.push({text,time});
-  db.collection("tasks").doc(id).update({logs});
-}
-
-function openDetail(id){
-  const t=tasks.find(x=>x.id===id);
-
-  detailModal.style.display='block';
-  detailModal.innerHTML=`
-  <h3>${t.name}</h3>
-  <p>${t.desc||''}</p>
-  <button onclick="addLog('${t.id}')">Add Log</button>
-  ${t.logs.map(l=>`<div class='log'>${l.time} - ${l.text}</div>`).join('')}
-  `;
-}
-
-function renderChips(){
-  const owners=[...new Set(tasks.map(t=>t.owner))];
-  ownerChips.innerHTML=owners.map(o=>`<span class='chip ${o===ownerFilter?'active':''}' onclick="ownerFilter='${o}';render()">${o}</span>`).join('');
-}
-
-function render(){
-  list.innerHTML='';
+/* ==============================
+   RENDER
+============================== */
+function render() {
   renderChips();
 
-  tasks
-  .filter(t=>!ownerFilter||t.owner===ownerFilter)
-  .sort((a,b)=>a.order-b.order)
-  .forEach((t,i)=>{
-    const div=document.createElement('div');
-    div.className='task'+(t.done?' done':'');
+  const f      = filtered();
+  const active = f.filter(t => !t.done);
+  const done   = f.filter(t => t.done);
+  const list   = document.getElementById('list');
+  list.innerHTML = '';
 
-    // MOBILE HOLD DRAG
-    div.ontouchstart=()=>dragId=t.id;
-    div.ontouchend=()=>{
-      const target=tasks[i+1];
-      if(target){
-        const d=tasks.find(x=>x.id===dragId);
-        const temp=d.order;
-        d.order=target.order;
-        target.order=temp;
+  /* stats */
+  document.getElementById('statsBadge').textContent =
+    active.length + ' active' + (done.length ? ' / ' + done.length + ' done' : '');
 
-        db.collection("tasks").doc(d.id).update({order:d.order});
-        db.collection("tasks").doc(target.id).update({order:target.order});
-      }
-    };
+  if (!f.length) {
+    list.innerHTML = '<div class="empty">No tasks. Hit + to add one.</div>';
+    return;
+  }
 
-    div.innerHTML=`
-    <div class='header'>
-      <div onclick="openDetail('${t.id}')">#${i+1} ${t.name}</div>
-      <button onclick="toggleDone('${t.id}',${t.done})">${t.done?'🔁':'✅'}</button>
-    </div>
-    <div class='desc'>${t.desc||''}</div>
-    <div>${t.owner}</div>
-    <button onclick="addLog('${t.id}')">+ Log</button>
-    <div class='log'>${(t.logs||[]).slice(-1).map(l=>`${l.time}`).join('')}</div>
-    `;
+  if (active.length) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label';
+    lbl.textContent = `ACTIVE (${active.length})`;
+    list.appendChild(lbl);
+    active.forEach((t, i) => list.appendChild(createCard(t, i + 1)));
+  }
 
-    list.appendChild(div);
-  });
+  if (done.length) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label';
+    lbl.textContent = `DONE (${done.length})`;
+    list.appendChild(lbl);
+    done.forEach((t, i) => list.appendChild(createCard(t, active.length + i + 1)));
+  }
 }
 
-const nameEl=document.getElementById('name');
-const descEl=document.getElementById('desc');
-const ownerEl=document.getElementById('owner');
-const modal=document.getElementById('modal');
-const detailModal=document.getElementById('detailModal');
+/* ==============================
+   REALTIME LISTENER
+============================== */
+db.collection('tasks').orderBy('order')
+  .onSnapshot(snap => {
+    tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    render();
+  });
 
-// realtime
-db.collection("tasks").orderBy("order")
-.onSnapshot(snap=>{
-  tasks=snap.docs.map(d=>({id:d.id,...d.data()}));
-  render();
+/* ==============================
+   KEYBOARD SHORTCUTS
+============================== */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('addModal').classList.remove('open');
+    document.getElementById('logModal').classList.remove('open');
+  }
 });
-</script>
 
+/* Close modals on overlay click */
+document.getElementById('addModal').addEventListener('click', closeAdd);
+document.getElementById('logModal').addEventListener('click', closeLog);
+</script>
 </body>
 </html>

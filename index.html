@@ -1396,7 +1396,7 @@ function render() {
 }
 
 /* ── REALTIME LISTENER ── */
-db.collection('tasks').orderBy('order').onSnapshot(function(snap) {
+db.collection('tasks').onSnapshot(function(snap) {
   tasks = snap.docs.map(function(d) { return Object.assign({id: d.id}, d.data()); });
   render();
 });

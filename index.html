@@ -33,16 +33,7 @@ body.light {
   --sh:rgba(0,0,0,.12); --sh1:rgba(0,0,0,0);
   --sheet:#fff;
 }
-/* === PINK === */
-body.pink {
-  --bg:#100819; --s1:#1c0d2c; --s2:#26123e; --s3:#31184f;
-  --b1:#4e2272; --b2:#6e309e;
-  --tx:#fceeff; --sub:#c49de0; --dim:#7a4a9a;
-  --ac:#e040fb; --acbg:rgba(224,64,251,.1); --acgl:rgba(224,64,251,.35);
-  --am:#ff80ab; --rd:#ff5252; --bl:#d580ff;
-  --sh:rgba(0,0,0,.55); --sh1:rgba(255,255,255,.02);
-  --sheet:#1c0d2c;
-}
+
 
 * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 body {
@@ -63,7 +54,6 @@ body {
   transition:background .2s, border-color .2s;
 }
 body.light .topbar { background:rgba(240,244,248,.97); }
-body.pink  .topbar { background:rgba(16,8,25,.97); }
 
 .tb1 { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
 .tbleft { display:flex; align-items:center; gap:7px; }
@@ -81,27 +71,19 @@ body.pink  .topbar { background:rgba(16,8,25,.97); }
 }
 .tbright { display:flex; align-items:center; gap:5px; }
 
-.theme-dots { display:flex; align-items:center; gap:4px; }
-.td {
-  width:16px; height:16px; border-radius:50%;
-  cursor:pointer; border:2px solid transparent;
-  transition:all .15s; flex-shrink:0;
-}
-.td:hover { transform:scale(1.2); }
-.td.on { transform:scale(1.28); box-shadow:0 0 0 2px var(--ac); }
-.td-dark  { background:#0c1a2e; border-color:#2a4666; }
-.td-light { background:#e8eef5; border-color:#93acc3; }
-.td-pink  { background:linear-gradient(135deg,#e040fb,#9c27b0); }
+
 
 .ibt {
-  width:30px; height:30px; border-radius:var(--rs);
+  height:36px; padding:0 12px; border-radius:var(--rs);
   background:var(--s2); border:1px solid var(--b1);
-  color:var(--sub); cursor:pointer; font-size:14px;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .15s; flex-shrink:0;
+  color:var(--sub); cursor:pointer; font-size:13px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  transition:all .15s; flex-shrink:0; font-family:'Outfit',sans-serif;
+  white-space:nowrap; letter-spacing:.5px;
 }
 .ibt:hover { border-color:var(--b2); color:var(--tx); }
 .ibt.on { border-color:var(--ac); color:var(--ac); background:var(--acbg); }
+.ibt-sq { width:36px; padding:0; }
 
 /* FILTER BAR */
 .fb { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
@@ -118,7 +100,6 @@ body.pink  .topbar { background:rgba(16,8,25,.97); }
 .chip.ad { background:rgba(255,179,0,.13);  border-color:rgba(255,179,0,.4);  color:var(--am); }
 .chip.ar { background:rgba(255,82,82,.13);   border-color:rgba(255,82,82,.4);   color:var(--rd); }
 .chip.ac { background:var(--acbg); border-color:rgba(0,230,118,.35); color:var(--ac); }
-body.pink .chip.ac { border-color:rgba(224,64,251,.35); }
 body.light .chip.ac { border-color:rgba(0,158,87,.4); }
 .chip.dash { border-style:dashed; }
 
@@ -128,8 +109,8 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
 /* TASK CARD */
 .card {
   background:var(--s1);
-  border:1px solid var(--b1); border-left:3px solid var(--b1);
-  border-radius:var(--r); margin-bottom:4px;
+  border:1px solid var(--b1); border-left:4px solid var(--b1);
+  border-radius:var(--r); margin-bottom:6px;
   cursor:grab; position:relative;
   transition:box-shadow .15s, border-color .15s, opacity .15s;
   user-select:none;
@@ -142,64 +123,74 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
 .card:hover { border-color:var(--b2); box-shadow:0 3px 14px var(--sh); }
 .card.lifted { opacity:.08; cursor:grabbing; }
 
-/* Compact row - always visible */
+/* Card top row */
 .crow {
-  display:flex; align-items:center; gap:7px;
-  padding:8px 10px 8px 7px; min-height:38px;
-}
-.crank {
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px; font-weight:700; color:var(--dim);
-  user-select:none; flex-shrink:0; width:22px; text-align:right;
+  display:grid;
+  grid-template-columns:30px 1fr auto;
+  gap:0 10px;
+  padding:12px 12px 4px 10px;
+  align-items:start;
 }
 .cradio {
-  width:20px; height:20px; border-radius:50%;
-  border:2px solid var(--b2); cursor:pointer;
+  width:26px; height:26px; border-radius:50%;
+  border:2.5px solid var(--b2); cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  flex-shrink:0;
+  flex-shrink:0; margin-top:1px;
   transition:all .2s cubic-bezier(.34,1.56,.64,1);
   background:none;
 }
-.cradio:hover { border-color:var(--ac); background:var(--acbg); transform:scale(1.12); }
+.cradio:hover { border-color:var(--ac); background:var(--acbg); transform:scale(1.1); }
 .cradio:active { transform:scale(.85); }
 .cradio.done {
   background:var(--ac); border-color:var(--ac);
-  box-shadow:0 0 8px var(--acgl);
+  box-shadow:0 0 10px var(--acgl);
 }
 .cradio.done::after {
-  content:''; width:7px; height:4px;
-  border-left:2px solid var(--bg); border-bottom:2px solid var(--bg);
+  content:''; width:8px; height:5px;
+  border-left:2.5px solid var(--bg); border-bottom:2.5px solid var(--bg);
   transform:rotate(-45deg) translateY(-1px); display:block;
 }
+.cbody { min-width:0; }
 .cname {
-  flex:1; font-size:13px; font-weight:700; color:var(--tx);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+  font-size:15px; font-weight:700; color:var(--tx);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  line-height:1.3; margin-bottom:0;
 }
 .card.done .cname { text-decoration:line-through; color:var(--sub); }
-.ctags { display:flex; align-items:center; gap:4px; flex-shrink:0; }
-.cpill {
-  font-size:9px; font-weight:700; padding:2px 6px;
-  border-radius:4px; white-space:nowrap;
-  font-family:'JetBrains Mono',monospace; letter-spacing:.3px;
+.cdue {
+  font-size:11px; font-weight:600; margin-top:5px;
+  font-family:'JetBrains Mono',monospace; display:none;
 }
-.duepill { padding:0 3px; background:none !important; }
-.duepill.overdue { color:var(--rd); }
-.duepill.soon    { color:var(--am); }
-.duepill.ok      { color:var(--dim); }
-
+.cdue.overdue { color:var(--rd); }
+.cdue.soon    { color:var(--am); }
+.cdue.ok      { color:var(--dim); }
+.ccat {
+  display:none; margin-top:4px;
+}
+.ccatpill {
+  display:inline-block; font-size:10px; font-weight:700; padding:2px 8px;
+  border-radius:4px; font-family:'JetBrains Mono',monospace; letter-spacing:.3px;
+}
+.crank {
+  display:block; font-size:10px; color:var(--dim);
+  font-family:'JetBrains Mono',monospace; font-weight:600;
+  margin-top:3px;
+}
+/* bottom padding row */
+.cpad { height:10px; }
 .clog {
-  width:20px; height:20px; border-radius:5px;
+  width:30px; height:30px; border-radius:6px;
   background:none; border:1px solid var(--b1);
   color:var(--dim); cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0; transition:all .15s; position:relative; padding:0;
 }
 .clog:hover { color:var(--bl); border-color:rgba(68,138,255,.4); background:rgba(68,138,255,.1); }
-.clog svg { width:11px; height:11px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.clog svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .lbadge {
-  position:absolute; top:-4px; right:-4px;
-  min-width:12px; height:12px; padding:0 2px;
-  background:var(--bl); border-radius:6px;
+  position:absolute; top:-5px; right:-5px;
+  min-width:14px; height:14px; padding:0 3px;
+  background:var(--bl); border-radius:7px;
   font-size:8px; color:#fff; font-weight:700;
   display:flex; align-items:center; justify-content:center;
   font-family:'JetBrains Mono',monospace;
@@ -473,14 +464,10 @@ body.light .field input[type="date"] { color-scheme:light; }
       <div class="stats" id="stats">-- tasks</div>
     </div>
     <div class="tbright">
-      <div class="theme-dots">
-        <div class="td td-dark on"  id="tdd" onclick="setTheme('dark')"  title="Dark"></div>
-        <div class="td td-light"    id="tdl" onclick="setTheme('light')" title="Light"></div>
-        <div class="td td-pink"     id="tdp" onclick="setTheme('pink')"  title="Pink"></div>
-      </div>
-      <button class="ibt on" id="viewBtn" onclick="toggleView()" title="Compact view">&#8803;</button>
-      <button class="ibt" onclick="openInst()" title="Install app">&#8659;</button>
-      <button class="ibt" onclick="openSet()" title="Settings">&#9881;</button>
+      <button class="ibt" id="themeBtn" onclick="toggleTheme()" title="Switch theme">&#9788; Light</button>
+      <button class="ibt on" id="viewBtn" onclick="toggleView()">&#8803; Compact</button>
+      <button class="ibt ibt-sq" onclick="openInst()" title="Install app">&#8659;</button>
+      <button class="ibt ibt-sq" onclick="openSet()" title="Settings">&#9881;</button>
     </div>
   </div>
   <div class="fb" id="fb"></div>
@@ -696,13 +683,14 @@ var currentTheme = localStorage.getItem('n7t') || 'dark';
 function setTheme(t) {
   currentTheme = t;
   localStorage.setItem('n7t', t);
-  document.body.className = (t === 'dark') ? '' : t;
-  ['dark','light','pink'].forEach(function(x) {
-    document.getElementById('td' + x[0]).classList.toggle('on', x === t);
-  });
-  var mc = t === 'pink' ? '#e040fb' : t === 'light' ? '#f0f4f8' : '#00e676';
-  document.getElementById('theme-meta').content = mc;
+  document.body.className = (t === 'light') ? 'light' : '';
+  document.getElementById('theme-meta').content = (t === 'light') ? '#f0f4f8' : '#00e676';
+  var btn = document.getElementById('themeBtn');
+  if (btn) btn.innerHTML = (t === 'light') ? '&#9790; Dark' : '&#9788; Light';
   render();
+}
+function toggleTheme() {
+  setTheme(currentTheme === 'light' ? 'dark' : 'light');
 }
 
 /* ── VIEW MODE ── */
@@ -711,8 +699,7 @@ function toggleView() {
   isCompact = !isCompact;
   var btn = document.getElementById('viewBtn');
   btn.classList.toggle('on', isCompact);
-  btn.innerHTML = isCompact ? '&#8803;' : '&#8801;';
-  btn.title = isCompact ? 'Compact view' : 'Detailed view';
+  btn.innerHTML = isCompact ? '&#8803; Compact' : '&#8801; Detailed';
   render();
 }
 
@@ -1207,29 +1194,27 @@ function createCard(t, rank) {
   var lc  = (t.logs || []).length;
 
   /* Compact row */
-  var duePillHTML = '';
-  if (due) {
-    duePillHTML = '<span class="cpill duepill ' + due.cls + '">' + due.label + '</span>';
-  }
-  var catPillHTML = '';
-  if (cc) {
-    catPillHTML = '<span class="cpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '28">' + t.category + '</span>';
-  }
   var logBadgeHTML = lc ? '<span class="lbadge">' + (lc > 9 ? '9+' : lc) + '</span>' : '';
 
   var crow = document.createElement('div');
   crow.className = 'crow';
+  var dueLineHTML = due ? '<div class="cdue ' + due.cls + '">&#128197; ' + due.label + '</div>' : '';
+  var catLineHTML = cc ? '<div class="ccat"><span class="ccatpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '30">' + t.category + '</span></div>' : '';
+  var ownerLineHTML = '<span class="ccatpill" style="background:' + os.bg + ';color:' + os.c + ';margin-left:' + (cc ? '6' : '0') + 'px">' + t.owner + '</span>';
   crow.innerHTML =
-    '<div class="crank">#' + rank + '</div>' +
     '<div class="cradio' + (t.done ? ' done' : '') + '"></div>' +
-    '<div class="cname">' + t.name + '</div>' +
-    '<div class="ctags">' +
-      '<span class="cpill" style="background:' + os.bg + ';color:' + os.c + '">' + t.owner + '</span>' +
-      catPillHTML +
-      duePillHTML +
+    '<div class="cbody">' +
+      '<div class="cname">' + t.name + '</div>' +
+      dueLineHTML +
+      (cc || true ? '<div class="ccat" style="display:flex;align-items:center;margin-top:4px">' + (cc ? '<span class="ccatpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '30">' + t.category + '</span>' : '') + ownerLineHTML + '</div>' : '') +
+      '<span class="crank">#' + rank + '</span>' +
     '</div>' +
     '<button class="clog">' + ICON_LOG + logBadgeHTML + '</button>';
   card.appendChild(crow);
+  document.createElement('div'); // padding
+  var padDiv = document.createElement('div');
+  padDiv.className = 'cpad';
+  card.appendChild(padDiv);
 
   /* Detailed rows (only in detailed mode) */
   if (!isCompact) {

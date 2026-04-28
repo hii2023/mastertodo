@@ -3,44 +3,71 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NOSH7 Action Board (Firebase Compat)</title>
+<title>NOSH7 Action Board (v3)</title>
 
 <style>
-body { font-family: Arial; margin:0; display:flex; height:100vh; }
-.sidebar { width:20%; background:#111; color:#fff; padding:15px; }
-.main { width:80%; padding:15px; overflow:auto; }
+body { font-family: Arial; margin:0; }
+.topbar { padding:10px; background:#111; color:#fff; display:flex; gap:10px; flex-wrap:wrap; }
+.container { display:flex; }
+.sidebar { width:20%; background:#222; color:#fff; padding:10px; }
+.main { width:80%; padding:10px; }
 .task { background:#f4f4f4; padding:10px; margin-bottom:10px; border-radius:8px; cursor:grab; }
 .task.done { opacity:0.5; text-decoration:line-through; }
-button { padding:6px; margin-top:5px; }
-input { width:100%; padding:6px; margin:5px 0; }
-.logs { background:#fff; padding:5px; margin-top:5px; font-size:12px; }
+input, select { padding:6px; margin:5px 0; width:100%; }
+.logs { font-size:12px; background:#fff; padding:5px; margin-top:5px; }
+@media(max-width:768px){
+  .container{flex-direction:column;}
+  .sidebar, .main{width:100%;}
+}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-<h3>+ New Task</h3>
-<input id="name" placeholder="Task name" />
-<input id="owner" placeholder="Owner" />
-<input id="deadline" type="date" />
-<button onclick="addTask()">Add Task</button>
+<div class="topbar">
+<select id="filterOwner" onchange="render()">
+<option value="">All Owners</option>
+<option>Altaf</option>
+<option>Sapna</option>
+<option>Parking</option>
+<option>Nope</option>
+</select>
 
-<h3>Filter</h3>
-<input id="filterOwner" placeholder="Filter by owner" oninput="render()" />
+<select id="filterCategory" onchange="render()">
+<option value="">All Categories</option>
+</select>
+
 <label><input type="checkbox" id="showDone" onchange="render()"/> Show Closed</label>
 </div>
 
+<div class="container">
+
+<div class="sidebar">
+<h3>+ Task</h3>
+<input id="name" placeholder="Task name" onkeypress="if(event.key==='Enter') addTask()" />
+<select id="owner">
+<option>Altaf</option>
+<option>Sapna</option>
+<option>Parking</option>
+<option>Nope</option>
+</select>
+
+<select id="category"></select>
+<input id="newCategory" placeholder="Add category" />
+<button onclick="addCategory()">Add Category</button>
+<button onclick="addTask()">Add Task</button>
+</div>
+
 <div class="main">
-<h2>Tasks (Drag to reorder)</h2>
+<h2>Tasks</h2>
 <div id="list"></div>
 </div>
 
-<!-- Firebase Compat SDK -->
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-// 🔥 PASTE YOUR FIREBASE CONFIG HERE
 const firebaseConfig = {
   apiKey: "AIzaSyBMG8nGe1Oa-_oycA5zgipy4oLMGpBq6WQ",
   authDomain: "nosh7-2f0a3.firebaseapp.com",
@@ -54,95 +81,109 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let tasks = [];
+let categories = [];
 let dragId = null;
 
-function addTask() {
+function addCategory(){
+  const val = document.getElementById('newCategory').value;
+  if(!val) return;
+  categories.push(val);
+  renderCategories();
+  document.getElementById('newCategory').value='';
+}
+
+function renderCategories(){
+  const cat = document.getElementById('category');
+  const filter = document.getElementById('filterCategory');
+
+  cat.innerHTML = '';
+  filter.innerHTML = '<option value="">All Categories</option>';
+
+  categories.forEach(c=>{
+    cat.innerHTML += `<option>${c}</option>`;
+    filter.innerHTML += `<option>${c}</option>`;
+  });
+}
+
+function addTask(){
   const name = document.getElementById('name').value;
-  if (!name) return alert("Enter task");
+  if(!name) return;
 
   db.collection("tasks").add({
     name,
     owner: document.getElementById('owner').value,
-    deadline: document.getElementById('deadline').value,
-    done: false,
-    order: Date.now(),
-    logs: []
+    category: document.getElementById('category').value,
+    done:false,
+    order:Date.now(),
+    logs:[]
   });
 
-  document.getElementById('name').value = "";
-  document.getElementById('owner').value = "";
-  document.getElementById('deadline').value = "";
+  document.getElementById('name').value='';
 }
 
-function toggleDone(id, val) {
-  db.collection("tasks").doc(id).update({ done: !val });
+function toggleDone(id,val){
+  db.collection("tasks").doc(id).update({done:!val});
 }
 
-function addLog(id) {
-  const text = prompt("Update / Comment");
-  if (!text) return;
-
-  const t = tasks.find(x => x.id === id);
-  const logs = t.logs || [];
-  logs.push({ text, time: new Date().toLocaleString() });
-
-  db.collection("tasks").doc(id).update({ logs });
+function addLog(id){
+  const text = prompt("Update");
+  if(!text) return;
+  const t = tasks.find(x=>x.id===id);
+  const logs = t.logs||[];
+  logs.push({text,time:new Date().toLocaleString()});
+  db.collection("tasks").doc(id).update({logs});
 }
 
-function render() {
+function render(){
   const list = document.getElementById('list');
-  const filter = document.getElementById('filterOwner').value.toLowerCase();
+  const ownerF = document.getElementById('filterOwner').value;
+  const catF = document.getElementById('filterCategory').value;
   const showDone = document.getElementById('showDone').checked;
 
-  list.innerHTML = "";
+  list.innerHTML='';
 
   tasks
-    .filter(t => (!filter || (t.owner||"").toLowerCase().includes(filter)))
-    .filter(t => showDone || !t.done)
-    .sort((a,b)=>a.order-b.order)
-    .forEach(t => {
-      const div = document.createElement('div');
-      div.className = 'task' + (t.done ? ' done':'');
-      div.draggable = true;
+  .filter(t=>!ownerF||t.owner===ownerF)
+  .filter(t=>!catF||t.category===catF)
+  .filter(t=>showDone||!t.done)
+  .sort((a,b)=>a.order-b.order)
+  .forEach(t=>{
+    const div = document.createElement('div');
+    div.className='task'+(t.done?' done':'');
+    div.draggable=true;
 
-      div.ondragstart = () => dragId = t.id;
-      div.ondragover = (e) => e.preventDefault();
-      div.ondrop = () => reorder(t.id);
+    div.ondragstart=()=>dragId=t.id;
+    div.ondragover=e=>e.preventDefault();
+    div.ondrop=()=>reorder(t.id);
 
-      div.innerHTML = `
-        <b>${t.name}</b><br>
-        Owner: ${t.owner||'-'}<br>
-        Deadline: ${t.deadline||'-'}<br>
-        <button onclick="toggleDone('${t.id}', ${t.done})">${t.done?'Reopen':'Done'}</button>
-        <button onclick="addLog('${t.id}')">Log</button>
-        <div class="logs">
-          ${(t.logs||[]).slice(-3).map(l=>`<div>[${l.time}] ${l.text}</div>`).join('')}
-        </div>
-      `;
+    div.innerHTML=`
+    <b>${t.name}</b><br>
+    ${t.owner} | ${t.category||'-'}<br>
+    <button onclick="toggleDone('${t.id}',${t.done})">${t.done?'Reopen':'Done'}</button>
+    <button onclick="addLog('${t.id}')">Log</button>
+    <div class="logs">${(t.logs||[]).slice(-2).map(l=>`<div>[${l.time}] ${l.text}</div>`).join('')}</div>
+    `;
 
-      list.appendChild(div);
-    });
+    list.appendChild(div);
+  });
 }
 
-function reorder(targetId) {
-  const dragged = tasks.find(x=>x.id===dragId);
-  const target = tasks.find(x=>x.id===targetId);
-
-  const temp = dragged.order;
-  dragged.order = target.order;
-  target.order = temp;
-
-  db.collection("tasks").doc(dragged.id).update({ order: dragged.order });
-  db.collection("tasks").doc(target.id).update({ order: target.order });
+function reorder(targetId){
+  const d = tasks.find(x=>x.id===dragId);
+  const t = tasks.find(x=>x.id===targetId);
+  const temp=d.order; d.order=t.order; t.order=temp;
+  db.collection("tasks").doc(d.id).update({order:d.order});
+  db.collection("tasks").doc(t.id).update({order:t.order});
 }
 
-// 🔄 Real-time sync
-db.collection("tasks").orderBy("order")
-.onSnapshot(snapshot => {
-  tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+// realtime
+ db.collection("tasks").orderBy("order")
+ .onSnapshot(snap=>{
+  tasks=snap.docs.map(d=>({id:d.id,...d.data()}));
   render();
 });
 
+renderCategories();
 </script>
 
 </body>

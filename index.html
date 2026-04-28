@@ -3,65 +3,52 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+
+<!-- PWA: Android / Chrome -->
+<link id="app-manifest" rel="manifest"/>
 <meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" id="theme-color-meta" content="#00e676"/>
+
+<!-- PWA: iOS / Safari -->
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#00e676"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='36' fill='%23060e1b'/><text x='24' y='148' font-size='130' font-family='monospace' font-weight='bold' fill='%2300e676'>N</text></svg>"/>
+<meta name="apple-mobile-web-app-title" content="N7 Board"/>
+<link rel="apple-touch-icon" id="apple-icon" href=""/>
+
 <title>N7 Board</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
-/* ===== DARK ===== */
 :root{
-  --bg:#060e1b; --s1:#0c1a2e; --s2:#112238; --s3:#172d48;
-  --border:#1f3550; --border2:#2a4666;
-  --text:#edf2fb; --sub:#8fafc8; --dim:#3d6080;
-  --green:#00e676; --green-bg:rgba(0,230,118,.1);
-  --amber:#ffb300; --red:#ff5252; --blue:#448aff;
-  --shadow:rgba(0,0,0,.5); --shine:rgba(255,255,255,.018);
-  --sheet:#0c1a2e; --radius:12px; --rsm:8px;
+  --bg:#060e1b;--s1:#0c1a2e;--s2:#112238;--s3:#172d48;
+  --border:#1f3550;--border2:#2a4666;
+  --text:#edf2fb;--sub:#8fafc8;--dim:#3d6080;
+  --green:#00e676;--green-bg:rgba(0,230,118,.1);
+  --amber:#ffb300;--red:#ff5252;--blue:#448aff;
+  --shadow:rgba(0,0,0,.5);--shine:rgba(255,255,255,.018);
+  --sheet:#0c1a2e;--radius:12px;--rsm:8px;
 }
-/* ===== LIGHT ===== */
 body.light{
-  --bg:#f0f4f8; --s1:#fff; --s2:#e8eef5; --s3:#dce4ef;
-  --border:#c4d0df; --border2:#93acc3;
-  --text:#0d1f2d; --sub:#3d5a73; --dim:#8aa0b5;
-  --green:#00995a; --green-bg:rgba(0,153,90,.09);
-  --amber:#b76e00; --red:#c62828; --blue:#1557b0;
-  --shadow:rgba(0,0,0,.13); --shine:rgba(0,0,0,0);
-  --sheet:#fff;
+  --bg:#f0f4f8;--s1:#fff;--s2:#e8eef5;--s3:#dce4ef;
+  --border:#c4d0df;--border2:#93acc3;
+  --text:#0d1f2d;--sub:#3d5a73;--dim:#8aa0b5;
+  --green:#00995a;--green-bg:rgba(0,153,90,.09);
+  --amber:#b76e00;--red:#c62828;--blue:#1557b0;
+  --shadow:rgba(0,0,0,.12);--shine:rgba(0,0,0,0);--sheet:#fff;
 }
-
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{
-  background:var(--bg); color:var(--text);
-  font-family:'Outfit',sans-serif; font-size:15px;
-  min-height:100dvh; overflow-x:hidden;
-  transition:background .25s,color .25s;
-  text-transform:uppercase;
-}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;min-height:100dvh;overflow-x:hidden;transition:background .25s,color .25s;text-transform:uppercase;}
 
-/* ===== TOPBAR ===== */
-.topbar{
-  position:sticky; top:0; z-index:200;
-  background:rgba(6,14,27,.97);
-  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  padding:10px 14px 9px;
-  transition:background .25s,border-color .25s;
-}
+.topbar{position:sticky;top:0;z-index:200;background:rgba(6,14,27,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 14px 9px;transition:background .25s,border-color .25s;}
 body.light .topbar{background:rgba(240,244,248,.97);}
-
 .topbar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .topbar-left{display:flex;align-items:center;gap:8px;}
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2.5s ease-in-out infinite;flex-shrink:0;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.stats-pill{font-size:11px;color:var(--sub);font-family:'JetBrains Mono',monospace;background:var(--s2);border:1px solid var(--border);padding:4px 10px;border-radius:20px;transition:background .25s,border-color .25s;}
+.stats-pill{font-size:11px;color:var(--sub);font-family:'JetBrains Mono',monospace;background:var(--s2);border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
 .topbar-right{display:flex;align-items:center;gap:7px;}
 .icon-btn{width:32px;height:32px;border-radius:var(--rsm);background:var(--s2);border:1px solid var(--border);color:var(--sub);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .icon-btn:hover{border-color:var(--border2);color:var(--text);}
 
-/* filter rows */
 .filter-group{margin-bottom:7px;}
 .filter-group:last-child{margin-bottom:0;}
 .filter-label{font-size:9px;font-weight:700;color:var(--dim);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:5px;}
@@ -74,56 +61,18 @@ body.light .topbar{background:rgba(240,244,248,.97);}
 body.light .chip.ac{border-color:rgba(0,153,90,.4);}
 .chip.blank-chip{border-style:dashed;}
 
-/* ===== CONTAINER ===== */
 .container{max-width:720px;margin:0 auto;padding:10px 12px 110px;}
 
-/* ===== TASK CARD ===== */
-.task-card{
-  background:var(--s1);border:1px solid var(--border);border-left:4px solid var(--border);
-  border-radius:var(--radius);margin-bottom:6px;cursor:grab;position:relative;
-  transition:box-shadow .18s,border-color .18s,opacity .18s;
-  user-select:none;
-}
-.task-card::before{
-  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(135deg,var(--shine) 0%,transparent 55%);
-}
+.task-card{background:var(--s1);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:var(--radius);margin-bottom:6px;cursor:grab;position:relative;transition:box-shadow .18s,border-color .18s,opacity .18s;user-select:none;}
+.task-card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,var(--shine) 0%,transparent 55%);}
 .task-card:hover{border-color:var(--border2);box-shadow:0 4px 18px var(--shadow);}
-.task-card.done{opacity:.3;}
-.task-card.drag-lifted{
-  opacity:.08;
-  cursor:grabbing;
-}
+.task-card.drag-lifted{opacity:.08;cursor:grabbing;}
 
-/* drag spacer */
-.drag-spacer{
-  border:2px dashed var(--green);
-  border-radius:var(--radius);
-  background:var(--green-bg);
-  margin-bottom:6px;
-  position:relative;
-  transition:height .15s ease;
-}
-.drag-spacer::before{
-  content:'DROP HERE';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:700;color:var(--green);
-  letter-spacing:2px;font-family:'JetBrains Mono',monospace;
-  opacity:.6;
-}
+.drag-spacer{border:2px dashed var(--green);border-radius:var(--radius);background:var(--green-bg);margin-bottom:6px;position:relative;}
+.drag-spacer::before{content:'Drop here';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--green);letter-spacing:2px;font-family:'JetBrains Mono',monospace;opacity:.55;}
 
-/* drag ghost */
-.drag-ghost{
-  position:fixed;z-index:9999;pointer-events:none;
-  border:2px solid var(--green) !important;
-  border-radius:var(--radius);
-  box-shadow:0 16px 48px rgba(0,230,118,.28),0 4px 12px var(--shadow);
-  transform:rotate(.6deg) scale(1.025);
-  opacity:.92;
-  cursor:grabbing;
-}
+.drag-ghost{position:fixed;z-index:9999;pointer-events:none;border:2px solid var(--green)!important;border-radius:var(--radius);box-shadow:0 16px 48px rgba(0,230,118,.28),0 4px 12px var(--shadow);transform:rotate(.6deg) scale(1.025);opacity:.92;cursor:grabbing;}
 
-/* card grid */
 .card-grid{display:grid;grid-template-columns:26px 30px 1fr auto;gap:0 8px;padding:11px 12px 11px 8px;align-items:start;}
 .rank-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--dim);padding-top:4px;text-align:right;user-select:none;}
 .left-col{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:2px;}
@@ -134,57 +83,74 @@ body.light .chip.ac{border-color:rgba(0,153,90,.4);}
 .radio-btn.done-r{background:var(--green);border-color:var(--green);box-shadow:0 0 10px rgba(0,230,118,.4);}
 .radio-btn.done-r::after{content:'';width:8px;height:5px;border-left:2.5px solid var(--bg);border-bottom:2.5px solid var(--bg);transform:rotate(-45deg) translateY(-1px);display:block;}
 
-.btn-log{width:24px;height:24px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s;position:relative;padding:0;}
-.btn-log:hover{color:var(--blue);background:rgba(68,138,255,.12);transform:scale(1.1);}
+.btn-log{width:26px;height:26px;background:none;border:1px solid var(--border);color:var(--dim);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s;position:relative;padding:0;flex-shrink:0;}
+.btn-log:hover{color:var(--blue);border-color:rgba(68,138,255,.4);background:rgba(68,138,255,.1);transform:scale(1.08);}
+.btn-log svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .log-badge{position:absolute;top:-5px;right:-5px;min-width:14px;height:14px;padding:0 2px;background:var(--blue);border-radius:7px;font-size:8px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;}
 
 .task-body{min-width:0;}
-.task-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;word-break:break-word;margin-bottom:2px;}
+.task-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;word-break:break-word;margin-bottom:3px;}
 .task-card.done .task-name{text-decoration:line-through;color:var(--sub);}
-.task-desc{font-size:12px;color:var(--sub);line-height:1.4;}
-.task-desc:empty{display:none;}
+.task-desc{font-size:12px;color:var(--sub);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .task-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
 .tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;white-space:nowrap;letter-spacing:.4px;font-family:'JetBrains Mono',monospace;}
-.dbl-hint{font-size:9px;color:var(--dim);margin-top:4px;opacity:0;transition:opacity .2s;letter-spacing:1px;}
+.dbl-hint{font-size:9px;color:var(--dim);margin-top:4px;opacity:0;transition:opacity .2s;letter-spacing:.8px;}
 .task-card:hover .dbl-hint{opacity:1;}
 
 .task-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding-top:2px;min-width:66px;}
-.owner-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;white-space:nowrap;letter-spacing:.5px;font-family:'JetBrains Mono',monospace;}
+.owner-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;white-space:nowrap;letter-spacing:.4px;font-family:'JetBrains Mono',monospace;}
 .due-badge{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;}
 .due-badge.overdue{color:var(--red);}
 .due-badge.soon{color:var(--amber);}
 .due-badge.ok{color:var(--dim);}
+.card-link-btn{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;background:rgba(68,138,255,.1);border:1px solid rgba(68,138,255,.3);color:var(--blue);text-decoration:none;transition:all .15s;flex-shrink:0;}
+.card-link-btn:hover{background:rgba(68,138,255,.2);border-color:var(--blue);transform:scale(1.1);}
+.card-link-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;}
 
-/* done separator */
-.done-sep{display:flex;align-items:center;gap:10px;margin:22px 0 9px;cursor:pointer;user-select:none;}
+.done-sep{display:flex;align-items:center;gap:10px;margin:22px 0 8px;cursor:pointer;user-select:none;}
 .done-sep-line{flex:1;height:1px;background:var(--border);}
 .done-sep-label{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:2px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
 .done-sep-caret{font-size:10px;color:var(--dim);}
 
-/* ===== FAB ===== */
+.done-card{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;background:var(--s1);border:1px solid var(--border);border-radius:9px;margin-bottom:4px;opacity:.38;transition:opacity .15s,border-color .15s;cursor:default;}
+.done-card:hover{opacity:.62;border-color:var(--border2);}
+.done-radio{width:22px;height:22px;border-radius:50%;background:var(--green);border:2px solid var(--green);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.done-radio:hover{background:var(--green-bg);border-color:var(--green);transform:scale(1.1);}
+.done-radio::after{content:'';width:7px;height:4px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:rotate(-45deg) translateY(-1px);display:block;}
+.done-radio:hover::after{border-color:var(--green);}
+.done-name{flex:1;font-size:13px;font-weight:600;color:var(--sub);text-decoration:line-through;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.done-owner-sm{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
 .fab{position:fixed;bottom:24px;right:18px;width:56px;height:56px;background:var(--green);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;cursor:pointer;color:var(--bg);user-select:none;box-shadow:0 8px 28px rgba(0,230,118,.38);transition:transform .15s,box-shadow .15s;z-index:300;}
 .fab:hover{transform:scale(1.06);box-shadow:0 12px 36px rgba(0,230,118,.5);}
 .fab:active{transform:scale(.91);}
-body.light .fab{box-shadow:0 8px 28px rgba(0,153,90,.3);}
 
-/* ===== INSTALL BANNER ===== */
+/* INSTALL BANNER */
 .install-banner{
   position:fixed;bottom:92px;left:12px;right:12px;
-  background:var(--s1);border:1.5px solid var(--green);
-  border-radius:14px;padding:12px 14px;z-index:400;
-  display:none;align-items:center;gap:10px;
-  box-shadow:0 8px 32px rgba(0,230,118,.2);
+  background:var(--s2);border:1.5px solid var(--green);
+  border-radius:16px;padding:14px 16px;z-index:400;
+  display:none;gap:12px;
+  box-shadow:0 8px 32px rgba(0,230,118,.22);
   animation:sUp .3s ease;
 }
-.install-banner.show{display:flex;}
-.install-icon{font-size:22px;flex-shrink:0;line-height:1;}
-.install-txt{flex:1;min-width:0;}
-.install-title{font-size:12px;font-weight:700;color:var(--text);}
-.install-sub{font-size:10px;color:var(--sub);margin-top:2px;letter-spacing:.5px;}
-.install-action{padding:7px 13px;background:var(--green);border:none;border-radius:7px;color:var(--bg);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif;}
-.install-dismiss{background:none;border:none;color:var(--dim);cursor:pointer;font-size:18px;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.install-banner.show{display:flex;align-items:flex-start;}
 
-/* ===== MODALS ===== */
+/* Platform-specific instruction cards */
+.install-steps{flex:1;min-width:0;}
+.install-platform{font-size:11px;font-weight:800;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;}
+.install-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.install-step:last-child{margin-bottom:0;}
+.step-num{width:18px;height:18px;border-radius:50%;background:var(--green);color:var(--bg);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:'JetBrains Mono',monospace;}
+.step-txt{font-size:12px;color:var(--text);line-height:1.4;}
+.step-icon{font-size:14px;margin:0 1px;}
+.install-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
+.install-btn{padding:9px 16px;background:var(--green);border:none;border-radius:8px;color:var(--bg);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif;letter-spacing:.5px;transition:all .15s;}
+.install-btn:hover{filter:brightness(1.08);}
+.install-dismiss{background:none;border:1px solid var(--border);color:var(--dim);cursor:pointer;font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;font-family:'Outfit',sans-serif;transition:all .15s;}
+.install-dismiss:hover{border-color:var(--border2);color:var(--sub);}
+.install-android-btn{display:none;}
+
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:500;display:none;align-items:flex-end;transition:background .2s;}
 .modal-ov.open{display:flex;background:rgba(0,0,0,.68);}
 .sheet{width:100%;background:var(--sheet);border:1px solid var(--border2);border-bottom:none;border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,20px);animation:sUp .24s cubic-bezier(.4,0,.2,1);max-height:92dvh;overflow-y:auto;transition:background .25s,border-color .25s;}
@@ -209,7 +175,6 @@ body.light .fab{box-shadow:0 8px 28px rgba(0,153,90,.3);}
 .sheet-sub{font-size:11px;color:var(--sub);margin-top:3px;letter-spacing:.5px;}
 .btn-del{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:var(--red);padding:7px 13px;border-radius:7px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;}
 .btn-del:hover{background:rgba(255,82,82,.2);border-color:var(--red);}
-
 .field{margin-bottom:13px;}
 .field label{display:block;font-size:10px;font-weight:700;color:var(--sub);letter-spacing:1.5px;margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
 .field input,.field select,.field textarea{width:100%;background:var(--s3);border:1.5px solid var(--border);color:var(--text);padding:11px 14px;border-radius:var(--rsm);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none;}
@@ -219,12 +184,11 @@ body.light .fab{box-shadow:0 8px 28px rgba(0,153,90,.3);}
 .field select option{background:var(--s2);}
 .field input[type="date"]{color-scheme:dark;}
 body.light .field input[type="date"]{color-scheme:light;}
-
+#inp-link,#edit-link{text-transform:none;}
 .cat-grid{display:flex;flex-wrap:wrap;gap:7px;}
 .cat-opt{padding:7px 13px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;color:var(--sub);transition:all .12s;user-select:none;font-family:'JetBrains Mono',monospace;}
 .cat-opt:hover{color:var(--text);border-color:var(--border2);}
 .cat-opt.csel{font-weight:800;}
-
 .sheet-btns{display:flex;gap:9px;margin-top:18px;}
 .btn-p{flex:1;padding:13px;background:var(--green);border:none;border-radius:var(--rsm);color:var(--bg);font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:.5px;}
 .btn-p:hover{filter:brightness(1.07);box-shadow:0 4px 16px rgba(0,230,118,.28);}
@@ -232,13 +196,11 @@ body.light .field input[type="date"]{color-scheme:light;}
 .btn-s{padding:13px 18px;background:var(--s2);border:1.5px solid var(--border);border-radius:var(--rsm);color:var(--sub);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
 .btn-s:hover{border-color:var(--border2);color:var(--text);}
 .kbd-hint{font-size:9px;color:var(--dim);text-align:right;margin-top:10px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
-
 .log-entry{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--s2);}
 .log-entry:last-child{border:none;}
 .log-ts{color:var(--dim);flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;padding-top:2px;}
 .log-txt{color:var(--text);font-size:13px;line-height:1.4;}
 .log-empty{font-size:12px;color:var(--sub);padding:10px 0;}
-
 .set-section{margin-bottom:22px;}
 .set-title{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:2px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
 .item-list{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;min-height:28px;}
@@ -250,7 +212,6 @@ body.light .field input[type="date"]{color-scheme:light;}
 .add-row input:focus{border-color:var(--green);}
 .add-row button{padding:9px 15px;background:var(--s3);border:1.5px solid var(--border);color:var(--sub);border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;font-family:'Outfit',sans-serif;white-space:nowrap;}
 .add-row button:hover{border-color:var(--green);color:var(--green);}
-
 .empty{text-align:center;padding:70px 20px;color:var(--dim);font-size:13px;letter-spacing:1px;}
 </style>
 </head>
@@ -263,25 +224,23 @@ body.light .field input[type="date"]{color-scheme:light;}
       <div class="stats-pill" id="stats">-- tasks</div>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">&#9788;</button>
-      <button class="icon-btn" onclick="openSettings()" title="Settings">&#9881;</button>
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">&#9788;</button>
+      <button class="icon-btn" onclick="openSettings()">&#9881;</button>
     </div>
   </div>
   <div id="filtersWrap"></div>
 </div>
 
 <div class="container" id="list"></div>
-<div class="fab" onclick="openAdd()" title="New task (N)">+</div>
+<div class="fab" onclick="openAdd()">+</div>
 
 <!-- INSTALL BANNER -->
 <div class="install-banner" id="installBanner">
-  <div class="install-icon">&#128187;</div>
-  <div class="install-txt">
-    <div class="install-title">Add to home screen</div>
-    <div class="install-sub" id="installSub">Install as app for quick access</div>
+  <div class="install-steps" id="installSteps"></div>
+  <div class="install-actions">
+    <button class="install-btn install-android-btn" id="installAndroidBtn" onclick="handleInstall()">Install</button>
+    <button class="install-dismiss" onclick="dismissInstall()">Not now</button>
   </div>
-  <button class="install-action" onclick="handleInstall()">Install</button>
-  <button class="install-dismiss" onclick="dismissInstall()">&#215;</button>
 </div>
 
 <!-- ADD SHEET -->
@@ -289,23 +248,15 @@ body.light .field input[type="date"]{color-scheme:light;}
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
     <div class="sheet-inner">
-      <div class="sheet-hd"><div><div class="sheet-ttl">New Task</div><div class="sheet-sub">Enter to save quickly</div></div></div>
-      <div class="field form-full">
-        <label>Task Name</label>
-        <input class="inp-xl" id="inp-name" placeholder="What needs to be done?" autocomplete="off"/>
-      </div>
-      <div class="field form-full">
-        <label>Description</label>
-        <textarea id="inp-desc" placeholder="Optional details..." rows="2"></textarea>
-      </div>
+      <div class="sheet-hd"><div><div class="sheet-ttl">New Task</div><div class="sheet-sub">Enter to save</div></div></div>
+      <div class="field form-full"><label>Task Name</label><input class="inp-xl" id="inp-name" placeholder="What needs to be done?" autocomplete="off"/></div>
+      <div class="field form-full"><label>Description</label><textarea id="inp-desc" placeholder="Optional details..." rows="2"></textarea></div>
       <div class="form-row">
         <div class="field"><label>Owner</label><select id="inp-owner"></select></div>
         <div class="field"><label>Due Date</label><input id="inp-due" type="date"/></div>
       </div>
-      <div class="field form-full" id="addCatWrap" style="display:none">
-        <label>Category</label>
-        <div class="cat-grid" id="addCatGrid"></div>
-      </div>
+      <div class="field form-full"><label>Link (optional)</label><input id="inp-link" type="url" placeholder="https://..." autocomplete="off"/></div>
+      <div class="field form-full" id="addCatWrap" style="display:none"><label>Category</label><div class="cat-grid" id="addCatGrid"></div></div>
       <div class="sheet-btns form-full">
         <button class="btn-s" onclick="closeAdd()">Cancel</button>
         <button class="btn-p" onclick="addTask()">Add Task</button>
@@ -321,19 +272,17 @@ body.light .field input[type="date"]{color-scheme:light;}
     <div class="sheet-handle"></div>
     <div class="sheet-inner">
       <div class="sheet-hd">
-        <div><div class="sheet-ttl">Edit Task</div><div class="sheet-sub" id="edit-sub">rank &amp; owner</div></div>
+        <div><div class="sheet-ttl">Edit Task</div><div class="sheet-sub" id="edit-sub">--</div></div>
         <button class="btn-del" onclick="deleteTask()">Delete</button>
       </div>
-      <div class="field form-full"><label>Task Name</label><input class="inp-xl" id="edit-name" placeholder="Task name..." autocomplete="off"/></div>
-      <div class="field form-full"><label>Description</label><textarea id="edit-desc" placeholder="Add a description..." rows="3"></textarea></div>
+      <div class="field form-full"><label>Task Name</label><input class="inp-xl" id="edit-name" autocomplete="off"/></div>
+      <div class="field form-full"><label>Description</label><textarea id="edit-desc" rows="3"></textarea></div>
       <div class="form-row">
         <div class="field"><label>Owner</label><select id="edit-owner"></select></div>
         <div class="field"><label>Due Date</label><input id="edit-due" type="date"/></div>
       </div>
-      <div class="field form-full" id="editCatWrap" style="display:none">
-        <label>Category</label>
-        <div class="cat-grid" id="editCatGrid"></div>
-      </div>
+      <div class="field form-full"><label>Link (optional)</label><input id="edit-link" type="url" placeholder="https://..." autocomplete="off"/></div>
+      <div class="field form-full" id="editCatWrap" style="display:none"><label>Category</label><div class="cat-grid" id="editCatGrid"></div></div>
       <div class="sheet-btns form-full">
         <button class="btn-s" onclick="closeEdit()">Cancel</button>
         <button class="btn-p" onclick="saveEdit()">Save Changes</button>
@@ -385,6 +334,119 @@ body.light .field input[type="date"]{color-scheme:light;}
 firebase.initializeApp({apiKey:"AIzaSyBMG8nGe1Oa-_oycA5zgipy4oLMGpBq6WQ",authDomain:"nosh7-2f0a3.firebaseapp.com",projectId:"nosh7-2f0a3"});
 const db=firebase.firestore();
 
+/* ===== PWA: Manifest + Service Worker ===== */
+(function setupPWA(){
+  /* Build icon as SVG data URI */
+  const iconSVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="%23060e1b"/><text x="48" y="400" font-size="380" font-weight="bold" font-family="monospace" fill="%2300e676">N</text></svg>`;
+  const iconUrl=`data:image/svg+xml,${iconSVG}`;
+
+  /* Set apple-touch-icon */
+  document.getElementById('apple-icon').href=iconUrl;
+
+  /* Create and inject web app manifest */
+  const manifest={
+    name:"N7 Board",short_name:"N7",
+    description:"NOSH7 Action Board",
+    start_url:"./",scope:"./",
+    display:"standalone",orientation:"portrait-primary",
+    background_color:"#060e1b",theme_color:"#00e676",
+    icons:[
+      {src:iconUrl,sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"},
+      {src:iconUrl,sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  document.getElementById('app-manifest').href=URL.createObjectURL(blob);
+
+  /* Register service worker (n7-sw.js must be in same folder as this HTML) */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./n7-sw.js',{scope:'./'})
+        .then(reg=>{
+          /* Check for updates every time app loads */
+          reg.update();
+          reg.addEventListener('updatefound',()=>{
+            const sw=reg.installing;
+            sw.addEventListener('statechange',()=>{
+              if(sw.state==='installed'&&navigator.serviceWorker.controller){
+                /* New version ready - tell SW to activate immediately */
+                sw.postMessage('SKIP_WAITING');
+              }
+            });
+          });
+        })
+        .catch(err=>console.warn('SW not registered:',err));
+
+      /* When SW takes control after update, reload for fresh content */
+      let refreshing=false;
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{
+        if(!refreshing){refreshing=true;window.location.reload();}
+      });
+    });
+  }
+})();
+
+/* ===== INSTALL BANNER ===== */
+let deferredInstall=null;
+const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+const IS_STANDALONE=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstall=e;
+  /* Show after slight delay so page settles */
+  setTimeout(()=>showInstallBanner(),2000);
+});
+window.addEventListener('appinstalled',()=>dismissInstall());
+
+function showInstallBanner(){
+  if(localStorage.getItem('n7-install-ok'))return;
+  if(IS_STANDALONE)return;
+
+  const steps=document.getElementById('installSteps');
+  const androidBtn=document.getElementById('installAndroidBtn');
+
+  if(IS_IOS){
+    steps.innerHTML=`
+      <div class="install-platform">Add to iPhone / iPad</div>
+      <div class="install-step"><div class="step-num">1</div><div class="step-txt">Tap the <span class="step-icon">⎋</span> Share button at the bottom of Safari</div></div>
+      <div class="install-step"><div class="step-num">2</div><div class="step-txt">Scroll down and tap <strong>"Add to Home Screen"</strong></div></div>
+      <div class="install-step"><div class="step-num">3</div><div class="step-txt">Tap <strong>Add</strong> — the app icon appears on your home screen</div></div>`;
+    androidBtn.style.display='none';
+  } else if(deferredInstall){
+    steps.innerHTML=`
+      <div class="install-platform">Install App</div>
+      <div class="install-step"><div class="step-num">1</div><div class="step-txt">Tap <strong>Install</strong> to add N7 Board to your home screen</div></div>
+      <div class="install-step"><div class="step-num">2</div><div class="step-txt">Open it like a normal app — it always refreshes when online</div></div>`;
+    androidBtn.style.display='';
+  } else {
+    steps.innerHTML=`
+      <div class="install-platform">Add to Home Screen</div>
+      <div class="install-step"><div class="step-num">1</div><div class="step-txt">Tap the browser <strong>menu (⋮)</strong> or Share button</div></div>
+      <div class="install-step"><div class="step-num">2</div><div class="step-txt">Select <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></div></div>`;
+    androidBtn.style.display='none';
+  }
+
+  document.getElementById('installBanner').classList.add('show');
+}
+
+async function handleInstall(){
+  if(!deferredInstall)return;
+  deferredInstall.prompt();
+  const{outcome}=await deferredInstall.userChoice;
+  if(outcome==='accepted')dismissInstall();
+  deferredInstall=null;
+}
+function dismissInstall(){
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('n7-install-ok','1');
+}
+
+/* Show iOS banner after 3s (Android handled by beforeinstallprompt above) */
+if(IS_IOS&&!IS_STANDALONE){
+  setTimeout(()=>showInstallBanner(),3000);
+}
+
 /* ===== THEME ===== */
 let isDark=localStorage.getItem('n7-theme')!=='light';
 function applyTheme(){
@@ -392,69 +454,48 @@ function applyTheme(){
   const b=document.getElementById('themeBtn');
   b.textContent=isDark?'☀':'☾';
   b.title=isDark?'Light mode':'Dark mode';
+  document.getElementById('theme-color-meta').content=isDark?'#060e1b':'#f0f4f8';
 }
 function toggleTheme(){isDark=!isDark;localStorage.setItem('n7-theme',isDark?'dark':'light');applyTheme();render();}
 applyTheme();
 
 /* ===== PALETTES ===== */
-const OPALS=[
-  {bg:'rgba(68,138,255,.13)',c:'#82b1ff',cl:'#1557b0'},
-  {bg:'rgba(255,82,130,.13)',c:'#ff80ab',cl:'#c2185b'},
-  {bg:'rgba(255,179,0,.13)',c:'#ffe082',cl:'#b76e00'},
-  {bg:'rgba(0,230,118,.13)',c:'#69f0ae',cl:'#00764a'},
-  {bg:'rgba(213,0,249,.13)',c:'#ea80fc',cl:'#7b1fa2'},
-  {bg:'rgba(255,109,0,.13)',c:'#ffab40',cl:'#e65100'},
-];
+const OPALS=[{bg:'rgba(68,138,255,.13)',c:'#82b1ff',cl:'#1557b0'},{bg:'rgba(255,82,130,.13)',c:'#ff80ab',cl:'#c2185b'},{bg:'rgba(255,179,0,.13)',c:'#ffe082',cl:'#b76e00'},{bg:'rgba(0,230,118,.13)',c:'#69f0ae',cl:'#00764a'},{bg:'rgba(213,0,249,.13)',c:'#ea80fc',cl:'#7b1fa2'},{bg:'rgba(255,109,0,.13)',c:'#ffab40',cl:'#e65100'}];
 const CC=['#00e676','#448aff','#d500f9','#ffb300','#ff5252','#ff6d00','#00b0ff','#69f0ae'];
-function ownerStyle(n){
-  if(!n) return OPALS[0];
-  const i=[...n].reduce((s,c)=>s+c.charCodeAt(0),0)%OPALS.length;
-  const p=OPALS[i];return{bg:p.bg,c:isDark?p.c:p.cl};
-}
-function catColor(n){
-  if(!n) return '#69f0ae';
-  const i=[...n].reduce((s,c)=>s+c.charCodeAt(0),0)%CC.length;
-  const c=CC[i];
-  if(!isDark){const d={'#00e676':'#007a3d','#448aff':'#1557b0','#d500f9':'#7b1fa2','#ffb300':'#b76e00','#ff5252':'#c62828','#ff6d00':'#e65100','#00b0ff':'#0277bd','#69f0ae':'#00764a'};return d[c]||c;}
-  return c;
-}
+function ownerStyle(n){if(!n)return OPALS[0];const i=[...n].reduce((s,c)=>s+c.charCodeAt(0),0)%OPALS.length;const p=OPALS[i];return{bg:p.bg,c:isDark?p.c:p.cl};}
+function catColor(n){if(!n)return'#69f0ae';const i=[...n].reduce((s,c)=>s+c.charCodeAt(0),0)%CC.length;const c=CC[i];if(!isDark){const d={'#00e676':'#007a3d','#448aff':'#1557b0','#d500f9':'#7b1fa2','#ffb300':'#b76e00','#ff5252':'#c62828','#ff6d00':'#e65100','#00b0ff':'#0277bd','#69f0ae':'#00764a'};return d[c]||c;}return c;}
+
+const ICON_LOG=`<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+const ICON_LINK=`<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
 
 /* ===== STATE ===== */
 let tasks=[],users=[],categories=[];
 let ownerF='',dateF='',catF='';
 let addSelCat='',editSelCat='';
-let logId=null,editId=null,doneColl=false;
+let logId=null,editId=null;
+let doneColl=true;
 
 /* ===== CONFIG ===== */
 async function initConfig(){
   const u=await db.collection('config').doc('users').get();
-  if(!u.exists) await db.collection('config').doc('users').set({list:['Parking','Altaf','Sapna','Nope']});
+  if(!u.exists)await db.collection('config').doc('users').set({list:['Parking','Altaf','Sapna','Nope']});
   const c=await db.collection('config').doc('categories').get();
-  if(!c.exists) await db.collection('config').doc('categories').set({list:[]});
+  if(!c.exists)await db.collection('config').doc('categories').set({list:[]});
 }
 db.collection('config').doc('users').onSnapshot(s=>{if(s.exists){users=s.data().list||[];syncSelects();renderFilters();}});
 db.collection('config').doc('categories').onSnapshot(s=>{
-  if(s.exists){
-    categories=s.data().list||[];
-    buildCatGrid('add');buildCatGrid('edit');renderFilters();
+  if(s.exists){categories=s.data().list||[];buildCatGrid('add');buildCatGrid('edit');renderFilters();
     document.getElementById('addCatWrap').style.display=categories.length?'':'none';
-    document.getElementById('editCatWrap').style.display=categories.length?'':'none';
-  }
+    document.getElementById('editCatWrap').style.display=categories.length?'':'none';}
 });
-function syncSelects(){
-  ['inp-owner','edit-owner'].forEach(id=>{
-    const sel=document.getElementById(id),cur=sel.value;
-    sel.innerHTML=users.map(u=>`<option${u===cur?' selected':''}>${u}</option>`).join('');
-    if(!cur||!users.includes(cur)) sel.value=users.includes('Parking')?'Parking':(users[0]||'');
-  });
-}
+function syncSelects(){['inp-owner','edit-owner'].forEach(id=>{const sel=document.getElementById(id),cur=sel.value;sel.innerHTML=users.map(u=>`<option${u===cur?' selected':''}>${u}</option>`).join('');if(!cur||!users.includes(cur))sel.value=users.includes('Parking')?'Parking':(users[0]||'');});}
 
 /* ===== SETTINGS ===== */
 function openSettings(){renderSettingsLists();document.getElementById('settingsModal').classList.add('open');}
 function closeSettings(){document.getElementById('settingsModal').classList.remove('open');}
 function renderSettingsLists(){
-  document.getElementById('usersList').innerHTML=users.map(u=>{const o=ownerStyle(u);return`<div class="item-pill"><span style="color:${o.c}">${u}</span><button class="del-btn" onclick="removeUser('${u}')">&#215;</button></div>`;}).join('')||'<span style="color:var(--dim);font-size:12px">No users yet.</span>';
-  document.getElementById('catsList').innerHTML=categories.map(c=>{const cc=catColor(c);return`<div class="item-pill"><span style="color:${cc}">${c}</span><button class="del-btn" onclick="removeCategory('${c}')">&#215;</button></div>`;}).join('')||'<span style="color:var(--dim);font-size:12px">No categories yet.</span>';
+  document.getElementById('usersList').innerHTML=users.map(u=>{const o=ownerStyle(u);return`<div class="item-pill"><span style="color:${o.c}">${u}</span><button class="del-btn" onclick="removeUser('${u}')">&#215;</button></div>`;}).join('')||'<span style="color:var(--dim);font-size:12px">No users.</span>';
+  document.getElementById('catsList').innerHTML=categories.map(c=>{const cc=catColor(c);return`<div class="item-pill"><span style="color:${cc}">${c}</span><button class="del-btn" onclick="removeCategory('${c}')">&#215;</button></div>`;}).join('')||'<span style="color:var(--dim);font-size:12px">No categories.</span>';
 }
 async function addUser(){const n=document.getElementById('inp-new-user').value.trim();if(!n||users.includes(n))return;await db.collection('config').doc('users').update({list:[...users,n]});document.getElementById('inp-new-user').value='';renderSettingsLists();}
 async function removeUser(n){if(users.length<=1)return;await db.collection('config').doc('users').update({list:users.filter(u=>u!==n)});renderSettingsLists();}
@@ -465,27 +506,22 @@ document.getElementById('inp-new-cat').addEventListener('keydown',e=>{if(e.key==
 
 /* ===== CAT GRID ===== */
 function buildCatGrid(mode){
-  const gId=mode==='add'?'addCatGrid':'editCatGrid';
-  const sel=mode==='add'?addSelCat:editSelCat;
+  const gId=mode==='add'?'addCatGrid':'editCatGrid',sel=mode==='add'?addSelCat:editSelCat;
   const g=document.getElementById(gId);if(!g)return;
   g.innerHTML=categories.map(c=>{const cc=catColor(c),isSel=sel===c;return`<div class="cat-opt${isSel?' csel':''}" onclick="pickCat('${mode}','${c}')" style="${isSel?`border-color:${cc};color:${cc};background:${cc}18`:''}">${c}</div>`;}).join('');
 }
 function pickCat(mode,c){if(mode==='add')addSelCat=addSelCat===c?'':c;else editSelCat=editSelCat===c?'':c;buildCatGrid(mode);}
 
-/* ===== DATE HELPERS ===== */
+/* ===== DATE ===== */
 function getRange(k){
-  const now=new Date();
-  const sod=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x;};
-  const eod=d=>{const x=new Date(d);x.setHours(23,59,59,999);return x;};
+  const now=new Date();const sod=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x;};const eod=d=>{const x=new Date(d);x.setHours(23,59,59,999);return x;};
   if(k==='week'){const s=new Date(now);s.setDate(now.getDate()-now.getDay());const e=new Date(s);e.setDate(s.getDate()+6);return[sod(s),eod(e)];}
   if(k==='nextweek'){const s=new Date(now);s.setDate(now.getDate()-now.getDay()+7);const e=new Date(s);e.setDate(s.getDate()+6);return[sod(s),eod(e)];}
   if(k==='month')return[sod(new Date(now.getFullYear(),now.getMonth(),1)),eod(new Date(now.getFullYear(),now.getMonth()+1,0))];
   return null;
 }
 function fmtDue(str){
-  if(!str)return null;
-  const d=new Date(str+'T00:00:00');
-  const now=new Date();now.setHours(0,0,0,0);
+  if(!str)return null;const d=new Date(str+'T00:00:00');const now=new Date();now.setHours(0,0,0,0);
   const diff=Math.ceil((d-now)/86400000);
   const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const label=diff===0?'Today':diff===1?'Tomorrow':diff===-1?'Yesterday':`${d.getDate()} ${M[d.getMonth()]}`;
@@ -495,11 +531,11 @@ function fmtDue(str){
 /* ===== FILTER ===== */
 function getFiltered(){
   let r=tasks.slice();
-  if(ownerF) r=r.filter(t=>t.owner===ownerF);
-  if(dateF==='blank') r=r.filter(t=>!t.dueDate);
+  if(ownerF)r=r.filter(t=>t.owner===ownerF);
+  if(dateF==='blank')r=r.filter(t=>!t.dueDate);
   else if(dateF){const rng=getRange(dateF);if(rng)r=r.filter(t=>{if(!t.dueDate)return false;const d=new Date(t.dueDate+'T00:00:00');return d>=rng[0]&&d<=rng[1];});}
-  if(catF==='blank') r=r.filter(t=>!t.category);
-  else if(catF) r=r.filter(t=>t.category===catF);
+  if(catF==='blank')r=r.filter(t=>!t.category);
+  else if(catF)r=r.filter(t=>t.category===catF);
   return r.sort((a,b)=>(a.order||0)-(b.order||0));
 }
 
@@ -512,235 +548,147 @@ function renderFilters(){
   users.forEach(u=>{const cnt=oc[u]||0;h+=`<span class="chip${u===ownerF?' ao':''}" onclick="setOwner('${u}')">${u}${cnt?' '+cnt:''}</span>`;});
   h+=`</div></div><div class="filter-group" style="margin-top:8px"><div class="filter-label">Date</div><div class="chips-row">`;
   dates.forEach(d=>h+=`<span class="chip${d.k===dateF?' ad':''}" onclick="setDate('${d.k}')">${d.l}</span>`);
-  h+=`<span class="chip blank-chip${dateF==='blank'?' ad':''}" onclick="setDate('blank')">Blank</span>`;
-  h+=`</div></div>`;
-  if(categories.length||tasks.some(t=>!t.category)){
-    const showCats=categories.length>0||usedCats.length>0;
-    if(showCats){
-      h+=`<div class="filter-group" style="margin-top:8px"><div class="filter-label">Category</div><div class="chips-row">`;
-      usedCats.forEach(c=>{const cc=catColor(c);h+=`<span class="chip${c===catF?' ac':''}" onclick="setCat('${c}')" style="${c!==catF?`color:${cc}90`:''}">${c}</span>`;});
-      h+=`<span class="chip blank-chip${catF==='blank'?' ac':''}" onclick="setCat('blank')">Blank</span>`;
-      h+=`</div></div>`;
-    }
+  h+=`<span class="chip blank-chip${dateF==='blank'?' ad':''}" onclick="setDate('blank')">Blank</span></div></div>`;
+  if(categories.length||usedCats.length){
+    h+=`<div class="filter-group" style="margin-top:8px"><div class="filter-label">Category</div><div class="chips-row">`;
+    usedCats.forEach(c=>{const cc=catColor(c);h+=`<span class="chip${c===catF?' ac':''}" onclick="setCat('${c}')" style="${c!==catF?`color:${cc}90`:''}">${c}</span>`;});
+    h+=`<span class="chip blank-chip${catF==='blank'?' ac':''}" onclick="setCat('blank')">Blank</span></div></div>`;
   }
   document.getElementById('filtersWrap').innerHTML=h;
 }
-function setOwner(o){ownerF=o;render();}
-function setDate(d){dateF=dateF===d?'':d;render();}
-function setCat(c){catF=catF===c?'':c;render();}
+function setOwner(o){ownerF=o;render();}function setDate(d){dateF=dateF===d?'':d;render();}function setCat(c){catF=catF===c?'':c;render();}
 
-/* ===== ADD TASK ===== */
-function openAdd(){
-  addSelCat='';buildCatGrid('add');
-  document.getElementById('inp-due').value=new Date().toISOString().slice(0,10);
-  const sel=document.getElementById('inp-owner');
-  sel.value=users.includes('Parking')?'Parking':(users[0]||'');
-  document.getElementById('addModal').classList.add('open');
-  setTimeout(()=>document.getElementById('inp-name').focus(),260);
-}
+/* ===== TASK CRUD ===== */
+function openAdd(){addSelCat='';buildCatGrid('add');document.getElementById('inp-due').value=new Date().toISOString().slice(0,10);document.getElementById('inp-link').value='';const sel=document.getElementById('inp-owner');sel.value=users.includes('Parking')?'Parking':(users[0]||'');document.getElementById('addModal').classList.add('open');setTimeout(()=>document.getElementById('inp-name').focus(),260);}
 function closeAdd(){document.getElementById('addModal').classList.remove('open');document.getElementById('inp-name').value='';document.getElementById('inp-desc').value='';}
 async function addTask(){
-  const name=document.getElementById('inp-name').value.trim();
-  if(!name){document.getElementById('inp-name').focus();return;}
-  await db.collection('tasks').add({name,desc:document.getElementById('inp-desc').value.trim(),owner:document.getElementById('inp-owner').value,category:addSelCat||'',dueDate:document.getElementById('inp-due').value||'',done:false,order:Date.now(),logs:[]});
+  const name=document.getElementById('inp-name').value.trim();if(!name){document.getElementById('inp-name').focus();return;}
+  await db.collection('tasks').add({name,desc:document.getElementById('inp-desc').value.trim(),owner:document.getElementById('inp-owner').value,category:addSelCat||'',dueDate:document.getElementById('inp-due').value||'',link:document.getElementById('inp-link').value.trim()||'',done:false,order:Date.now(),logs:[]});
   closeAdd();
 }
 
-/* ===== EDIT TASK ===== */
 function openEdit(id){
   const t=tasks.find(x=>x.id===id);if(!t)return;
   editId=id;editSelCat=t.category||'';
   document.getElementById('edit-name').value=t.name||'';
   document.getElementById('edit-desc').value=t.desc||'';
   document.getElementById('edit-due').value=t.dueDate||'';
-  const sel=document.getElementById('edit-owner');
-  sel.innerHTML=users.map(u=>`<option${u===t.owner?' selected':''}>${u}</option>`).join('');
+  document.getElementById('edit-link').value=t.link||'';
+  const sel=document.getElementById('edit-owner');sel.innerHTML=users.map(u=>`<option${u===t.owner?' selected':''}>${u}</option>`).join('');
   buildCatGrid('edit');
-  const f=getFiltered();
-  const rank=f.filter(x=>!x.done).findIndex(x=>x.id===id)+1;
-  document.getElementById('edit-sub').textContent=`Rank #${rank} — ${t.owner}`;
+  const f=getFiltered();const rank=f.filter(x=>!x.done).findIndex(x=>x.id===id)+1;
+  document.getElementById('edit-sub').textContent=`Rank #${rank>0?rank:'?'} — ${t.owner}`;
   document.getElementById('editModal').classList.add('open');
   setTimeout(()=>{const el=document.getElementById('edit-name');el.focus();el.select();},260);
 }
 function closeEdit(){document.getElementById('editModal').classList.remove('open');editId=null;}
 async function saveEdit(){
-  const name=document.getElementById('edit-name').value.trim();
-  if(!name){document.getElementById('edit-name').focus();return;}
-  await db.collection('tasks').doc(editId).update({name,desc:document.getElementById('edit-desc').value.trim(),owner:document.getElementById('edit-owner').value,category:editSelCat||'',dueDate:document.getElementById('edit-due').value||''});
+  const name=document.getElementById('edit-name').value.trim();if(!name){document.getElementById('edit-name').focus();return;}
+  await db.collection('tasks').doc(editId).update({name,desc:document.getElementById('edit-desc').value.trim(),owner:document.getElementById('edit-owner').value,category:editSelCat||'',dueDate:document.getElementById('edit-due').value||'',link:document.getElementById('edit-link').value.trim()||''});
   closeEdit();
 }
-async function deleteTask(){
-  if(!editId)return;
-  if(!confirm('Delete this task permanently?'))return;
-  await db.collection('tasks').doc(editId).delete();
-  closeEdit();
-}
+async function deleteTask(){if(!editId)return;if(!confirm('Delete this task permanently?'))return;await db.collection('tasks').doc(editId).delete();closeEdit();}
 document.getElementById('edit-name').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveEdit();}});
-
-/* ===== TOGGLE DONE ===== */
 function toggleDone(id,cur){db.collection('tasks').doc(id).update({done:!cur});}
 
 /* ===== LOGS ===== */
-function openLog(id){
-  logId=id;const t=tasks.find(x=>x.id===id);
-  document.getElementById('log-ttl').textContent=t.name;
-  const lc=(t.logs||[]).length;
-  document.getElementById('log-sub').textContent=`${lc} update${lc===1?'':'s'}`;
-  renderLogs(t.logs||[]);
-  document.getElementById('logModal').classList.add('open');
-  setTimeout(()=>document.getElementById('inp-log').focus(),260);
-}
+function openLog(id){logId=id;const t=tasks.find(x=>x.id===id);document.getElementById('log-ttl').textContent=t.name;const lc=(t.logs||[]).length;document.getElementById('log-sub').textContent=`${lc} update${lc===1?'':'s'}`;renderLogs(t.logs||[]);document.getElementById('logModal').classList.add('open');setTimeout(()=>document.getElementById('inp-log').focus(),260);}
 function closeLog(){document.getElementById('logModal').classList.remove('open');document.getElementById('inp-log').value='';logId=null;}
 function renderLogs(logs){document.getElementById('log-list').innerHTML=logs.length?logs.slice().reverse().map(l=>`<div class="log-entry"><span class="log-ts">${l.time}</span><span class="log-txt">${l.text}</span></div>`).join(''):'<div class="log-empty">No updates yet.</div>';}
-async function submitLog(){
-  const text=document.getElementById('inp-log').value.trim();if(!text||!logId)return;
-  const t=tasks.find(x=>x.id===logId);const logs=[...(t.logs||[])];
-  const now=new Date();
-  logs.push({text,time:`${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`});
-  await db.collection('tasks').doc(logId).update({logs});
-  document.getElementById('inp-log').value='';renderLogs(logs);
-  document.getElementById('log-sub').textContent=`${logs.length} update${logs.length===1?'':'s'}`;
-}
+async function submitLog(){const text=document.getElementById('inp-log').value.trim();if(!text||!logId)return;const t=tasks.find(x=>x.id===logId);const logs=[...(t.logs||[])];const now=new Date();logs.push({text,time:`${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`});await db.collection('tasks').doc(logId).update({logs});document.getElementById('inp-log').value='';renderLogs(logs);document.getElementById('log-sub').textContent=`${logs.length} update${logs.length===1?'':'s'}`;}
 document.getElementById('inp-log').addEventListener('keydown',e=>{if(e.key==='Enter')submitLog();});
 
-/* ======================================================
-   DRAG — LIFT AND SHIFT with FLIP animation
-====================================================== */
+/* ===== FILTER-SAFE DRAG ===== */
 let dragState=null;
 
-function flipAnimate(cards,beforeTops){
-  const afterTops=cards.map(c=>c.getBoundingClientRect().top);
+/* Commits new visible order while preserving relative order of hidden tasks */
+async function commitOrder(newVisibleIds){
+  if(!newVisibleIds.length)return;
+  const allSorted=tasks.slice().sort((a,b)=>(a.order||0)-(b.order||0));
+  const visSet=new Set(newVisibleIds);
+  let vi=0;
+  const finalIds=allSorted.map(t=>visSet.has(t.id)?newVisibleIds[vi++]:t.id);
+  const batch=db.batch();
+  finalIds.forEach((id,i)=>batch.update(db.collection('tasks').doc(id),{order:i*1000}));
+  await batch.commit();
+}
+
+function flipAnimate(cards,before){
+  const after=cards.map(c=>c.getBoundingClientRect().top);
   cards.forEach((c,i)=>{
-    const dy=beforeTops[i]-afterTops[i];
-    if(Math.abs(dy)<1) return;
-    c.style.transition='none';
-    c.style.transform=`translateY(${dy}px)`;
-    // Force repaint then animate
+    const dy=before[i]-after[i];if(Math.abs(dy)<1)return;
+    c.style.transition='none';c.style.transform=`translateY(${dy}px)`;
     c.getBoundingClientRect();
-    c.style.transition='transform .2s cubic-bezier(.4,0,.2,1)';
-    c.style.transform='';
+    c.style.transition='transform .2s cubic-bezier(.4,0,.2,1)';c.style.transform='';
   });
 }
+function cleanupTransforms(){document.querySelectorAll('.task-card').forEach(c=>{c.style.transform='';c.style.transition='';});}
 
-function cleanupTransforms(){
-  document.querySelectorAll('.task-card').forEach(c=>{c.style.transform='';c.style.transition='';});
-}
-
-function initDrag(card,t,clientX,clientY){
+function initDrag(card,t,cx,cy){
   const rect=card.getBoundingClientRect();
-  const list=document.getElementById('list');
-
-  // Ghost - floats under finger/cursor
   const ghost=card.cloneNode(true);
   ghost.classList.add('drag-ghost');
   ghost.style.cssText+=`;position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;margin:0;transition:none;z-index:9999;`;
   document.body.appendChild(ghost);
-
-  // Spacer - green dashed placeholder
-  const spacer=document.createElement('div');
-  spacer.className='drag-spacer';
-  spacer.style.height=rect.height+'px';
-
-  // Hide original, insert spacer in its place
+  const spacer=document.createElement('div');spacer.className='drag-spacer';spacer.style.height=rect.height+'px';
   card.classList.add('drag-lifted');
-  list.insertBefore(spacer,card);
-  // Move card to end of body temporarily (out of flow)
+  document.getElementById('list').insertBefore(spacer,card);
   card.style.display='none';
-
-  dragState={srcId:t.id,srcCard:card,ghost,spacer,offsetX:clientX-rect.left,offsetY:clientY-rect.top,active:true,lastKey:null};
-  if(navigator.vibrate) navigator.vibrate(40);
+  dragState={srcId:t.id,srcCard:card,ghost,spacer,offsetX:cx-rect.left,offsetY:cy-rect.top,active:true,lastKey:null};
+  if(navigator.vibrate)navigator.vibrate(40);
 }
 
-function moveDrag(clientX,clientY){
-  if(!dragState||!dragState.active) return;
-  const{ghost,spacer,offsetX,offsetY,srcCard}=dragState;
-
-  // Move ghost
-  ghost.style.left=(clientX-offsetX)+'px';
-  ghost.style.top=(clientY-offsetY)+'px';
-
-  // Hide ghost+spacer to detect card under cursor
-  ghost.style.visibility='hidden';
-  spacer.style.visibility='hidden';
-  const el=document.elementFromPoint(clientX,clientY);
-  ghost.style.visibility='';
-  spacer.style.visibility='';
-
-  const targetCard=el&&el.closest('.task-card');
-  if(!targetCard||targetCard===srcCard) return;
-
-  const rect=targetCard.getBoundingClientRect();
-  const above=clientY<rect.top+rect.height/2;
-  const key=targetCard.dataset.id+(above?'A':'B');
-  if(dragState.lastKey===key) return;
+function moveDrag(cx,cy){
+  if(!dragState||!dragState.active)return;
+  const{ghost,spacer,offsetX,offsetY}=dragState;
+  ghost.style.left=(cx-offsetX)+'px';ghost.style.top=(cy-offsetY)+'px';
+  ghost.style.visibility='hidden';spacer.style.visibility='hidden';
+  const el=document.elementFromPoint(cx,cy);
+  ghost.style.visibility='';spacer.style.visibility='';
+  const tgt=el&&el.closest('.task-card');
+  if(!tgt||tgt===dragState.srcCard)return;
+  const rect=tgt.getBoundingClientRect();
+  const above=cy<rect.top+rect.height/2;
+  const key=tgt.dataset.id+(above?'A':'B');
+  if(dragState.lastKey===key)return;
   dragState.lastKey=key;
-
-  // FLIP: snapshot before
-  const movingCards=Array.from(document.querySelectorAll('.task-card')).filter(c=>c!==srcCard);
-  const before=movingCards.map(c=>c.getBoundingClientRect().top);
-
-  // Move spacer
+  const moving=Array.from(document.querySelectorAll('.task-card')).filter(c=>c!==dragState.srcCard);
+  const before=moving.map(c=>c.getBoundingClientRect().top);
   const list=document.getElementById('list');
-  if(above) list.insertBefore(spacer,targetCard);
-  else list.insertBefore(spacer,targetCard.nextSibling);
-
-  // FLIP: animate shift
-  flipAnimate(movingCards,before);
+  if(above)list.insertBefore(spacer,tgt);else list.insertBefore(spacer,tgt.nextSibling);
+  flipAnimate(moving,before);
 }
 
 async function endDrag(){
-  if(!dragState||!dragState.active) return;
+  if(!dragState||!dragState.active)return;
   const{srcId,srcCard,ghost,spacer}=dragState;
   dragState.active=false;
-
-  // Snap ghost into spacer position smoothly
   const sr=spacer.getBoundingClientRect();
   ghost.style.transition='all .22s cubic-bezier(.4,0,.2,1)';
-  ghost.style.left=sr.left+'px';
-  ghost.style.top=sr.top+'px';
-  ghost.style.transform='rotate(0deg) scale(1)';
-  ghost.style.opacity='0';
-
-  // Read new order from DOM (spacer = src position)
-  const allChildren=Array.from(document.getElementById('list').children);
-  const newOrder=[];
-  allChildren.forEach(el=>{
-    if(el.classList.contains('drag-spacer')) newOrder.push(srcId);
-    else if(el.classList.contains('task-card')&&el.dataset.id!==srcId) newOrder.push(el.dataset.id);
+  ghost.style.left=sr.left+'px';ghost.style.top=sr.top+'px';
+  ghost.style.transform='rotate(0deg) scale(1)';ghost.style.opacity='0';
+  const newVis=[];
+  Array.from(document.getElementById('list').children).forEach(el=>{
+    if(el.classList.contains('drag-spacer'))newVis.push(srcId);
+    else if(el.classList.contains('task-card')&&el.dataset.id!==srcId)newVis.push(el.dataset.id);
   });
-
   await new Promise(r=>setTimeout(r,220));
-  ghost.remove();
-  spacer.remove();
-  srcCard.style.display='';
-  srcCard.classList.remove('drag-lifted');
-  cleanupTransforms();
-  dragState=null;
-
-  if(newOrder.length){
-    const batch=db.batch();
-    newOrder.forEach((id,i)=>batch.update(db.collection('tasks').doc(id),{order:i*1000}));
-    await batch.commit();
-  }
+  ghost.remove();spacer.remove();srcCard.style.display='';srcCard.classList.remove('drag-lifted');
+  cleanupTransforms();dragState=null;
+  await commitOrder(newVis);
 }
 
 /* ===== CREATE CARD ===== */
 function createCard(t,rank){
   const card=document.createElement('div');
-  card.className='task-card'+(t.done?' done':'');
-  card.dataset.id=t.id;
-
-  const due=fmtDue(t.dueDate);
-  const os=ownerStyle(t.owner||'');
-  const cc=t.category?catColor(t.category):null;
-  const lc=(t.logs||[]).length;
-
+  card.className='task-card';card.dataset.id=t.id;
+  const due=fmtDue(t.dueDate);const os=ownerStyle(t.owner||'');const cc=t.category?catColor(t.category):null;const lc=(t.logs||[]).length;
   card.innerHTML=`
     <div class="card-grid">
       <div class="rank-num">#${rank}</div>
       <div class="left-col">
-        <div class="radio-btn${t.done?' done-r':''}"></div>
-        <button class="btn-log">&#9776;${lc?`<span class="log-badge">${lc>9?'9+':lc}</span>`:''}</button>
+        <div class="radio-btn"></div>
+        <button class="btn-log">${ICON_LOG}${lc?`<span class="log-badge">${lc>9?'9+':lc}</span>`:''}</button>
       </div>
       <div class="task-body">
         <div class="task-name">${t.name}</div>
@@ -751,102 +699,71 @@ function createCard(t,rank){
       <div class="task-meta">
         <span class="owner-tag" style="background:${os.bg};color:${os.c}">${t.owner}</span>
         ${due?`<span class="due-badge ${due.cls}">${due.label}</span>`:''}
+        ${t.link?`<a class="card-link-btn" href="${t.link}" target="_blank" rel="noopener noreferrer" title="${t.link}">${ICON_LINK}</a>`:''}
       </div>
     </div>`;
-
-  /* radio */
-  card.querySelector('.radio-btn').addEventListener('click',e=>{
-    e.stopPropagation();
-    const r=card.querySelector('.radio-btn');
-    r.style.transform='scale(.78)';
-    setTimeout(()=>r.style.transform='',200);
-    toggleDone(t.id,t.done);
-  });
-  /* log */
+  card.querySelector('.radio-btn').addEventListener('click',e=>{e.stopPropagation();const r=card.querySelector('.radio-btn');r.style.transform='scale(.78)';setTimeout(()=>r.style.transform='',200);toggleDone(t.id,false);});
   card.querySelector('.btn-log').addEventListener('click',e=>{e.stopPropagation();openLog(t.id);});
+  if(t.link)card.querySelector('.card-link-btn').addEventListener('click',e=>e.stopPropagation());
+  card.addEventListener('dblclick',e=>{if(!e.target.closest('.radio-btn,.btn-log,.card-link-btn'))openEdit(t.id);});
 
-  /* double-click to open edit (desktop) */
-  card.addEventListener('dblclick',e=>{if(!e.target.closest('.radio-btn,.btn-log'))openEdit(t.id);});
-
-  /* -------- MOUSE DRAG (desktop) -------- */
+  /* mouse drag */
   card.addEventListener('mousedown',e=>{
-    if(e.button!==0||e.target.closest('.radio-btn,.btn-log')) return;
+    if(e.button!==0||e.target.closest('.radio-btn,.btn-log,.card-link-btn'))return;
     const sx=e.clientX,sy=e.clientY;let moved=false;
-
-    const onMove=ev=>{
-      if(!moved&&(Math.abs(ev.clientX-sx)>5||Math.abs(ev.clientY-sy)>5)){
-        moved=true;
-        if(!dragState) initDrag(card,t,sx,sy);
-      }
-      if(moved&&dragState) moveDrag(ev.clientX,ev.clientY);
-    };
-    const onUp=()=>{
-      document.removeEventListener('mousemove',onMove);
-      document.removeEventListener('mouseup',onUp);
-      if(moved&&dragState) endDrag();
-    };
-    document.addEventListener('mousemove',onMove);
-    document.addEventListener('mouseup',onUp);
+    const onMove=ev=>{if(!moved&&(Math.abs(ev.clientX-sx)>5||Math.abs(ev.clientY-sy)>5)){moved=true;if(!dragState)initDrag(card,t,sx,sy);}if(moved&&dragState)moveDrag(ev.clientX,ev.clientY);};
+    const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);if(moved&&dragState)endDrag();};
+    document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
   });
 
-  /* -------- TOUCH DRAG (mobile, long press) -------- */
-  let lpTimer=null,touchSX=0,touchSY=0,touchMoved=false,touchDragging=false,lastTap=0;
+  /* touch drag + double tap */
+  let lpTimer=null,tSX=0,tSY=0,tMoved=false,tDrag=false,lastTap=0;
   card.addEventListener('touchstart',e=>{
-    if(e.target.closest('.radio-btn,.btn-log')) return;
-    touchSX=e.touches[0].clientX;touchSY=e.touches[0].clientY;
-    touchMoved=false;touchDragging=false;
-    lpTimer=setTimeout(()=>{
-      if(!touchMoved){touchDragging=true;initDrag(card,t,touchSX,touchSY);}
-    },420);
+    if(e.target.closest('.radio-btn,.btn-log,.card-link-btn'))return;
+    tSX=e.touches[0].clientX;tSY=e.touches[0].clientY;tMoved=false;tDrag=false;
+    lpTimer=setTimeout(()=>{if(!tMoved){tDrag=true;initDrag(card,t,tSX,tSY);}},420);
   },{passive:true});
-
   card.addEventListener('touchmove',e=>{
-    const dx=Math.abs(e.touches[0].clientX-touchSX),dy=Math.abs(e.touches[0].clientY-touchSY);
-    if(dx>7||dy>7){touchMoved=true;if(!touchDragging){clearTimeout(lpTimer);return;}}
-    if(!touchDragging) return;
-    e.preventDefault();
-    moveDrag(e.touches[0].clientX,e.touches[0].clientY);
+    const dx=Math.abs(e.touches[0].clientX-tSX),dy=Math.abs(e.touches[0].clientY-tSY);
+    if(dx>7||dy>7){tMoved=true;if(!tDrag){clearTimeout(lpTimer);return;}}
+    if(!tDrag)return;e.preventDefault();moveDrag(e.touches[0].clientX,e.touches[0].clientY);
   },{passive:false});
+  const onTE=e=>{clearTimeout(lpTimer);if(tDrag){tDrag=false;endDrag();return;}if(!e.target.closest('.radio-btn,.btn-log,.card-link-btn')){const now=Date.now();if(now-lastTap<340){e.preventDefault();openEdit(t.id);}lastTap=now;}};
+  card.addEventListener('touchend',onTE);
+  card.addEventListener('touchcancel',()=>{clearTimeout(lpTimer);if(tDrag){tDrag=false;endDrag();}});
+  return card;
+}
 
-  const onTouchEnd=e=>{
-    clearTimeout(lpTimer);
-    if(touchDragging){touchDragging=false;endDrag();return;}
-    // double-tap to edit
-    if(!e.target.closest('.radio-btn,.btn-log')){
-      const now=Date.now();
-      if(now-lastTap<340){e.preventDefault();openEdit(t.id);}
-      lastTap=now;
-    }
-  };
-  card.addEventListener('touchend',onTouchEnd);
-  card.addEventListener('touchcancel',()=>{clearTimeout(lpTimer);if(touchDragging){touchDragging=false;endDrag();}});
+/* ===== CREATE DONE CARD ===== */
+function createDoneCard(t){
+  const card=document.createElement('div');card.className='done-card';card.dataset.id=t.id;
+  const os=ownerStyle(t.owner||'');
+  card.innerHTML=`<div class="done-radio" title="Reopen task"></div><div class="done-name">${t.name}</div><span class="done-owner-sm" style="background:${os.bg};color:${os.c}">${t.owner}</span>`;
+  card.querySelector('.done-radio').addEventListener('click',e=>{e.stopPropagation();toggleDone(t.id,true);});
+  card.addEventListener('dblclick',e=>{if(!e.target.closest('.done-radio'))openEdit(t.id);});
+  let lt=0;card.addEventListener('touchend',e=>{if(e.target.closest('.done-radio'))return;const now=Date.now();if(now-lt<340){e.preventDefault();openEdit(t.id);}lt=now;});
   return card;
 }
 
 /* ===== RENDER ===== */
 function render(){
   renderFilters();
-  const f=getFiltered();
-  const active=f.filter(t=>!t.done);
-  const done=f.filter(t=>t.done);
-  const list=document.getElementById('list');
-  list.innerHTML='';
+  const f=getFiltered();const active=f.filter(t=>!t.done);const done=f.filter(t=>t.done);
+  const list=document.getElementById('list');list.innerHTML='';
   document.getElementById('stats').textContent=active.length+' active'+(done.length?' / '+done.length+' done':'');
   if(!f.length){list.innerHTML='<div class="empty">No tasks. Press N or + to add one.</div>';return;}
   active.forEach((t,i)=>list.appendChild(createCard(t,i+1)));
   if(done.length){
     const sep=document.createElement('div');sep.className='done-sep';
     sep.onclick=()=>{doneColl=!doneColl;render();};
-    sep.innerHTML=`<div class="done-sep-line"></div><div class="done-sep-label">Done ${done.length}</div><div class="done-sep-caret">${doneColl?'▶':'▼'}</div><div class="done-sep-line"></div>`;
+    sep.innerHTML=`<div class="done-sep-line"></div><div class="done-sep-label">Done — ${done.length}</div><div class="done-sep-caret">${doneColl?'▶':'▼'}</div><div class="done-sep-line"></div>`;
     list.appendChild(sep);
-    if(!doneColl) done.forEach((t,i)=>list.appendChild(createCard(t,active.length+i+1)));
+    if(!doneColl)done.forEach(t=>list.appendChild(createDoneCard(t)));
   }
 }
 
 /* ===== REALTIME ===== */
 db.collection('tasks').orderBy('order').onSnapshot(snap=>{tasks=snap.docs.map(d=>({id:d.id,...d.data()}));render();});
-
-/* ===== INIT ===== */
 initConfig();
 
 /* ===== KEYBOARD ===== */
@@ -857,25 +774,6 @@ document.addEventListener('keydown',e=>{
 });
 document.getElementById('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addTask();}});
 ['addModal','editModal','logModal','settingsModal'].forEach(id=>document.getElementById(id).addEventListener('click',()=>document.getElementById(id).classList.remove('open')));
-
-/* ===== INSTALL BANNER ===== */
-let deferredInstall=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;});
-function showInstallBanner(){
-  if(localStorage.getItem('n7-install-ok')) return;
-  if(window.matchMedia('(display-mode: standalone)').matches) return;
-  const sub=document.getElementById('installSub');
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-  if(isIOS) sub.textContent='Tap share icon → Add to home screen';
-  else if(deferredInstall) sub.textContent='Tap Install to add to your home screen';
-  else sub.textContent='Browser menu → Install app or add to home screen';
-  document.getElementById('installBanner').classList.add('show');
-}
-function handleInstall(){
-  if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(r=>{if(r.outcome==='accepted')dismissInstall();deferredInstall=null;});}
-}
-function dismissInstall(){document.getElementById('installBanner').classList.remove('show');localStorage.setItem('n7-install-ok','1');}
-setTimeout(showInstallBanner,3000);
 </script>
 </body>
 </html>

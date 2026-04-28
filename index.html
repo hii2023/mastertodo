@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOSH7 Action Board (Firebase v2)</title>
+
+<style>
+body { font-family: Arial; margin:0; display:flex; height:100vh; }
+.sidebar { width:20%; background:#111; color:#fff; padding:15px; }
+.main { width:80%; padding:15px; overflow:auto; }
+.task { background:#f4f4f4; padding:10px; margin-bottom:10px; border-radius:8px; cursor:grab; }
+.task.done { opacity:0.5; text-decoration:line-through; }
+button { padding:6px; margin-top:5px; }
+input, textarea { width:100%; padding:6px; margin:5px 0; }
+.logs { background:#fff; padding:5px; margin-top:5px; font-size:12px; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+<h3>+ New Task</h3>
+<input id="name" placeholder="Task name" />
+<input id="owner" placeholder="Owner" />
+<input id="deadline" type="date" />
+<button onclick="addTask()">Add Task</button>
+
+<h3>Filter</h3>
+<input id="filterOwner" placeholder="Filter by owner" oninput="render()" />
+<label><input type="checkbox" id="showDone" onchange="render()"/> Show Closed</label>
+</div>
+
+<div class="main">
+<h2>Tasks (Drag to reorder)</h2>
+<div id="list"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+if (firebaseConfig.apiKey === "YOUR_KEY") alert("Add Firebase config");
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let tasks = [];
+let dragId = null;
+
+window.addTask = async () => {
+  const name = nameEl.value;
+  if (!name) return alert("Enter task");
+
+  await addDoc(collection(db, "tasks"), {
+    name,
+    owner: ownerEl.value,
+    deadline: deadlineEl.value,
+    done: false,
+    order: Date.now(),
+    logs: []
+  });
+
+  nameEl.value = ownerEl.value = deadlineEl.value = "";
+};
+
+window.toggleDone = async (id, val) => {
+  await updateDoc(doc(db, "tasks", id), { done: !val });
+};
+
+window.addLog = async (id) => {
+  const text = prompt("Update / Comment");
+  if (!text) return;
+
+  const t = tasks.find(x => x.id === id);
+  const logs = t.logs || [];
+  logs.push({ text, time: new Date().toLocaleString() });
+
+  await updateDoc(doc(db, "tasks", id), { logs });
+};
+
+function render() {
+  const list = document.getElementById('list');
+  const filter = filterOwner.value.toLowerCase();
+  const showDone = showDoneEl.checked;
+
+  list.innerHTML = "";
+
+  tasks
+    .filter(t => (!filter || (t.owner||"").toLowerCase().includes(filter)))
+    .filter(t => showDone || !t.done)
+    .sort((a,b)=>a.order-b.order)
+    .forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'task' + (t.done ? ' done':'');
+      div.draggable = true;
+
+      div.ondragstart = () => dragId = t.id;
+      div.ondragover = (e) => e.preventDefault();
+      div.ondrop = async () => {
+        const target = t.id;
+        const dragged = tasks.find(x=>x.id===dragId);
+        const targetTask = tasks.find(x=>x.id===target);
+
+        const temp = dragged.order;
+        dragged.order = targetTask.order;
+        targetTask.order = temp;
+
+        await updateDoc(doc(db, "tasks", dragged.id), { order: dragged.order });
+        await updateDoc(doc(db, "tasks", targetTask.id), { order: targetTask.order });
+      };
+
+      div.innerHTML = `
+        <b>${t.name}</b><br>
+        Owner: ${t.owner||'-'}<br>
+        Deadline: ${t.deadline||'-'}<br>
+        <button onclick="toggleDone('${t.id}', ${t.done})">${t.done?'Reopen':'Done'}</button>
+        <button onclick="addLog('${t.id}')">Log</button>
+        <div class="logs">
+          ${(t.logs||[]).slice(-3).map(l=>`<div>[${l.time}] ${l.text}</div>`).join('')}
+        </div>
+      `;
+
+      list.appendChild(div);
+    });
+}
+
+// realtime
+const q = query(collection(db, "tasks"), orderBy("order"));
+onSnapshot(q, snap => {
+  tasks = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+  render();
+});
+
+const nameEl = document.getElementById('name');
+const ownerEl = document.getElementById('owner');
+const deadlineEl = document.getElementById('deadline');
+const filterOwner = document.getElementById('filterOwner');
+const showDoneEl = document.getElementById('showDone');
+
+</script>
+</body>
+</html>

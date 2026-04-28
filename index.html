@@ -110,7 +110,7 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
 .card {
   background:var(--s1);
   border:1px solid var(--b1); border-left:4px solid var(--b1);
-  border-radius:var(--r); margin-bottom:6px;
+  border-radius:var(--r); margin-bottom:4px;
   cursor:grab; position:relative;
   transition:box-shadow .15s, border-color .15s, opacity .15s;
   user-select:none;
@@ -128,7 +128,7 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
   display:grid;
   grid-template-columns:30px 1fr auto;
   gap:0 10px;
-  padding:12px 12px 4px 10px;
+  padding:8px 10px 2px 8px;
   align-items:start;
 }
 .cradio {
@@ -168,8 +168,8 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
   display:none; margin-top:4px;
 }
 .ccatpill {
-  display:inline-block; font-size:10px; font-weight:700; padding:2px 8px;
-  border-radius:4px; font-family:'JetBrains Mono',monospace; letter-spacing:.3px;
+  display:inline-block; font-size:11px; font-weight:700; padding:3px 10px;
+  border-radius:5px; font-family:'JetBrains Mono',monospace; letter-spacing:.3px;
 }
 .crank {
   display:block; font-size:10px; color:var(--dim);
@@ -482,13 +482,13 @@ body.light .field input[type="date"] { color-scheme:light; }
     <div class="handle"></div>
     <div class="si">
       <div class="shd"><div><div class="sttl">New Task</div><div class="ssub">Enter to save</div></div></div>
-      <div class="field ffull"><label>Task Name</label><input class="xl" id="inp-name" placeholder="What needs to be done?" autocomplete="off"/></div>
-      <div class="field ffull"><label>Description</label><textarea id="inp-desc" placeholder="Optional details..." rows="2"></textarea></div>
+      <div class="field ffull"><label>Task Name</label><input class="xl" id="inp-name" placeholder="What needs to be done?" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
+      <div class="field ffull"><label>Description</label><textarea id="inp-desc" placeholder="Optional details..." rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"></textarea></div>
       <div class="frow">
-        <div class="field"><label>Owner</label><select id="inp-owner"></select></div>
+        <div class="field"><label>Owner</label><select id="inp-owner" autocomplete="off"></select></div>
         <div class="field"><label>Due Date</label><input id="inp-due" type="date"/></div>
       </div>
-      <div class="field ffull"><label>Link (optional)</label><input id="inp-link" type="url" placeholder="https://..." autocomplete="off"/></div>
+      <div class="field ffull"><label>Link (optional)</label><input id="inp-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="field ffull" id="addCW" style="display:none"><label>Category</label><div class="catgrid" id="addCG"></div></div>
       <div class="sbtns ffull">
         <button class="bs" onclick="closeAdd()">Cancel</button>
@@ -508,13 +508,13 @@ body.light .field input[type="date"] { color-scheme:light; }
         <div><div class="sttl">Edit Task</div><div class="ssub" id="edit-sub">--</div></div>
         <button class="bdel" onclick="deleteTask()">Delete</button>
       </div>
-      <div class="field ffull"><label>Task Name</label><input class="xl" id="edit-name" autocomplete="off"/></div>
-      <div class="field ffull"><label>Description</label><textarea id="edit-desc" rows="3"></textarea></div>
+      <div class="field ffull"><label>Task Name</label><input class="xl" id="edit-name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
+      <div class="field ffull"><label>Description</label><textarea id="edit-desc" rows="3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"></textarea></div>
       <div class="frow">
-        <div class="field"><label>Owner</label><select id="edit-owner"></select></div>
+        <div class="field"><label>Owner</label><select id="edit-owner" autocomplete="off"></select></div>
         <div class="field"><label>Due Date</label><input id="edit-due" type="date"/></div>
       </div>
-      <div class="field ffull"><label>Link (optional)</label><input id="edit-link" type="url" placeholder="https://..." autocomplete="off"/></div>
+      <div class="field ffull"><label>Link (optional)</label><input id="edit-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="field ffull" id="editCW" style="display:none"><label>Category</label><div class="catgrid" id="editCG"></div></div>
       <div class="sbtns ffull">
         <button class="bs" onclick="closeEdit()">Cancel</button>
@@ -531,7 +531,7 @@ body.light .field input[type="date"] { color-scheme:light; }
     <div class="si">
       <div class="shd"><div><div class="sttl" id="log-title">Updates</div><div class="ssub" id="log-count">0 updates</div></div></div>
       <div id="log-list" style="margin-bottom:12px;max-height:220px;overflow-y:auto;"></div>
-      <div class="field"><label>New Update</label><input id="inp-log" placeholder="What happened?" autocomplete="off"/></div>
+      <div class="field"><label>New Update</label><input id="inp-log" placeholder="What happened?" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="sbtns">
         <button class="bs" onclick="closeLog()">Close</button>
         <button class="bp" onclick="submitLog()">Add Update</button>
@@ -550,7 +550,7 @@ body.light .field input[type="date"] { color-scheme:light; }
         <div class="setttl">Users</div>
         <div class="ilist" id="userList"></div>
         <div class="addrow">
-          <input id="inp-nu" placeholder="New user..." autocomplete="off"/>
+          <input id="inp-nu" placeholder="New user..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/>
           <button onclick="addUser()">+ Add</button>
         </div>
       </div>
@@ -558,7 +558,7 @@ body.light .field input[type="date"] { color-scheme:light; }
         <div class="setttl">Categories</div>
         <div class="ilist" id="catList"></div>
         <div class="addrow">
-          <input id="inp-nc" placeholder="New category..." autocomplete="off"/>
+          <input id="inp-nc" placeholder="New category..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/>
           <button onclick="addCat()">+ Add</button>
         </div>
       </div>

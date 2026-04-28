@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NOSH7 Action Board (v5 Mobile Optimized)</title>
+<title>NOSH7 Action Board (v6 Final UX)</title>
 
 <style>
 body { margin:0; font-family: system-ui; background:#f6f7fb; }
@@ -13,41 +13,33 @@ body { margin:0; font-family: system-ui; background:#f6f7fb; }
 .container { padding:10px; }
 .task { background:#fff; padding:12px; margin-bottom:10px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
 .task.done { opacity:0.5; }
-.header { display:flex; justify-content:space-between; align-items:center; }
-.logs { font-size:12px; margin-top:5px; }
+.header { display:flex; justify-content:space-between; }
 .desc { font-size:13px; color:#555; }
-.priority { font-weight:bold; color:#22c55e; }
-.fab { position:fixed; bottom:20px; right:20px; background:#22c55e; color:#000; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer; }
-.modal { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:15px; border-radius:20px 20px 0 0; display:none; }
+.log { font-size:12px; color:#888; }
+.fab { position:fixed; bottom:20px; right:20px; width:60px; height:60px; background:#22c55e; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; }
+.modal { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:15px; display:none; border-radius:20px 20px 0 0; }
 input, select { width:100%; padding:10px; margin:5px 0; border-radius:8px; border:1px solid #ddd; }
-button { padding:10px; border:none; border-radius:8px; background:#22c55e; }
+button { padding:8px; border:none; border-radius:8px; background:#22c55e; }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-<div id="ownerChips"></div>
-<div id="categoryChips"></div>
-<div>
-<span class="chip" onclick="setTimeFilter('week')">Week</span>
-<span class="chip" onclick="setTimeFilter('month')">Month</span>
-<span class="chip" onclick="setTimeFilter('')">All</span>
-</div>
-</div>
+<div class="topbar" id="ownerChips"></div>
 
 <div class="container" id="list"></div>
 
 <div class="fab" onclick="openModal()">+</div>
 
 <div class="modal" id="modal">
-<input id="name" placeholder="Task name" />
+<input id="name" placeholder="Task" />
+<input id="desc" placeholder="Description" />
 <select id="owner">
 <option>Altaf</option><option>Sapna</option><option>Parking</option><option>Nope</option>
 </select>
-<input id="category" placeholder="Category" />
-<input id="deadline" type="date" />
-<button onclick="addTask()">Add Task</button>
+<button onclick="addTask()">Add</button>
 </div>
+
+<div class="modal" id="detailModal"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -56,94 +48,120 @@ button { padding:10px; border:none; border-radius:8px; background:#22c55e; }
 const firebaseConfig = {
   apiKey: "AIzaSyBMG8nGe1Oa-_oycA5zgipy4oLMGpBq6WQ",
   authDomain: "nosh7-2f0a3.firebaseapp.com",
-  projectId: "nosh7-2f0a3",
-  storageBucket: "nosh7-2f0a3.firebasestorage.app",
-  messagingSenderId: "726990430722",
-  appId: "1:726990430722:web:874f212689909eec36bd1b"
+  projectId: "nosh7-2f0a3"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let tasks=[];
-let ownerFilter='',categoryFilter='',timeFilter='';
+let ownerFilter='';
+let dragId=null;
 
-function openModal(){ document.getElementById('modal').style.display='block'; }
+function openModal(){ modal.style.display='block'; }
 
 function addTask(){
-  const name=document.getElementById('name').value;
+  const name=nameEl.value;
   if(!name) return;
 
   db.collection("tasks").add({
     name,
-    owner:document.getElementById('owner').value,
-    category:document.getElementById('category').value,
-    deadline:document.getElementById('deadline').value,
+    desc:descEl.value,
+    owner:ownerEl.value,
     done:false,
     order:Date.now(),
     logs:[]
   });
 
-  document.getElementById('modal').style.display='none';
+  modal.style.display='none';
+  nameEl.value=descEl.value='';
 }
 
 function toggleDone(id,val){
   db.collection("tasks").doc(id).update({done:!val});
 }
 
-function reorder(index,dir){
-  const newIndex=index+dir;
-  if(newIndex<0||newIndex>=tasks.length) return;
+function addLog(id){
+  const text=prompt("Add update");
+  if(!text) return;
 
-  const t1=tasks[index];
-  const t2=tasks[newIndex];
+  const t=tasks.find(x=>x.id===id);
+  const logs=t.logs||[];
 
-  const temp=t1.order;
-  t1.order=t2.order;
-  t2.order=temp;
+  const now=new Date();
+  const time=`${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  db.collection("tasks").doc(t1.id).update({order:t1.order});
-  db.collection("tasks").doc(t2.id).update({order:t2.order});
+  logs.push({text,time});
+  db.collection("tasks").doc(id).update({logs});
+}
+
+function openDetail(id){
+  const t=tasks.find(x=>x.id===id);
+
+  detailModal.style.display='block';
+  detailModal.innerHTML=`
+  <h3>${t.name}</h3>
+  <p>${t.desc||''}</p>
+  <button onclick="addLog('${t.id}')">Add Log</button>
+  ${t.logs.map(l=>`<div class='log'>${l.time} - ${l.text}</div>`).join('')}
+  `;
+}
+
+function renderChips(){
+  const owners=[...new Set(tasks.map(t=>t.owner))];
+  ownerChips.innerHTML=owners.map(o=>`<span class='chip ${o===ownerFilter?'active':''}' onclick="ownerFilter='${o}';render()">${o}</span>`).join('');
 }
 
 function render(){
-  const list=document.getElementById('list');
   list.innerHTML='';
+  renderChips();
 
   tasks
   .filter(t=>!ownerFilter||t.owner===ownerFilter)
-  .filter(t=>!categoryFilter||t.category===categoryFilter)
-  .filter(t=>{
-    if(!timeFilter||!t.deadline) return true;
-    const d=new Date(t.deadline);
-    const now=new Date();
-    if(timeFilter==='week') return (d-now)/(1000*60*60*24)<=7;
-    if(timeFilter==='month') return (d-now)/(1000*60*60*24)<=30;
-  })
   .sort((a,b)=>a.order-b.order)
   .forEach((t,i)=>{
     const div=document.createElement('div');
     div.className='task'+(t.done?' done':'');
 
+    // MOBILE HOLD DRAG
+    div.ontouchstart=()=>dragId=t.id;
+    div.ontouchend=()=>{
+      const target=tasks[i+1];
+      if(target){
+        const d=tasks.find(x=>x.id===dragId);
+        const temp=d.order;
+        d.order=target.order;
+        target.order=temp;
+
+        db.collection("tasks").doc(d.id).update({order:d.order});
+        db.collection("tasks").doc(target.id).update({order:target.order});
+      }
+    };
+
     div.innerHTML=`
     <div class='header'>
-      <div><span class='priority'>#${i+1}</span> ${t.name}</div>
+      <div onclick="openDetail('${t.id}')">#${i+1} ${t.name}</div>
       <button onclick="toggleDone('${t.id}',${t.done})">${t.done?'🔁':'✅'}</button>
     </div>
-    <div>${t.owner} | ${t.category||'-'}</div>
-    <div>
-      <button onclick="reorder(${i},-1)">⬆️</button>
-      <button onclick="reorder(${i},1)">⬇️</button>
-    </div>
+    <div class='desc'>${t.desc||''}</div>
+    <div>${t.owner}</div>
+    <button onclick="addLog('${t.id}')">+ Log</button>
+    <div class='log'>${(t.logs||[]).slice(-1).map(l=>`${l.time}`).join('')}</div>
     `;
 
     list.appendChild(div);
   });
 }
 
+const nameEl=document.getElementById('name');
+const descEl=document.getElementById('desc');
+const ownerEl=document.getElementById('owner');
+const modal=document.getElementById('modal');
+const detailModal=document.getElementById('detailModal');
+
 // realtime
- db.collection("tasks").orderBy("order")
- .onSnapshot(snap=>{
+db.collection("tasks").orderBy("order")
+.onSnapshot(snap=>{
   tasks=snap.docs.map(d=>({id:d.id,...d.data()}));
   render();
 });

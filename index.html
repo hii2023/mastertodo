@@ -543,7 +543,7 @@ body.light .field input[type="date"] { color-scheme:light; }
   .sb-chip.ao .sb-cnt, .sb-chip.ad .sb-cnt, .sb-chip.ac .sb-cnt { background:rgba(255,255,255,.1); }
   .sb-divider { height:1px; background:var(--b1); margin:4px 0 20px; }
   .sb-clear {
-    margin-top:auto; padding:8px 12px; border-radius:7px;
+    margin-top:0; padding:8px 12px; border-radius:7px;
     font-size:11px; font-weight:700; cursor:pointer;
     border:1px solid rgba(255,82,82,.3);
     color:var(--rd); background:rgba(255,82,82,.08);
@@ -558,6 +558,14 @@ body.light .field input[type="date"] { color-scheme:light; }
     flex:1;
     min-width:0;
     padding:12px 16px 80px;
+  }
+
+  /* Full task name - no truncation */
+  .cname {
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    line-height:1.35;
   }
 
   /* TWO COLUMN TASK GRID */
@@ -1512,22 +1520,26 @@ function renderSidebar() {
   var hasOverdue = tasks.some(function(t){ return !t.done && t.dueDate && new Date(t.dueDate+'T00:00:00') < now2; });
   var usedCats = [];
   tasks.forEach(function(t){ if (t.category && !usedCats.includes(t.category)) usedCats.push(t.category); });
+  var anyFilter = ownerF || dateF || catF;
 
   var html = '';
 
-  // Categories
-  if (usedCats.length) {
-    html += '<div class="sb-section"><span class="sb-label">Category</span><div class="sb-chips">';
-    usedCats.forEach(function(c) {
-      var cc = catColor(c);
-      html += '<div class="sb-chip' + (c===catF ? ' ac' : '') + '" onclick="setCat(\'' + c + '\')" style="' + (c===catF ? '' : 'color:'+cc+'99') + '">' + c + '</div>';
-    });
-    html += '<div class="sb-chip' + (catF==='blank' ? ' ac' : '') + ' dash" onclick="setCat(\'blank\')" style="border-style:dashed">No Category</div>';
-    html += '</div></div>';
-    html += '<div class="sb-divider"></div>';
+  // ── CLEAR FILTERS (top, only when active) ──
+  if (anyFilter) {
+    html += '<div class="sb-clear visible" style="margin-bottom:14px;margin-top:0" onclick="clearAll()">&#10005; Clear Filters</div>';
   }
 
-  // Date
+  // ── OWNER (top) ──
+  html += '<div class="sb-section"><span class="sb-label">Owner</span><div class="sb-chips">';
+  html += '<div class="sb-chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All <span class="sb-cnt">' + tasks.filter(function(t){return !t.done;}).length + '</span></div>';
+  users.forEach(function(u) {
+    var cnt = oc[u] || 0;
+    html += '<div class="sb-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? '<span class="sb-cnt">'+cnt+'</span>' : '') + '</div>';
+  });
+  html += '</div></div>';
+  html += '<div class="sb-divider"></div>';
+
+  // ── DATE ──
   html += '<div class="sb-section"><span class="sb-label">Date</span><div class="sb-chips">';
   if (hasOverdue) {
     html += '<div class="sb-chip ar' + (dateF==='overdue' ? ' ad' : '') + '" onclick="setDate(\'overdue\')">Overdue</div>';
@@ -1539,20 +1551,16 @@ function renderSidebar() {
   html += '</div></div>';
   html += '<div class="sb-divider"></div>';
 
-  // Owners
-  html += '<div class="sb-section"><span class="sb-label">Owner</span><div class="sb-chips">';
-  html += '<div class="sb-chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All <span class="sb-cnt">' + tasks.filter(function(t){return !t.done;}).length + '</span></div>';
-  users.forEach(function(u) {
-    var cnt = oc[u] || 0;
-    html += '<div class="sb-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? '<span class="sb-cnt">'+cnt+'</span>' : '') + '</div>';
-  });
-  html += '</div></div>';
-
-  // Clear all
-  var anyFilter = ownerF || dateF || catF;
-  html += '<div class="sb-clear' + (anyFilter ? ' visible' : '') + '" onclick="clearAll()">&#10005; Clear Filters</div>';
-
-  sb.innerHTML = html;
+  // ── CATEGORY (bottom) ──
+  if (usedCats.length) {
+    html += '<div class="sb-section"><span class="sb-label">Category</span><div class="sb-chips">';
+    usedCats.forEach(function(c) {
+      var cc = catColor(c);
+      html += '<div class="sb-chip' + (c===catF ? ' ac' : '') + '" onclick="setCat(\'' + c + '\')" style="' + (c===catF ? '' : 'color:'+cc+'99') + '">' + c + '</div>';
+    });
+    html += '<div class="sb-chip' + (catF==='blank' ? ' ac' : '') + '" onclick="setCat(\'blank\')" style="border-style:dashed">No Category</div>';
+    html += '</div></div>';
+  }
 }
 
 /* ── RENDER ── */

@@ -1473,7 +1473,7 @@ function createCard(t, rank) {
   var stDone = subtasks.filter(function(s){return s.done;}).length;
   var stTotal = subtasks.length;
   var stBadgeColor = stTotal === 0 ? '' : (stDone === stTotal ? 'background:var(--acbg);color:var(--ac)' : stDone > 0 ? 'background:rgba(68,138,255,.12);color:var(--bl)' : 'background:rgba(255,179,0,.12);color:var(--am)');
-  var stBadgeHTML = stTotal > 0 ? '<button class="st-badge" style="' + stBadgeColor + '" onclick="toggleSubtaskPanel(event,'' + t.id + '')">' + stDone + '/' + stTotal + '</button>' : '';
+  var stBadgeHTML = stTotal > 0 ? '<button class="st-badge" style="' + stBadgeColor + '" onclick="toggleSubtaskPanel(event,&apos;' + t.id + '&apos;)">' + stDone + '/' + stTotal + '</button>' : '';
 
   var crow = document.createElement('div');
   crow.className = 'crow';

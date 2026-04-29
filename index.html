@@ -483,6 +483,108 @@ body.light .field input[type="date"] { color-scheme:light; }
 .itxt b { color:var(--ac); }
 
 .empty { text-align:center; padding:60px 20px; color:var(--dim); font-size:12px; letter-spacing:1px; }
+
+/* ============ DESKTOP LAYOUT (768px+) ============ */
+@media(min-width:768px) {
+
+  /* Hide topbar filter bar on desktop */
+  .topbar .fb { display:none; }
+  .topbar { padding:10px 20px 10px; }
+
+  /* App shell: sidebar + main */
+  .app-shell {
+    display:flex;
+    min-height:calc(100dvh - 56px);
+  }
+
+  /* LEFT SIDEBAR */
+  .sidebar {
+    width:220px;
+    flex-shrink:0;
+    position:sticky;
+    top:56px;
+    height:calc(100dvh - 56px);
+    overflow-y:auto;
+    border-right:1px solid var(--b1);
+    padding:16px 14px 30px;
+    background:var(--s1);
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    scrollbar-width:none;
+  }
+  .sidebar::-webkit-scrollbar { display:none; }
+
+  .sb-section { margin-bottom:20px; }
+  .sb-label {
+    font-size:9px; font-weight:700; color:var(--dim);
+    letter-spacing:2px; font-family:'JetBrains Mono',monospace;
+    margin-bottom:8px; display:block;
+  }
+  .sb-chips { display:flex; flex-direction:column; gap:4px; }
+  .sb-chip {
+    padding:8px 12px; border-radius:7px;
+    font-size:12px; font-weight:700;
+    cursor:pointer; border:1px solid transparent;
+    color:var(--sub); transition:all .12s;
+    user-select:none; white-space:nowrap;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .sb-chip:hover { background:var(--s2); color:var(--tx); }
+  .sb-chip.ao { background:rgba(68,138,255,.13); border-color:rgba(68,138,255,.3); color:var(--bl); }
+  .sb-chip.ad { background:rgba(255,179,0,.13);  border-color:rgba(255,179,0,.3);  color:var(--am); }
+  .sb-chip.ac { background:var(--acbg); border-color:color-mix(in srgb,var(--ac) 35%,transparent); color:var(--ac); }
+  .sb-chip.ar { background:rgba(255,179,0,.13); border-color:rgba(255,179,0,.3); color:var(--am); }
+  .sb-cnt {
+    font-size:10px; font-family:'JetBrains Mono',monospace;
+    background:var(--s3); padding:1px 6px; border-radius:10px;
+    color:var(--dim);
+  }
+  .sb-chip.ao .sb-cnt, .sb-chip.ad .sb-cnt, .sb-chip.ac .sb-cnt { background:rgba(255,255,255,.1); }
+  .sb-divider { height:1px; background:var(--b1); margin:4px 0 20px; }
+  .sb-clear {
+    margin-top:auto; padding:8px 12px; border-radius:7px;
+    font-size:11px; font-weight:700; cursor:pointer;
+    border:1px solid rgba(255,82,82,.3);
+    color:var(--rd); background:rgba(255,82,82,.08);
+    text-align:center; transition:all .12s;
+    display:none;
+  }
+  .sb-clear.visible { display:block; }
+  .sb-clear:hover { background:rgba(255,82,82,.16); }
+
+  /* MAIN CONTENT */
+  .main-content {
+    flex:1;
+    min-width:0;
+    padding:12px 16px 80px;
+  }
+
+  /* TWO COLUMN TASK GRID */
+  .task-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    align-items:start;
+  }
+  /* Done separator spans full width */
+  .donesep { grid-column:1/-1; }
+  /* Done cards in 2-col too */
+
+  /* Cards slightly wider - use space */
+  .card { margin-bottom:0; }
+
+  /* Topbar stat pill */
+  .stats { font-size:12px; }
+}
+
+@media(max-width:767px) {
+  .sidebar { display:none; }
+  .app-shell { display:block; }
+  .main-content { padding:0; }
+  .task-grid { display:block; }
+}
+
 </style>
 </head>
 <body>
@@ -504,7 +606,12 @@ body.light .field input[type="date"] { color-scheme:light; }
   <div class="fb" id="fb"></div>
 </div>
 
-<div class="container" id="list"></div>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <div class="task-grid container" id="list"></div>
+  </div>
+</div>
 <div class="fab" onclick="openAdd()">+</div>
 
 <!-- ADD -->
@@ -1393,9 +1500,65 @@ function createDoneCard(t) {
   return card;
 }
 
+
+/* ── SIDEBAR (desktop only) ── */
+function renderSidebar() {
+  var sb = document.getElementById('sidebar');
+  if (!sb) return;
+
+  var oc = {};
+  tasks.forEach(function(t){ if (!t.done) oc[t.owner] = (oc[t.owner]||0) + 1; });
+  var now2 = new Date(); now2.setHours(0,0,0,0);
+  var hasOverdue = tasks.some(function(t){ return !t.done && t.dueDate && new Date(t.dueDate+'T00:00:00') < now2; });
+  var usedCats = [];
+  tasks.forEach(function(t){ if (t.category && !usedCats.includes(t.category)) usedCats.push(t.category); });
+
+  var html = '';
+
+  // Categories
+  if (usedCats.length) {
+    html += '<div class="sb-section"><span class="sb-label">Category</span><div class="sb-chips">';
+    usedCats.forEach(function(c) {
+      var cc = catColor(c);
+      html += '<div class="sb-chip' + (c===catF ? ' ac' : '') + '" onclick="setCat(\'' + c + '\')" style="' + (c===catF ? '' : 'color:'+cc+'99') + '">' + c + '</div>';
+    });
+    html += '<div class="sb-chip' + (catF==='blank' ? ' ac' : '') + ' dash" onclick="setCat(\'blank\')" style="border-style:dashed">No Category</div>';
+    html += '</div></div>';
+    html += '<div class="sb-divider"></div>';
+  }
+
+  // Date
+  html += '<div class="sb-section"><span class="sb-label">Date</span><div class="sb-chips">';
+  if (hasOverdue) {
+    html += '<div class="sb-chip ar' + (dateF==='overdue' ? ' ad' : '') + '" onclick="setDate(\'overdue\')">Overdue</div>';
+  }
+  var dateOpts = [{k:'week',l:'This Week'},{k:'nextweek',l:'Next Week'},{k:'month',l:'This Month'},{k:'blank',l:'No Due Date'}];
+  dateOpts.forEach(function(opt) {
+    html += '<div class="sb-chip' + (dateF===opt.k ? ' ad' : '') + '" onclick="setDate(\'' + opt.k + '\')">' + opt.l + '</div>';
+  });
+  html += '</div></div>';
+  html += '<div class="sb-divider"></div>';
+
+  // Owners
+  html += '<div class="sb-section"><span class="sb-label">Owner</span><div class="sb-chips">';
+  html += '<div class="sb-chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All <span class="sb-cnt">' + tasks.filter(function(t){return !t.done;}).length + '</span></div>';
+  users.forEach(function(u) {
+    var cnt = oc[u] || 0;
+    html += '<div class="sb-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? '<span class="sb-cnt">'+cnt+'</span>' : '') + '</div>';
+  });
+  html += '</div></div>';
+
+  // Clear all
+  var anyFilter = ownerF || dateF || catF;
+  html += '<div class="sb-clear' + (anyFilter ? ' visible' : '') + '" onclick="clearAll()">&#10005; Clear Filters</div>';
+
+  sb.innerHTML = html;
+}
+
 /* ── RENDER ── */
 function render() {
   renderFilters();
+  renderSidebar();
   var f      = getFiltered();
   var active = f.filter(function(t){ return !t.done; });
   var done   = f.filter(function(t){ return  t.done; });

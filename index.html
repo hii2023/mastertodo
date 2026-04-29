@@ -599,37 +599,12 @@ body.light .field input[type="date"] { color-scheme:light; }
 }
 
 @media(max-width:767px) {
-  .sidebar {
-    width:200px;
-    flex-shrink:0;
-    height:100%;
-    overflow-y:auto;
-    border-right:1px solid var(--b1);
-    padding:14px 12px 30px;
-    background:var(--s1);
-    display:flex;
-    flex-direction:column;
-    scrollbar-width:none;
-  }
-  .app-shell {
-    display:flex;
-    height:calc(100dvh - 56px);
-    overflow:hidden;
-  }
-  .main-content {
-    flex:1;
-    min-width:0;
-    padding:10px 12px 80px;
-    overflow-y:auto;
-    height:100%;
-  }
-  .task-grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:5px 8px;
-    align-items:start;
-  }
-  #tb-owners { display:none !important; }
+  .sidebar        { display:none !important; }
+  .app-shell      { display:block; height:auto; overflow:visible; }
+  .main-content   { padding:0; height:auto; overflow-y:visible; }
+  .task-grid      { display:block; }
+  .container      { max-width:720px; padding:8px 10px 90px; }
+  #tb-owners      { display:none !important; }
   .settings-appearance { display:none; }
 }
 

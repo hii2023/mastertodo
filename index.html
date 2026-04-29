@@ -487,30 +487,45 @@ body.light .field input[type="date"] { color-scheme:light; }
 /* ============ DESKTOP LAYOUT (768px+) ============ */
 @media(min-width:768px) {
 
-  /* Hide topbar filter bar on desktop */
+  /* Desktop topbar: hide mobile filter bar, show owner strip */
   .topbar .fb { display:none; }
-  .topbar { padding:10px 20px 10px; }
+  .topbar { padding:8px 20px 8px; }
+  .tb1 { margin-bottom:0; }
+  .tb-owners {
+    display:flex; align-items:center; gap:5px;
+    margin-top:7px; flex-wrap:nowrap; overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .tb-owners::-webkit-scrollbar { display:none; }
+  .tbo-chip {
+    padding:5px 14px; border-radius:6px;
+    font-size:12px; font-weight:700;
+    cursor:pointer; border:1.5px solid var(--b1);
+    background:var(--s1); color:var(--sub);
+    transition:all .12s; white-space:nowrap;
+  }
+  .tbo-chip:hover { border-color:var(--b2); color:var(--tx); }
+  .tbo-chip.ao { background:rgba(68,138,255,.13); border-color:rgba(68,138,255,.4); color:var(--bl); }
+  #tb-owners { display:flex !important; }
 
   /* App shell: sidebar + main */
   .app-shell {
     display:flex;
-    min-height:calc(100dvh - 56px);
+    height:calc(100dvh - 56px);
+    overflow:hidden;
   }
 
   /* LEFT SIDEBAR */
   .sidebar {
-    width:220px;
+    width:200px;
     flex-shrink:0;
-    position:sticky;
-    top:56px;
-    height:calc(100dvh - 56px);
+    height:100%;
     overflow-y:auto;
     border-right:1px solid var(--b1);
-    padding:16px 14px 30px;
+    padding:14px 12px 30px;
     background:var(--s1);
     display:flex;
     flex-direction:column;
-    gap:0;
     scrollbar-width:none;
   }
   .sidebar::-webkit-scrollbar { display:none; }
@@ -557,40 +572,62 @@ body.light .field input[type="date"] { color-scheme:light; }
   .main-content {
     flex:1;
     min-width:0;
-    padding:12px 16px 80px;
-  }
-
-  /* Full task name - no truncation */
-  .cname {
-    white-space:normal;
-    overflow:visible;
-    text-overflow:clip;
-    line-height:1.35;
+    padding:10px 12px 80px;
+    overflow-y:auto;
+    height:100%;
   }
 
   /* TWO COLUMN TASK GRID */
   .task-grid {
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:6px;
+    gap:5px 8px;
     align-items:start;
   }
   /* Done separator spans full width */
   .donesep { grid-column:1/-1; }
   /* Done cards in 2-col too */
 
-  /* Cards slightly wider - use space */
+  .container { max-width:none; padding:0; }
   .card { margin-bottom:0; }
+  .donesep { grid-column:1/-1; margin:10px 0 5px; }
 
   /* Topbar stat pill */
   .stats { font-size:12px; }
 }
 
 @media(max-width:767px) {
-  .sidebar { display:none; }
-  .app-shell { display:block; }
-  .main-content { padding:0; }
-  .task-grid { display:block; }
+  .sidebar {
+    width:200px;
+    flex-shrink:0;
+    height:100%;
+    overflow-y:auto;
+    border-right:1px solid var(--b1);
+    padding:14px 12px 30px;
+    background:var(--s1);
+    display:flex;
+    flex-direction:column;
+    scrollbar-width:none;
+  }
+  .app-shell {
+    display:flex;
+    height:calc(100dvh - 56px);
+    overflow:hidden;
+  }
+  .main-content {
+    flex:1;
+    min-width:0;
+    padding:10px 12px 80px;
+    overflow-y:auto;
+    height:100%;
+  }
+  .task-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px 8px;
+    align-items:start;
+  }
+  #tb-owners { display:none !important; }
 }
 
 </style>
@@ -605,13 +642,12 @@ body.light .field input[type="date"] { color-scheme:light; }
       <div class="stats" id="stats">-- tasks</div>
     </div>
     <div class="tbright">
-      <button class="ibt" id="themeBtn" onclick="toggleTheme()" title="Switch theme">&#9788; Light</button>
       <button class="ibt on" id="viewBtn" onclick="toggleView()">&#8803; Compact</button>
-      <button class="ibt ibt-sq" onclick="openInst()" title="Install app">&#8659;</button>
       <button class="ibt ibt-sq" onclick="openSet()" title="Settings">&#9881;</button>
     </div>
   </div>
   <div class="fb" id="fb"></div>
+  <div class="tb-owners" id="tb-owners" style="display:none"></div>
 </div>
 
 <div class="app-shell">
@@ -692,6 +728,15 @@ body.light .field input[type="date"] { color-scheme:light; }
     <div class="handle"></div>
     <div class="si">
       <div class="shd"><div><div class="sttl">Settings</div></div></div>
+
+      <div class="setsec">
+        <div class="setttl">Appearance</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="ibt" id="themeBtn" onclick="toggleTheme()" style="flex:1;min-width:120px">&#9788; Light</button>
+          <button class="ibt" onclick="openInst();closeSet();" style="flex:1;min-width:120px">&#8659; Install App</button>
+        </div>
+      </div>
+
       <div class="setsec">
         <div class="setttl">Users</div>
         <div class="ilist" id="userList"></div>
@@ -1510,12 +1555,23 @@ function createDoneCard(t) {
 
 
 /* ── SIDEBAR (desktop only) ── */
+function renderTopbarOwners() {
+  var el = document.getElementById('tb-owners');
+  if (!el) return;
+  var oc = {};
+  tasks.forEach(function(t){ if (!t.done) oc[t.owner] = (oc[t.owner]||0) + 1; });
+  var html = '<span class="tbo-chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All</span>';
+  users.forEach(function(u) {
+    var cnt = oc[u] || 0;
+    html += '<span class="tbo-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? ' '+cnt : '') + '</span>';
+  });
+  el.innerHTML = html;
+}
+
 function renderSidebar() {
   var sb = document.getElementById('sidebar');
   if (!sb) return;
 
-  var oc = {};
-  tasks.forEach(function(t){ if (!t.done) oc[t.owner] = (oc[t.owner]||0) + 1; });
   var now2 = new Date(); now2.setHours(0,0,0,0);
   var hasOverdue = tasks.some(function(t){ return !t.done && t.dueDate && new Date(t.dueDate+'T00:00:00') < now2; });
   var usedCats = [];
@@ -1524,35 +1580,24 @@ function renderSidebar() {
 
   var html = '';
 
-  // ── CLEAR FILTERS (top, only when active) ──
+  // ── CLEAR FILTERS (top) ──
   if (anyFilter) {
-    html += '<div class="sb-clear visible" style="margin-bottom:14px;margin-top:0" onclick="clearAll()">&#10005; Clear Filters</div>';
+    html += '<div class="sb-clear visible" style="margin-bottom:14px" onclick="clearAll()">&#10005; Clear Filters</div>';
   }
-
-  // ── OWNER (top) ──
-  html += '<div class="sb-section"><span class="sb-label">Owner</span><div class="sb-chips">';
-  html += '<div class="sb-chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All <span class="sb-cnt">' + tasks.filter(function(t){return !t.done;}).length + '</span></div>';
-  users.forEach(function(u) {
-    var cnt = oc[u] || 0;
-    html += '<div class="sb-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? '<span class="sb-cnt">'+cnt+'</span>' : '') + '</div>';
-  });
-  html += '</div></div>';
-  html += '<div class="sb-divider"></div>';
 
   // ── DATE ──
   html += '<div class="sb-section"><span class="sb-label">Date</span><div class="sb-chips">';
   if (hasOverdue) {
     html += '<div class="sb-chip ar' + (dateF==='overdue' ? ' ad' : '') + '" onclick="setDate(\'overdue\')">Overdue</div>';
   }
-  var dateOpts = [{k:'week',l:'This Week'},{k:'nextweek',l:'Next Week'},{k:'month',l:'This Month'},{k:'blank',l:'No Due Date'}];
-  dateOpts.forEach(function(opt) {
+  [{k:'week',l:'This Week'},{k:'nextweek',l:'Next Week'},{k:'month',l:'This Month'},{k:'blank',l:'No Due Date'}].forEach(function(opt) {
     html += '<div class="sb-chip' + (dateF===opt.k ? ' ad' : '') + '" onclick="setDate(\'' + opt.k + '\')">' + opt.l + '</div>';
   });
   html += '</div></div>';
-  html += '<div class="sb-divider"></div>';
 
-  // ── CATEGORY (bottom) ──
+  // ── CATEGORY ──
   if (usedCats.length) {
+    html += '<div class="sb-divider"></div>';
     html += '<div class="sb-section"><span class="sb-label">Category</span><div class="sb-chips">';
     usedCats.forEach(function(c) {
       var cc = catColor(c);
@@ -1561,12 +1606,15 @@ function renderSidebar() {
     html += '<div class="sb-chip' + (catF==='blank' ? ' ac' : '') + '" onclick="setCat(\'blank\')" style="border-style:dashed">No Category</div>';
     html += '</div></div>';
   }
+
+  sb.innerHTML = html;
 }
 
 /* ── RENDER ── */
 function render() {
   renderFilters();
   renderSidebar();
+  renderTopbarOwners();
   var f      = getFiltered();
   var active = f.filter(function(t){ return !t.done; });
   var done   = f.filter(function(t){ return  t.done; });

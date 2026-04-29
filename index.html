@@ -489,6 +489,8 @@ body.light .field input[type="date"] { color-scheme:light; }
 
   /* Desktop topbar: hide mobile filter bar, show owner strip */
   .topbar .fb { display:none; }
+  #themeBtn { display:none; }
+  #instBtn  { display:none; }
   .topbar { padding:8px 20px 8px; }
   .tb1 { margin-bottom:0; }
   .tb-owners {
@@ -628,6 +630,7 @@ body.light .field input[type="date"] { color-scheme:light; }
     align-items:start;
   }
   #tb-owners { display:none !important; }
+  .settings-appearance { display:none; }
 }
 
 </style>
@@ -642,8 +645,10 @@ body.light .field input[type="date"] { color-scheme:light; }
       <div class="stats" id="stats">-- tasks</div>
     </div>
     <div class="tbright">
+      <button class="ibt" id="themeBtn" onclick="toggleTheme()">&#9788; Light</button>
       <button class="ibt on" id="viewBtn" onclick="toggleView()">&#8803; Compact</button>
-      <button class="ibt ibt-sq" onclick="openSet()" title="Settings">&#9881;</button>
+      <button class="ibt ibt-sq" id="instBtn" onclick="openInst()" title="Install app">&#8659;</button>
+      <button class="ibt ibt-sq" onclick="openSet()">&#9881;</button>
     </div>
   </div>
   <div class="fb" id="fb"></div>
@@ -729,10 +734,10 @@ body.light .field input[type="date"] { color-scheme:light; }
     <div class="si">
       <div class="shd"><div><div class="sttl">Settings</div></div></div>
 
-      <div class="setsec">
+      <div class="setsec settings-appearance">
         <div class="setttl">Appearance</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="ibt" id="themeBtn" onclick="toggleTheme()" style="flex:1;min-width:120px">&#9788; Light</button>
+          <button class="ibt" id="themeBtn2" onclick="toggleTheme()" style="flex:1;min-width:120px">&#9788; Light</button>
           <button class="ibt" onclick="openInst();closeSet();" style="flex:1;min-width:120px">&#8659; Install App</button>
         </div>
       </div>
@@ -878,6 +883,8 @@ function setTheme(t) {
   document.getElementById('theme-meta').content = (t === 'light') ? '#f0f4f8' : '#00e676';
   var btn = document.getElementById('themeBtn');
   if (btn) btn.innerHTML = (t === 'light') ? '&#9790; Dark' : '&#9788; Light';
+  var btn2 = document.getElementById('themeBtn2');
+  if (btn2) btn2.innerHTML = (t === 'light') ? '&#9790; Dark' : '&#9788; Light';
   render();
 }
 function toggleTheme() {

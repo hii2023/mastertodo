@@ -99,7 +99,7 @@ body.light .topbar { background:rgba(240,244,248,.97); }
 .chip:hover { border-color:var(--b2); color:var(--tx); }
 .chip.ao { background:rgba(68,138,255,.13); border-color:rgba(68,138,255,.4); color:var(--bl); }
 .chip.ad { background:rgba(255,179,0,.13);  border-color:rgba(255,179,0,.4);  color:var(--am); }
-.chip.ar { background:rgba(255,82,82,.13);   border-color:rgba(255,82,82,.4);   color:var(--rd); }
+.chip.ar { background:rgba(255,179,0,.13); border-color:rgba(255,179,0,.4); color:var(--am); }
 .chip.ac { background:var(--acbg); border-color:rgba(0,230,118,.35); color:var(--ac); }
 body.light .chip.ac { border-color:rgba(0,158,87,.4); }
 .chip.dash { border-style:dashed; }
@@ -934,12 +934,20 @@ function renderFilters() {
   var usedCats = [];
   tasks.forEach(function(t){ if (t.category && !usedCats.includes(t.category)) usedCats.push(t.category); });
 
-  var h = '<span class="chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All</span>';
-  users.forEach(function(u) {
-    var cnt = oc[u] || 0;
-    h += '<span class="chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? ' '+cnt : '') + '</span>';
-  });
-  h += '<div class="sep"></div>';
+  var h = '';
+
+  // ── ROW 1: Category ──
+  if (categories.length || usedCats.length) {
+    usedCats.forEach(function(c) {
+      var cc = catColor(c);
+      var style = (c !== catF) ? ('color:' + cc + '90') : '';
+      h += '<span class="chip sm' + (c===catF ? ' ac' : '') + '" onclick="setCat(\'' + c + '\')" style="' + style + '">' + c + '</span>';
+    });
+    h += '<span class="chip sm dash' + (catF==='blank' ? ' ac' : '') + '" onclick="setCat(\'blank\')">No Cat</span>';
+    h += '<div class="sep"></div>';
+  }
+
+  // ── ROW 2: Date ──
   if (hasOverdue) {
     h += '<span class="chip sm ar' + (dateF==='overdue' ? ' ad' : '') + '" onclick="setDate(\'overdue\')">Overdue</span>';
   }
@@ -948,17 +956,24 @@ function renderFilters() {
     var smClass = opt.big ? '' : ' sm';
     h += '<span class="chip' + smClass + (dateF===opt.k ? ' ad' : '') + (opt.d ? ' dash' : '') + '" onclick="setDate(\'' + opt.k + '\')">' + opt.l + '</span>';
   });
-  if (categories.length || usedCats.length) {
+  h += '<div class="sep"></div>';
+
+  // ── ROW 3: Owner ──
+  h += '<span class="chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All</span>';
+  users.forEach(function(u) {
+    var cnt = oc[u] || 0;
+    h += '<span class="chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? ' '+cnt : '') + '</span>';
+  });
+
+  // ── CLEAR ALL (only if any filter active) ──
+  if (ownerF || dateF || catF) {
     h += '<div class="sep"></div>';
-    usedCats.forEach(function(c) {
-      var cc = catColor(c);
-      var style = (c !== catF) ? ('color:' + cc + '90') : '';
-      h += '<span class="chip sm' + (c===catF ? ' ac' : '') + '" onclick="setCat(\'' + c + '\')" style="' + style + '">' + c + '</span>';
-    });
-    h += '<span class="chip sm dash' + (catF==='blank' ? ' ac' : '') + '" onclick="setCat(\'blank\')">No Cat</span>';
+    h += '<span class="chip sm" style="color:var(--rd);border-color:rgba(255,82,82,.3);background:rgba(255,82,82,.08)" onclick="clearAll()">&#10005; Clear</span>';
   }
+
   document.getElementById('fb').innerHTML = h;
 }
+function clearAll() { ownerF = ''; dateF = ''; catF = ''; render(); }
 function setOwner(o) { ownerF = o; render(); }
 function setDate(d)  { dateF = (dateF === d) ? '' : d; render(); }
 function setCat(c)   { catF  = (catF  === c) ? '' : c; render(); }

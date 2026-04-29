@@ -600,13 +600,89 @@ body.light .field input[type="date"] { color-scheme:light; }
 
 @media(max-width:767px) {
   .sidebar        { display:none !important; }
+  #themeBtn       { display:none !important; }
+  #instBtn        { display:none !important; }
   .app-shell      { display:block; height:auto; overflow:visible; }
   .main-content   { padding:0; height:auto; overflow-y:visible; }
   .task-grid      { display:block; }
   .container      { max-width:720px; padding:8px 10px 90px; }
   #tb-owners      { display:none !important; }
-  .settings-appearance { display:none; }
 }
+
+
+/* ── SUBTASKS ── */
+.subtask-panel {
+  border-top:1px solid var(--b1);
+  padding:8px 12px 10px 40px;
+}
+.subtask-row {
+  display:flex; align-items:center; gap:8px;
+  padding:4px 0;
+}
+.st-radio {
+  width:16px; height:16px; border-radius:50%;
+  border:2px solid var(--b2); cursor:pointer;
+  flex-shrink:0; display:flex; align-items:center;
+  justify-content:center; transition:all .15s; background:none;
+}
+.st-radio:hover { border-color:var(--ac); background:var(--acbg); }
+.st-radio.done  { background:var(--ac); border-color:var(--ac); }
+.st-radio.done::after {
+  content:''; width:6px; height:3.5px;
+  border-left:2px solid var(--bg); border-bottom:2px solid var(--bg);
+  transform:rotate(-45deg) translateY(-1px); display:block;
+}
+.st-text {
+  flex:1; font-size:12px; color:var(--tx); line-height:1.3;
+}
+.st-text.done { text-decoration:line-through; color:var(--sub); }
+.st-add-row {
+  display:flex; align-items:center; gap:8px; margin-top:4px;
+}
+.st-add-input {
+  flex:1; font-size:12px; background:none; border:none;
+  border-bottom:1px solid var(--b2); color:var(--tx);
+  padding:2px 0; outline:none; font-family:'Outfit',sans-serif;
+}
+.st-add-input::placeholder { color:var(--dim); }
+.st-add-input:focus { border-bottom-color:var(--ac); }
+.st-badge {
+  font-size:10px; font-weight:700; padding:2px 7px;
+  border-radius:4px; font-family:'JetBrains Mono',monospace;
+  cursor:pointer; flex-shrink:0; border:none; outline:none;
+  transition:all .12s;
+}
+.st-badge:hover { filter:brightness(1.1); }
+
+/* Edit modal subtask list */
+.edit-st-row {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 0; border-bottom:1px solid var(--s2);
+}
+.edit-st-row:last-child { border:none; }
+.edit-st-check {
+  width:18px; height:18px; border-radius:50%;
+  border:2px solid var(--b2); cursor:pointer;
+  flex-shrink:0; display:flex; align-items:center;
+  justify-content:center; transition:all .15s; background:none;
+}
+.edit-st-check.done { background:var(--ac); border-color:var(--ac); }
+.edit-st-check.done::after {
+  content:''; width:6px; height:4px;
+  border-left:2px solid var(--bg); border-bottom:2px solid var(--bg);
+  transform:rotate(-45deg) translateY(-1px); display:block;
+}
+.edit-st-name {
+  flex:1; font-size:13px; color:var(--tx);
+}
+.edit-st-name.done { text-decoration:line-through; color:var(--sub); }
+.edit-st-del {
+  background:none; border:none; color:var(--dim);
+  cursor:pointer; font-size:14px; padding:0;
+  width:18px; height:18px; display:flex; align-items:center;
+  justify-content:center; border-radius:50%; transition:all .1s;
+}
+.edit-st-del:hover { color:var(--rd); background:rgba(255,82,82,.12); }
 
 </style>
 </head>
@@ -678,6 +754,14 @@ body.light .field input[type="date"] { color-scheme:light; }
       </div>
       <div class="field ffull"><label>Link (optional)</label><input id="edit-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="field ffull" id="editCW" style="display:none"><label>Category</label><div class="catgrid" id="editCG"></div></div>
+      <div class="field ffull">
+        <label>Subtasks</label>
+        <div id="edit-st-list" style="margin-bottom:8px"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:18px;height:18px;border-radius:50%;border:2px dashed var(--b2);flex-shrink:0"></div>
+          <input id="edit-st-input" placeholder="Add subtask..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other" style="flex:1;font-size:13px;background:none;border:none;border-bottom:1px solid var(--b2);color:var(--tx);padding:2px 0;outline:none;font-family:'Outfit',sans-serif"/>
+        </div>
+      </div>
       <div class="sbtns ffull">
         <button class="bs" onclick="closeEdit()">Cancel</button>
         <button class="bp" onclick="saveEdit()">Save Changes</button>
@@ -1171,6 +1255,7 @@ function openEdit(id) {
   var rank = f.filter(function(x){ return !x.done; }).findIndex(function(x){ return x.id===id; }) + 1;
   document.getElementById('edit-sub').textContent = 'Rank #' + (rank > 0 ? rank : '?') + ' - ' + t.owner;
   document.getElementById('editM').classList.add('open');
+  renderEditSubtasks();
   setTimeout(function(){ var el = document.getElementById('edit-name'); el.focus(); el.select(); }, 260);
 }
 function closeEdit() { document.getElementById('editM').classList.remove('open'); editId = null; }
@@ -1384,6 +1469,11 @@ function createCard(t, rank) {
 
   /* Compact row */
   var logBadgeHTML = lc ? '<span class="lbadge">' + (lc > 9 ? '9+' : lc) + '</span>' : '';
+  var subtasks = t.subtasks || [];
+  var stDone = subtasks.filter(function(s){return s.done;}).length;
+  var stTotal = subtasks.length;
+  var stBadgeColor = stTotal === 0 ? '' : (stDone === stTotal ? 'background:var(--acbg);color:var(--ac)' : stDone > 0 ? 'background:rgba(68,138,255,.12);color:var(--bl)' : 'background:rgba(255,179,0,.12);color:var(--am)');
+  var stBadgeHTML = stTotal > 0 ? '<button class="st-badge" style="' + stBadgeColor + '" onclick="toggleSubtaskPanel(event,'' + t.id + '')">' + stDone + '/' + stTotal + '</button>' : '';
 
   var crow = document.createElement('div');
   crow.className = 'crow';
@@ -1397,7 +1487,8 @@ function createCard(t, rank) {
       dueLineHTML +
       (cc || true ? '<div class="ccat" style="display:flex;align-items:center;margin-top:3px">' + (cc ? '<span class="ccatpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '30">' + t.category + '</span>' : '') + ownerLineHTML + '</div>' : '') +
     '</div>' +
-    '<button class="clog">' + ICON_LOG + logBadgeHTML + '</button>';
+    '<button class="clog">' + ICON_LOG + logBadgeHTML + '</button>' +
+    stBadgeHTML;
   card.appendChild(crow);
   var wmDiv = document.createElement('div');
   wmDiv.className = 'cwm';
@@ -1406,6 +1497,12 @@ function createCard(t, rank) {
   var padDiv = document.createElement('div');
   padDiv.className = 'cpad';
   card.appendChild(padDiv);
+
+  /* Subtask panel: always in detailed mode, or if expanded in compact */
+  if (!isCompact && stTotal > 0) {
+    var stPanel = buildSubtaskPanel(t);
+    card.insertBefore(stPanel, card.querySelector('.cpad'));
+  }
 
   /* Detailed rows (only in detailed mode) */
   if (!isCompact) {
@@ -1592,6 +1689,123 @@ function renderSidebar() {
   sb.innerHTML = html;
 }
 
+
+/* ── SUBTASK HELPERS ── */
+var expandedSubtasks = {};
+
+function buildSubtaskPanel(t) {
+  var panel = document.createElement('div');
+  panel.className = 'subtask-panel';
+  panel.dataset.stPanel = t.id;
+
+  var subtasks = t.subtasks || [];
+  subtasks.forEach(function(st, idx) {
+    var row = document.createElement('div');
+    row.className = 'subtask-row';
+    row.innerHTML =
+      '<div class="st-radio' + (st.done ? ' done' : '') + '" data-id="' + t.id + '" data-idx="' + idx + '"></div>' +
+      '<div class="st-text' + (st.done ? ' done' : '') + '">' + st.text + '</div>';
+    row.querySelector('.st-radio').addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleSubtask(t.id, idx);
+    });
+    panel.appendChild(row);
+  });
+
+  // Add row
+  var addRow = document.createElement('div');
+  addRow.className = 'st-add-row';
+  addRow.innerHTML =
+    '<div style="width:16px;height:16px;border-radius:50%;border:1.5px dashed var(--b2);flex-shrink:0"></div>' +
+    '<input class="st-add-input" placeholder="Add subtask..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other" data-taskid="' + t.id + '"/>';
+  addRow.querySelector('.st-add-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); addSubtask(t.id, this.value); this.value = ''; }
+    e.stopPropagation();
+  });
+  addRow.querySelector('.st-add-input').addEventListener('click', function(e){ e.stopPropagation(); });
+  panel.appendChild(addRow);
+  return panel;
+}
+
+function toggleSubtaskPanel(e, taskId) {
+  e.stopPropagation();
+  var card = document.querySelector('.card[data-id="' + taskId + '"]');
+  if (!card) return;
+  var existing = card.querySelector('[data-st-panel]');
+  if (existing) {
+    existing.remove();
+    delete expandedSubtasks[taskId];
+  } else {
+    expandedSubtasks[taskId] = true;
+    var t = tasks.find(function(x){ return x.id === taskId; });
+    if (!t) return;
+    var panel = buildSubtaskPanel(t);
+    var padDiv = card.querySelector('.cpad');
+    card.insertBefore(panel, padDiv);
+  }
+}
+
+async function toggleSubtask(taskId, idx) {
+  var t = tasks.find(function(x){ return x.id === taskId; });
+  if (!t) return;
+  var subtasks = (t.subtasks || []).slice();
+  subtasks[idx] = { text: subtasks[idx].text, done: !subtasks[idx].done };
+  await db.collection('tasks').doc(taskId).update({ subtasks: subtasks });
+}
+
+async function addSubtask(taskId, text) {
+  text = text.trim();
+  if (!text) return;
+  var t = tasks.find(function(x){ return x.id === taskId; });
+  if (!t) return;
+  var subtasks = (t.subtasks || []).slice();
+  subtasks.push({ text: text, done: false });
+  await db.collection('tasks').doc(taskId).update({ subtasks: subtasks });
+}
+
+async function deleteSubtaskEdit(idx) {
+  if (!editId) return;
+  var t = tasks.find(function(x){ return x.id === editId; });
+  if (!t) return;
+  var subtasks = (t.subtasks || []).slice();
+  subtasks.splice(idx, 1);
+  await db.collection('tasks').doc(editId).update({ subtasks: subtasks });
+  renderEditSubtasks();
+}
+
+async function toggleSubtaskEdit(idx) {
+  if (!editId) return;
+  var t = tasks.find(function(x){ return x.id === editId; });
+  if (!t) return;
+  var subtasks = (t.subtasks || []).slice();
+  subtasks[idx] = { text: subtasks[idx].text, done: !subtasks[idx].done };
+  await db.collection('tasks').doc(editId).update({ subtasks: subtasks });
+  renderEditSubtasks();
+}
+
+function renderEditSubtasks() {
+  var list = document.getElementById('edit-st-list');
+  if (!list) return;
+  var t = tasks.find(function(x){ return x.id === editId; });
+  var subtasks = (t && t.subtasks) || [];
+  if (!subtasks.length) { list.innerHTML = ''; return; }
+  list.innerHTML = subtasks.map(function(st, idx) {
+    return '<div class="edit-st-row">' +
+      '<div class="edit-st-check' + (st.done ? ' done' : '') + '" onclick="toggleSubtaskEdit(' + idx + ')"></div>' +
+      '<div class="edit-st-name' + (st.done ? ' done' : '') + '">' + st.text + '</div>' +
+      '<button class="edit-st-del" onclick="deleteSubtaskEdit(' + idx + ')">&#215;</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function addSubtaskFromEdit() {
+  var inp = document.getElementById('edit-st-input');
+  if (!inp || !inp.value.trim() || !editId) return;
+  await addSubtask(editId, inp.value);
+  inp.value = '';
+  renderEditSubtasks();
+}
+
 /* ── RENDER ── */
 function render() {
   renderFilters();
@@ -1633,6 +1847,19 @@ function render() {
 db.collection('tasks').onSnapshot(function(snap) {
   tasks = snap.docs.map(function(d) { return Object.assign({id: d.id}, d.data()); });
   render();
+  /* Re-render open subtask panels */
+  Object.keys(expandedSubtasks).forEach(function(taskId) {
+    var card = document.querySelector('.card[data-id="' + taskId + '"]');
+    if (!card) return;
+    var old = card.querySelector('[data-st-panel]');
+    if (old) old.remove();
+    var t = tasks.find(function(x){ return x.id === taskId; });
+    if (!t) return;
+    var panel = buildSubtaskPanel(t);
+    var padDiv = card.querySelector('.cpad');
+    if (padDiv) card.insertBefore(panel, padDiv);
+  });
+  if (editId) renderEditSubtasks();
 });
 
 initConfig();

@@ -963,6 +963,7 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
     <div class="handle"></div>
     <div class="si">
       <div class="shd"><div><div class="sttl" id="log-title">Updates</div><div class="ssub" id="log-count">0 updates</div></div></div>
+      <div id="log-created-stamp" style="display:none;align-items:center;gap:6px;padding:8px 12px;background:var(--s2);border-radius:var(--rsm);margin-bottom:10px;border-left:3px solid var(--ac)"></div>
       <div id="log-list" style="margin-bottom:12px;max-height:220px;overflow-y:auto;"></div>
       <div class="field"><label>New Update</label><input id="inp-log" placeholder="What happened?" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="sbtns">
@@ -1535,10 +1536,26 @@ function toggleDone(id, cur) {
 function openLog(id) {
   logId = id;
   var t = tasks.find(function(x){ return x.id===id; });
+  /* Separate created stamp from real comments */
+  var allLogs = t.logs || [];
+  var createdEntry = allLogs.find(function(l){ return l.type === 'created'; });
+  var comments = allLogs.filter(function(l){ return l.type !== 'created'; });
+  var lc = comments.length;
   document.getElementById('log-title').textContent = t.name;
-  var lc = (t.logs || []).length;
   document.getElementById('log-count').textContent = lc + ' update' + (lc===1?'':'s');
-  renderLogs(t.logs || []);
+  /* Show creation stamp */
+  var stampEl = document.getElementById('log-created-stamp');
+  if (stampEl) {
+    if (createdEntry) {
+      stampEl.style.display = 'flex';
+      stampEl.innerHTML =
+        '<span style="font-size:10px;font-weight:700;color:var(--ac);font-family:monospace;letter-spacing:.5px">CREATED</span>' +
+        '<span style="font-size:11px;color:var(--sub);font-family:monospace;margin-left:8px">' + createdEntry.time + '</span>';
+    } else {
+      stampEl.style.display = 'none';
+    }
+  }
+  renderLogs(comments);
   document.getElementById('logM').classList.add('open');
   setTimeout(function(){ document.getElementById('inp-log').focus(); }, 260);
 }
@@ -1570,7 +1587,8 @@ async function submitLog() {
   db.collection('activity').add({type:'comment',taskId:logId,taskName:_logTaskName,detail:text,ts:Date.now()});
   document.getElementById('inp-log').value = '';
   renderLogs(logs);
-  document.getElementById('log-count').textContent = logs.length + ' update' + (logs.length===1?'':'s');
+  var realCount2 = logs.filter(function(l){return l.type!=='created';}).length;
+  document.getElementById('log-count').textContent = realCount2 + ' update' + (realCount2===1?'':'s');
 }
 document.getElementById('inp-log').addEventListener('keydown', function(e){
   if (e.key === 'Enter') submitLog();
@@ -1713,7 +1731,7 @@ function createCard(t, rank) {
   var due = fmtDue(t.dueDate);
   var os  = ownerStyle(t.owner || '');
   var cc  = t.category ? catColor(t.category) : null;
-  var lc  = (t.logs || []).length;
+  var lc  = (t.logs || []).filter(function(l){ return l.type !== 'created'; }).length;
 
   /* Compact row */
   var logBadgeHTML = lc ? '<span class="lbadge">' + (lc > 9 ? '9+' : lc) + '</span>' : '';
@@ -2435,55 +2453,39 @@ function setActFilter(f) {
 
 /* ── BACKFILL createdAt for existing tasks ── */
 async function backfillCreatedAt() {
+  var FALLBACK_DATE = 1777161600000; /* Apr 26 2026 */
   var snap = await db.collection('tasks').get();
-  var actSnap = await db.collection('activity').get();
-
-  /* Find oldest activity per task */
-  var oldestByTask = {};
-  actSnap.docs.forEach(function(d) {
-    var a = d.data();
-    if (a.taskId && a.ts) {
-      if (!oldestByTask[a.taskId] || a.ts < oldestByTask[a.taskId]) {
-        oldestByTask[a.taskId] = a.ts;
-      }
-    }
-  });
-
   var batch = db.batch();
   var count = 0;
+
   snap.docs.forEach(function(d) {
     var data = d.data();
     var updates = {};
 
-    /* Backfill createdAt */
-    if (!data.createdAt) {
-      updates.createdAt = oldestByTask[d.id] || data.order || Date.now();
+    /* Fix createdAt: if missing, 0, or before 2024 (clearly wrong), set to Apr 26 2026 */
+    var needsDateFix = !data.createdAt || data.createdAt < 1700000000000;
+    if (needsDateFix) {
+      updates.createdAt = FALLBACK_DATE;
     }
 
-    /* Add "Task created" as first log entry if missing */
-    var logs = data.logs || [];
-    var hasCreatedLog = logs.some(function(l){ return l.type === 'created'; });
-    if (!hasCreatedLog) {
-      var createdTs = updates.createdAt || data.createdAt || data.order || Date.now();
-      var d2 = new Date(createdTs);
-      var ts = String(d2.getMonth()+1).padStart(2,'0') + '/' +
-               String(d2.getDate()).padStart(2,'0') + '/' +
-               d2.getFullYear() + ' ' +
-               String(d2.getHours()).padStart(2,'0') + ':' +
-               String(d2.getMinutes()).padStart(2,'0');
-      var createdLog = { text: 'Task created', time: ts, type: 'created' };
-      updates.logs = [createdLog].concat(logs);
-    }
+    /* Remove any existing 'created' type log entry then add correct one */
+    var existingLogs = (data.logs || []).filter(function(l){ return l.type !== 'created'; });
+    var createdTs = needsDateFix ? FALLBACK_DATE : data.createdAt;
+    var d2 = new Date(createdTs);
+    var ts = String(d2.getMonth()+1).padStart(2,'0') + '/' +
+             String(d2.getDate()).padStart(2,'0') + '/' +
+             d2.getFullYear() + ' ' +
+             String(d2.getHours()).padStart(2,'0') + ':' +
+             String(d2.getMinutes()).padStart(2,'0');
+    updates.logs = [{ text: 'Task created', time: ts, type: 'created' }].concat(existingLogs);
 
-    if (Object.keys(updates).length > 0) {
-      batch.update(d.ref, updates);
-      count++;
-    }
+    batch.update(d.ref, updates);
+    count++;
   });
 
   if (count > 0) {
     await batch.commit();
-    console.log('Backfilled ' + count + ' tasks');
+    console.log('Backfilled ' + count + ' tasks with creation date Apr 26 2026');
   }
 }
 

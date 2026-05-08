@@ -2359,6 +2359,40 @@ function setActFilter(f) {
   renderDashActivity();
 }
 
+
+/* ── BACKFILL createdAt for existing tasks ── */
+async function backfillCreatedAt() {
+  // Get all activity to find oldest timestamps per task
+  var actSnap = await db.collection('activity').get();
+  var oldestByTask = {};
+  actSnap.docs.forEach(function(d) {
+    var a = d.data();
+    if (a.taskId && a.ts) {
+      if (!oldestByTask[a.taskId] || a.ts < oldestByTask[a.taskId]) {
+        oldestByTask[a.taskId] = a.ts;
+      }
+    }
+  });
+
+  // For each task missing createdAt, write it
+  var snap = await db.collection('tasks').get();
+  var batch = db.batch();
+  var count = 0;
+  snap.docs.forEach(function(d) {
+    var data = d.data();
+    if (!data.createdAt) {
+      // Priority: oldest activity entry > order field > now
+      var ts = oldestByTask[d.id] || data.order || Date.now();
+      batch.update(d.ref, { createdAt: ts });
+      count++;
+    }
+  });
+  if (count > 0) {
+    await batch.commit();
+    console.log('Backfilled createdAt for ' + count + ' tasks');
+  }
+}
+
 /* ── RENDER ── */
 function render() {
   renderFilters();
@@ -2408,6 +2442,7 @@ db.collection('tasks').onSnapshot(function(snap) {
 });
 
 initConfig();
+backfillCreatedAt();
 
 /* ── KEYBOARD ── */
 document.addEventListener('keydown', function(e) {

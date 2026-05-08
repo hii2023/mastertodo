@@ -1412,11 +1412,18 @@ function closeAdd() {
 async function addTask() {
   var name = document.getElementById('inp-name').value.trim();
   if (!name) { document.getElementById('inp-name').focus(); return; }
-  var _addName = document.getElementById('inp-name').value.trim();
-  await db.collection('tasks').add({
+  var now = new Date();
+  var ts = String(now.getMonth()+1).padStart(2,'0') + '/' +
+           String(now.getDate()).padStart(2,'0') + '/' +
+           now.getFullYear() + ' ' +
+           String(now.getHours()).padStart(2,'0') + ':' +
+           String(now.getMinutes()).padStart(2,'0');
+  var owner = document.getElementById('inp-owner').value;
+  var createdLog = { text: 'Task created by ' + owner, time: ts, type: 'created' };
+  var ref = await db.collection('tasks').add({
     name:     name,
     desc:     document.getElementById('inp-desc').value.trim(),
-    owner:    document.getElementById('inp-owner').value,
+    owner:    owner,
     category: addSelCat || '',
     dueDate:  document.getElementById('inp-due').value || '',
     link:     document.getElementById('inp-link').value.trim() || '',
@@ -1424,7 +1431,15 @@ async function addTask() {
     order:    Date.now(),
     createdAt:Date.now(),
     subtasks: pendingSubtasks.slice(),
-    logs:     []
+    logs:     [createdLog]
+  });
+  /* Write to activity feed */
+  db.collection('activity').add({
+    type:     'added',
+    taskId:   ref.id,
+    taskName: name,
+    detail:   'by ' + owner,
+    ts:       Date.now()
   });
   closeAdd();
 }
@@ -1478,8 +1493,42 @@ document.getElementById('edit-name').addEventListener('keydown', function(e){
 function toggleDone(id, cur) {
   var _t = tasks.find(function(x){return x.id===id;});
   var _tn = _t ? _t.name : id;
-  db.collection('tasks').doc(id).update({done: !cur});
-  db.collection('activity').add({type:cur?'reopened':'done',taskId:id,taskName:_tn,detail:'',ts:Date.now()});
+  var nowTs = Date.now();
+  var update = { done: !cur };
+  if (!cur) {
+    /* Marking done — save completedAt */
+    update.completedAt = nowTs;
+    /* Add a log entry too */
+    var now = new Date(nowTs);
+    var ts = String(now.getMonth()+1).padStart(2,'0') + '/' +
+             String(now.getDate()).padStart(2,'0') + '/' +
+             now.getFullYear() + ' ' +
+             String(now.getHours()).padStart(2,'0') + ':' +
+             String(now.getMinutes()).padStart(2,'0');
+    var logs = (_t && _t.logs) ? _t.logs.slice() : [];
+    logs.push({ text: 'Task marked done', time: ts, type: 'done' });
+    update.logs = logs;
+  } else {
+    /* Reopening — clear completedAt */
+    update.completedAt = null;
+    var now2 = new Date(nowTs);
+    var ts2 = String(now2.getMonth()+1).padStart(2,'0') + '/' +
+              String(now2.getDate()).padStart(2,'0') + '/' +
+              now2.getFullYear() + ' ' +
+              String(now2.getHours()).padStart(2,'0') + ':' +
+              String(now2.getMinutes()).padStart(2,'0');
+    var logs2 = (_t && _t.logs) ? _t.logs.slice() : [];
+    logs2.push({ text: 'Task reopened', time: ts2, type: 'reopened' });
+    update.logs = logs2;
+  }
+  db.collection('tasks').doc(id).update(update);
+  db.collection('activity').add({
+    type:     cur ? 'reopened' : 'done',
+    taskId:   id,
+    taskName: _tn,
+    detail:   '',
+    ts:       nowTs
+  });
 }
 
 /* ── LOGS ── */
@@ -2278,32 +2327,56 @@ function renderDashAvg() {
   if (!el) return;
   var done = tasks.filter(function(t){ return t.done && t.createdAt; });
   if (!done.length) {
-    el.innerHTML = '<div class="dash-avg-val" style="color:var(--dim)">--</div><div class="dash-avg-lbl">No completed tasks with creation date yet.</div>';
+    el.innerHTML = '<div class="dash-avg-val" style="color:var(--dim)">--</div><div class="dash-avg-lbl">No completed tasks yet.</div>';
     return;
   }
-  var now = Date.now();
-  var times = done.map(function(t){ return (now - t.createdAt) / 86400000; });
+
+  /* Get completion time for each task:
+     completedAt (exact) > last log timestamp (fallback) > now */
+  function getCompletedTs(t) {
+    if (t.completedAt) return t.completedAt;
+    /* Try last log entry that has a type of done or a parseable time */
+    if (t.logs && t.logs.length) {
+      var last = t.logs[t.logs.length - 1];
+      /* logs have MM/DD/YYYY HH:MM or MM/DD HH:MM format */
+      var d = new Date(last.time);
+      if (!isNaN(d.getTime())) return d.getTime();
+    }
+    return Date.now();
+  }
+
+  var times = done.map(function(t){
+    return (getCompletedTs(t) - t.createdAt) / 86400000;
+  }).filter(function(v){ return v >= 0; });
+
+  if (!times.length) {
+    el.innerHTML = '<div class="dash-avg-val" style="color:var(--dim)">--</div><div class="dash-avg-lbl">Insufficient data.</div>';
+    return;
+  }
+
   var avg = times.reduce(function(a,b){return a+b;},0) / times.length;
-  
-  // Per owner breakdown
+
+  /* Per owner breakdown */
   var byOwner = {};
   done.forEach(function(t){
+    var days = (getCompletedTs(t) - t.createdAt) / 86400000;
+    if (days < 0) return;
     if (!byOwner[t.owner]) byOwner[t.owner] = [];
-    byOwner[t.owner].push((now - t.createdAt)/86400000);
+    byOwner[t.owner].push(days);
   });
-  
+
   var rows = Object.keys(byOwner).map(function(u){
     var avg2 = byOwner[u].reduce(function(a,b){return a+b;},0)/byOwner[u].length;
     var os = ownerStyle(u);
     return '<div class="dash-avg-row">' +
       '<span style="flex:1;font-weight:600;color:var(--tx)">' + u + '</span>' +
-      '<span style="color:'+os.c+';font-family:monospace;font-size:12px;">' + avg2.toFixed(1) + ' days</span>' +
+      '<span style="color:'+os.c+';font-family:monospace;font-size:12px">' + avg2.toFixed(1) + ' days</span>' +
     '</div>';
   }).join('');
 
   el.innerHTML =
     '<div class="dash-avg-val">' + avg.toFixed(1) + '</div>' +
-    '<div class="dash-avg-lbl" style="margin-bottom:12px">days avg to complete</div>' +
+    '<div class="dash-avg-lbl" style="margin-bottom:12px">days avg to complete (' + done.length + ' tasks)</div>' +
     rows;
 }
 
@@ -2362,8 +2435,10 @@ function setActFilter(f) {
 
 /* ── BACKFILL createdAt for existing tasks ── */
 async function backfillCreatedAt() {
-  // Get all activity to find oldest timestamps per task
+  var snap = await db.collection('tasks').get();
   var actSnap = await db.collection('activity').get();
+
+  /* Find oldest activity per task */
   var oldestByTask = {};
   actSnap.docs.forEach(function(d) {
     var a = d.data();
@@ -2374,22 +2449,41 @@ async function backfillCreatedAt() {
     }
   });
 
-  // For each task missing createdAt, write it
-  var snap = await db.collection('tasks').get();
   var batch = db.batch();
   var count = 0;
   snap.docs.forEach(function(d) {
     var data = d.data();
+    var updates = {};
+
+    /* Backfill createdAt */
     if (!data.createdAt) {
-      // Priority: oldest activity entry > order field > now
-      var ts = oldestByTask[d.id] || data.order || Date.now();
-      batch.update(d.ref, { createdAt: ts });
+      updates.createdAt = oldestByTask[d.id] || data.order || Date.now();
+    }
+
+    /* Add "Task created" as first log entry if missing */
+    var logs = data.logs || [];
+    var hasCreatedLog = logs.some(function(l){ return l.type === 'created'; });
+    if (!hasCreatedLog) {
+      var createdTs = updates.createdAt || data.createdAt || data.order || Date.now();
+      var d2 = new Date(createdTs);
+      var ts = String(d2.getMonth()+1).padStart(2,'0') + '/' +
+               String(d2.getDate()).padStart(2,'0') + '/' +
+               d2.getFullYear() + ' ' +
+               String(d2.getHours()).padStart(2,'0') + ':' +
+               String(d2.getMinutes()).padStart(2,'0');
+      var createdLog = { text: 'Task created', time: ts, type: 'created' };
+      updates.logs = [createdLog].concat(logs);
+    }
+
+    if (Object.keys(updates).length > 0) {
+      batch.update(d.ref, updates);
       count++;
     }
   });
+
   if (count > 0) {
     await batch.commit();
-    console.log('Backfilled createdAt for ' + count + ' tasks');
+    console.log('Backfilled ' + count + ' tasks');
   }
 }
 

@@ -648,6 +648,176 @@ body.light .field input[type="date"] { color-scheme:light; }
 }
 .st-badge:hover { filter:brightness(1.12); }
 
+
+/* ════ DASHBOARD ════ */
+.dash-topbar {
+  position:sticky; top:0; z-index:10;
+  background:rgba(6,14,27,.97);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--b1);
+  padding:10px 16px;
+  display:flex; align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap; gap:8px;
+}
+body.light .dash-topbar { background:rgba(240,244,248,.97); }
+.dash-back {
+  background:var(--s2); border:1px solid var(--b1);
+  color:var(--sub); padding:6px 14px; border-radius:var(--rsm);
+  font-family:'Outfit',sans-serif; font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .15s;
+}
+.dash-back:hover { border-color:var(--b2); color:var(--tx); }
+.dash-title {
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px; font-weight:700; color:var(--ac);
+  letter-spacing:1.5px;
+}
+.dash-body {
+  max-width:1200px; margin:0 auto;
+  padding:16px 16px 60px;
+  display:flex; flex-direction:column; gap:12px;
+}
+.dash-stats-row {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+}
+.dash-stat {
+  background:var(--s1); border:1px solid var(--b1);
+  border-radius:var(--r); padding:14px 16px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.dash-stat-val {
+  font-size:28px; font-weight:800; color:var(--tx);
+  font-family:'JetBrains Mono',monospace; line-height:1;
+}
+.dash-stat-lbl {
+  font-size:10px; font-weight:700; color:var(--sub);
+  letter-spacing:1.5px; text-transform:uppercase;
+}
+.dash-stat-sub {
+  font-size:11px; color:var(--dim);
+  font-family:'JetBrains Mono',monospace;
+}
+.dash-grid2 {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+.dash-grid3 {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;
+}
+@media(max-width:767px) {
+  .dash-grid2, .dash-grid3 { grid-template-columns:1fr; }
+  .dash-body { padding:12px 12px 60px; }
+}
+.dash-card {
+  background:var(--s1); border:1px solid var(--b1);
+  border-radius:var(--r); padding:14px 16px;
+}
+.dash-card-title {
+  font-size:10px; font-weight:700; color:var(--sub);
+  letter-spacing:2px; text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace; margin-bottom:12px;
+}
+/* Owner / category rows */
+.dash-row {
+  display:flex; align-items:center; gap:10px;
+  padding:7px 0; border-bottom:1px solid var(--s2);
+  cursor:pointer; transition:background .12s; border-radius:5px;
+  padding-left:4px; padding-right:4px;
+}
+.dash-row:last-child { border-bottom:none; }
+.dash-row:hover { background:var(--s2); }
+.dash-row-name {
+  font-size:13px; font-weight:600; color:var(--tx);
+  min-width:80px; flex-shrink:0;
+}
+.dash-row-bar-wrap {
+  flex:1; height:6px; background:var(--s3);
+  border-radius:3px; overflow:hidden;
+}
+.dash-row-bar {
+  height:100%; border-radius:3px;
+  transition:width .4s ease;
+}
+.dash-row-counts {
+  font-size:11px; color:var(--sub);
+  font-family:'JetBrains Mono',monospace;
+  flex-shrink:0; text-align:right; min-width:52px;
+}
+.dash-row-over {
+  font-size:10px; font-weight:700; color:var(--rd);
+  font-family:'JetBrains Mono',monospace; flex-shrink:0;
+}
+/* Task list items in dashboard */
+.dash-task-item {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 6px; border-bottom:1px solid var(--s2);
+  cursor:pointer; border-radius:5px; transition:background .12s;
+}
+.dash-task-item:last-child { border-bottom:none; }
+.dash-task-item:hover { background:var(--s2); }
+.dash-task-name {
+  flex:1; font-size:13px; font-weight:600; color:var(--tx);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.dash-task-meta {
+  font-size:10px; color:var(--sub);
+  font-family:'JetBrains Mono',monospace; flex-shrink:0;
+}
+.dash-badge {
+  font-size:10px; font-weight:700; padding:2px 7px;
+  border-radius:4px; font-family:'JetBrains Mono',monospace;
+  flex-shrink:0;
+}
+/* Activity feed */
+.dash-act-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:9px 0; border-bottom:1px solid var(--s2);
+}
+.dash-act-item:last-child { border-bottom:none; }
+.dash-act-icon {
+  width:28px; height:28px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; flex-shrink:0; margin-top:1px;
+}
+.dash-act-body { flex:1; min-width:0; }
+.dash-act-text {
+  font-size:13px; color:var(--tx); line-height:1.4;
+}
+.dash-act-text b { color:var(--ac); }
+.dash-act-time {
+  font-size:10px; color:var(--dim);
+  font-family:'JetBrains Mono',monospace; margin-top:2px;
+}
+/* Activity filter buttons */
+.dash-act-btns {
+  display:flex; gap:5px; flex-wrap:wrap;
+}
+.dash-filt {
+  padding:3px 9px; border-radius:5px; font-size:10px;
+  font-weight:700; cursor:pointer; border:1px solid var(--b1);
+  background:var(--s1); color:var(--sub); transition:all .12s;
+  white-space:nowrap;
+}
+.dash-filt:hover { border-color:var(--b2); color:var(--tx); }
+.dash-filt.on { background:var(--acbg); border-color:var(--ac); color:var(--ac); }
+.dash-empty {
+  font-size:12px; color:var(--dim); padding:12px 0;
+  font-style:italic;
+}
+.dash-avg-val {
+  font-size:36px; font-weight:800;
+  font-family:'JetBrains Mono',monospace; color:var(--ac);
+  line-height:1; margin-bottom:4px;
+}
+.dash-avg-lbl { font-size:11px; color:var(--sub); }
+.dash-avg-row {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 0; border-bottom:1px solid var(--s2); font-size:12px;
+}
+.dash-avg-row:last-child { border-bottom:none; }
+
 </style>
 </head>
 <body>
@@ -660,6 +830,7 @@ body.light .field input[type="date"] { color-scheme:light; }
       <div class="stats" id="stats">-- tasks</div>
     </div>
     <div class="tbright">
+      <button class="ibt" onclick="openDash()" id="dashBtn">&#9783; Dashboard</button>
       <button class="ibt" id="themeBtn" onclick="toggleTheme()">&#9788; Light</button>
       <button class="ibt on" id="viewBtn" onclick="toggleView()">&#8803; Compact</button>
       <button class="ibt ibt-sq" id="instBtn" onclick="openInst()" title="Install app">&#8659;</button>
@@ -677,6 +848,56 @@ body.light .field input[type="date"] { color-scheme:light; }
   </div>
 </div>
 <div class="fab" onclick="openAdd()">+</div>
+
+
+<!-- DASHBOARD -->
+<div id="dashOverlay" style="display:none;position:fixed;inset:0;z-index:600;background:var(--bg);overflow-y:auto;">
+  <div class="dash-topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="dash-back" onclick="closeDash()">&#8592; Back</button>
+      <span class="dash-title">Dashboard</span>
+    </div>
+    <div class="dash-act-filters" id="dash-act-filters"></div>
+  </div>
+  <div class="dash-body">
+    <!-- ROW 1: Stats cards -->
+    <div class="dash-stats-row" id="dash-stats"></div>
+    <!-- ROW 2: By User | By Category -->
+    <div class="dash-grid2">
+      <div class="dash-card">
+        <div class="dash-card-title">By Owner</div>
+        <div id="dash-by-owner"></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">By Category</div>
+        <div id="dash-by-cat"></div>
+      </div>
+    </div>
+    <!-- ROW 3: Top Active | Upcoming | Avg Completion -->
+    <div class="dash-grid3">
+      <div class="dash-card">
+        <div class="dash-card-title">Top Active Tasks</div>
+        <div id="dash-top-active"></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Due This Week</div>
+        <div id="dash-upcoming"></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Avg Completion</div>
+        <div id="dash-avg"></div>
+      </div>
+    </div>
+    <!-- ROW 4: Activity feed -->
+    <div class="dash-card" style="margin-top:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="dash-card-title" style="margin:0">Recent Activity</div>
+        <div class="dash-act-btns" id="dash-act-btns"></div>
+      </div>
+      <div id="dash-activity"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ADD -->
 <div class="mov" id="addM">
@@ -1184,6 +1405,7 @@ function closeAdd() {
 async function addTask() {
   var name = document.getElementById('inp-name').value.trim();
   if (!name) { document.getElementById('inp-name').focus(); return; }
+  var _addName = document.getElementById('inp-name').value.trim();
   await db.collection('tasks').add({
     name:     name,
     desc:     document.getElementById('inp-desc').value.trim(),
@@ -1193,6 +1415,7 @@ async function addTask() {
     link:     document.getElementById('inp-link').value.trim() || '',
     done:     false,
     order:    Date.now(),
+    createdAt:Date.now(),
     logs:     []
   });
   closeAdd();
@@ -1223,6 +1446,7 @@ function closeEdit() { document.getElementById('editM').classList.remove('open')
 async function saveEdit() {
   var name = document.getElementById('edit-name').value.trim();
   if (!name) { document.getElementById('edit-name').focus(); return; }
+  var _editName = name; var _editId = editId;
   await db.collection('tasks').doc(editId).update({
     name:     name,
     desc:     document.getElementById('edit-desc').value.trim(),
@@ -1231,6 +1455,7 @@ async function saveEdit() {
     dueDate:  document.getElementById('edit-due').value || '',
     link:     document.getElementById('edit-link').value.trim() || ''
   });
+  db.collection('activity').add({type:'edited',taskId:_editId,taskName:_editName,detail:'updated',ts:Date.now()});
   closeEdit();
 }
 async function deleteTask() {
@@ -1243,7 +1468,10 @@ document.getElementById('edit-name').addEventListener('keydown', function(e){
   if (e.key === 'Enter') { e.preventDefault(); saveEdit(); }
 });
 function toggleDone(id, cur) {
+  var _t = tasks.find(function(x){return x.id===id;});
+  var _tn = _t ? _t.name : id;
   db.collection('tasks').doc(id).update({done: !cur});
+  db.collection('activity').add({type:cur?'reopened':'done',taskId:id,taskName:_tn,detail:'',ts:Date.now()});
 }
 
 /* ── LOGS ── */
@@ -1280,7 +1508,9 @@ async function submitLog() {
            String(now.getHours()).padStart(2,'0') + ':' +
            String(now.getMinutes()).padStart(2,'0');
   logs.push({text: text, time: ts});
+  var _logTaskName = t.name;
   await db.collection('tasks').doc(logId).update({logs: logs});
+  db.collection('activity').add({type:'comment',taskId:logId,taskName:_logTaskName,detail:text,ts:Date.now()});
   document.getElementById('inp-log').value = '';
   renderLogs(logs);
   document.getElementById('log-count').textContent = logs.length + ' update' + (logs.length===1?'':'s');
@@ -1818,6 +2048,261 @@ function stRefresh() {
     if (t) renderStPanel(card, t);
   });
   renderEstList();
+}
+
+
+/* ════════════════════════════════
+   DASHBOARD
+════════════════════════════════ */
+var dashOpen = false;
+var actFilter = 'all';
+var activityCache = [];
+
+db.collection('activity').orderBy('ts','desc').limit(100)
+  .onSnapshot(function(snap){
+    activityCache = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if (dashOpen) renderDashActivity();
+  });
+
+function openDash() {
+  dashOpen = true;
+  document.getElementById('dashOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  renderDash();
+}
+function closeDash() {
+  dashOpen = false;
+  document.getElementById('dashOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function gotoTask(taskId) {
+  closeDash();
+  setTimeout(function(){
+    var card = document.querySelector('.card[data-id="' + taskId + '"]');
+    if (card) {
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+      card.style.boxShadow = '0 0 0 3px var(--ac)';
+      setTimeout(function(){ card.style.boxShadow = ''; }, 2000);
+    }
+  }, 300);
+}
+
+function renderDash() {
+  renderDashStats();
+  renderDashByOwner();
+  renderDashByCat();
+  renderDashTopActive();
+  renderDashUpcoming();
+  renderDashAvg();
+  renderDashActivity();
+}
+
+/* ── Stats row ── */
+function renderDashStats() {
+  var el = document.getElementById('dash-stats');
+  if (!el) return;
+  var total   = tasks.length;
+  var active  = tasks.filter(function(t){return !t.done;}).length;
+  var done    = tasks.filter(function(t){return  t.done;}).length;
+  var now     = new Date(); now.setHours(0,0,0,0);
+  var overdue = tasks.filter(function(t){return !t.done && t.dueDate && new Date(t.dueDate+'T00:00:00')<now;}).length;
+  var withSubs = tasks.filter(function(t){return (t.subtasks||[]).length>0;}).length;
+  var pct = total ? Math.round(done/total*100) : 0;
+
+  el.innerHTML = [
+    {v:active,   l:'Active',    s:'tasks to do'},
+    {v:done,     l:'Done',      s:pct+'% completion'},
+    {v:overdue,  l:'Overdue',   s:'need attention', c:'var(--rd)'},
+    {v:total,    l:'Total',     s:'all tasks'},
+    {v:withSubs, l:'With Subtasks', s:'have checklists'},
+  ].map(function(s){
+    return '<div class="dash-stat">' +
+      '<div class="dash-stat-val" style="color:' + (s.c||'var(--tx)') + '">' + s.v + '</div>' +
+      '<div class="dash-stat-lbl">' + s.l + '</div>' +
+      '<div class="dash-stat-sub">' + s.s + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── By owner ── */
+function renderDashByOwner() {
+  var el = document.getElementById('dash-by-owner');
+  if (!el) return;
+  if (!users.length) { el.innerHTML = '<div class="dash-empty">No users.</div>'; return; }
+  var now = new Date(); now.setHours(0,0,0,0);
+  el.innerHTML = users.map(function(u) {
+    var mine   = tasks.filter(function(t){return t.owner===u;});
+    var active = mine.filter(function(t){return !t.done;}).length;
+    var done   = mine.filter(function(t){return  t.done;}).length;
+    var over   = mine.filter(function(t){return !t.done&&t.dueDate&&new Date(t.dueDate+'T00:00:00')<now;}).length;
+    var total  = mine.length;
+    var pct    = total ? Math.round(done/total*100) : 0;
+    var os     = ownerStyle(u);
+    return '<div class="dash-row" onclick="setOwner(\''+u+'\');closeDash();">' +
+      '<div class="dash-row-name">' + u + '</div>' +
+      '<div class="dash-row-bar-wrap"><div class="dash-row-bar" style="width:'+pct+'%;background:'+os.c+'"></div></div>' +
+      '<div class="dash-row-counts">' + done + '/' + total + '</div>' +
+      (over ? '<div class="dash-row-over">'+over+' late</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+/* ── By category ── */
+function renderDashByCat() {
+  var el = document.getElementById('dash-by-cat');
+  if (!el) return;
+  var now = new Date(); now.setHours(0,0,0,0);
+  var cats = [];
+  tasks.forEach(function(t){ if(t.category && !cats.includes(t.category)) cats.push(t.category); });
+  cats.push('');
+  var rows = cats.map(function(c) {
+    var mine   = tasks.filter(function(t){return t.category===(c||'');});
+    if (!mine.length) return '';
+    var done   = mine.filter(function(t){return  t.done;}).length;
+    var over   = mine.filter(function(t){return !t.done&&t.dueDate&&new Date(t.dueDate+'T00:00:00')<now;}).length;
+    var pct    = Math.round(done/mine.length*100);
+    var cc     = c ? catColor(c) : 'var(--dim)';
+    var lbl    = c || 'Uncategorised';
+    return '<div class="dash-row" onclick="setCat(\''+c+'\');closeDash();">' +
+      '<div class="dash-row-name" style="color:'+cc+'">' + lbl + '</div>' +
+      '<div class="dash-row-bar-wrap"><div class="dash-row-bar" style="width:'+pct+'%;background:'+cc+'"></div></div>' +
+      '<div class="dash-row-counts">' + done + '/' + mine.length + '</div>' +
+      (over ? '<div class="dash-row-over">'+over+' late</div>' : '') +
+    '</div>';
+  }).join('');
+  el.innerHTML = rows || '<div class="dash-empty">No categories yet.</div>';
+}
+
+/* ── Top active tasks (most log entries) ── */
+function renderDashTopActive() {
+  var el = document.getElementById('dash-top-active');
+  if (!el) return;
+  var sorted = tasks.filter(function(t){return !t.done;})
+    .sort(function(a,b){ return (b.logs||[]).length - (a.logs||[]).length; })
+    .slice(0,6);
+  if (!sorted.length) { el.innerHTML = '<div class="dash-empty">No active tasks.</div>'; return; }
+  el.innerHTML = sorted.map(function(t) {
+    var lc = (t.logs||[]).length;
+    var os = ownerStyle(t.owner||'');
+    return '<div class="dash-task-item" onclick="gotoTask(\''+t.id+'\')">' +
+      '<div class="dash-task-name">' + t.name + '</div>' +
+      '<span class="dash-badge" style="background:rgba(68,138,255,.12);color:var(--bl)">' + lc + ' logs</span>' +
+      '<span class="dash-badge" style="background:'+os.bg+';color:'+os.c+'">' + (t.owner||'') + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── Due this week ── */
+function renderDashUpcoming() {
+  var el = document.getElementById('dash-upcoming');
+  if (!el) return;
+  var rng = getRange('week');
+  if (!rng) return;
+  var soon = tasks.filter(function(t){
+    if (t.done || !t.dueDate) return false;
+    var d = new Date(t.dueDate+'T00:00:00');
+    return d >= rng[0] && d <= rng[1];
+  }).sort(function(a,b){ return new Date(a.dueDate) - new Date(b.dueDate); }).slice(0,8);
+  if (!soon.length) { el.innerHTML = '<div class="dash-empty">Nothing due this week.</div>'; return; }
+  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  el.innerHTML = soon.map(function(t) {
+    var d = new Date(t.dueDate+'T00:00:00');
+    var due = fmtDue(t.dueDate);
+    var os = ownerStyle(t.owner||'');
+    return '<div class="dash-task-item" onclick="gotoTask(\''+t.id+'\')">' +
+      '<div class="dash-task-name">' + t.name + '</div>' +
+      '<span class="dash-badge due ' + (due?due.cls:'ok') + '" style="font-size:10px;background:none;padding:0;color:var(--sub);font-family:var(--font-mono,monospace)">' + (due?due.label:'') + '</span>' +
+      '<span class="dash-badge" style="background:'+os.bg+';color:'+os.c+'">' + (t.owner||'') + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── Average completion time ── */
+function renderDashAvg() {
+  var el = document.getElementById('dash-avg');
+  if (!el) return;
+  var done = tasks.filter(function(t){ return t.done && t.createdAt; });
+  if (!done.length) {
+    el.innerHTML = '<div class="dash-avg-val" style="color:var(--dim)">--</div><div class="dash-avg-lbl">No completed tasks with creation date yet.</div>';
+    return;
+  }
+  var now = Date.now();
+  var times = done.map(function(t){ return (now - t.createdAt) / 86400000; });
+  var avg = times.reduce(function(a,b){return a+b;},0) / times.length;
+  
+  // Per owner breakdown
+  var byOwner = {};
+  done.forEach(function(t){
+    if (!byOwner[t.owner]) byOwner[t.owner] = [];
+    byOwner[t.owner].push((now - t.createdAt)/86400000);
+  });
+  
+  var rows = Object.keys(byOwner).map(function(u){
+    var avg2 = byOwner[u].reduce(function(a,b){return a+b;},0)/byOwner[u].length;
+    var os = ownerStyle(u);
+    return '<div class="dash-avg-row">' +
+      '<span style="flex:1;font-weight:600;color:var(--tx)">' + u + '</span>' +
+      '<span style="color:'+os.c+';font-family:monospace;font-size:12px;">' + avg2.toFixed(1) + ' days</span>' +
+    '</div>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="dash-avg-val">' + avg.toFixed(1) + '</div>' +
+    '<div class="dash-avg-lbl" style="margin-bottom:12px">days avg to complete</div>' +
+    rows;
+}
+
+/* ── Activity feed ── */
+var ACT_TYPES = [
+  {k:'all',     l:'All'},
+  {k:'added',   l:'Added'},
+  {k:'done',    l:'Done'},
+  {k:'edited',  l:'Edited'},
+  {k:'comment', l:'Comments'},
+  {k:'reopened',l:'Reopened'},
+];
+var ACT_ICONS = {
+  added:   {icon:'＋', bg:'rgba(0,230,118,.12)',    c:'var(--ac)'},
+  done:    {icon:'✓',  bg:'rgba(0,230,118,.12)',    c:'var(--ac)'},
+  edited:  {icon:'✏', bg:'rgba(68,138,255,.12)',   c:'var(--bl)'},
+  comment: {icon:'✉', bg:'rgba(68,138,255,.12)',   c:'var(--bl)'},
+  reopened:{icon:'↺',  bg:'rgba(255,179,0,.12)',    c:'var(--am)'},
+};
+
+function renderDashActivity() {
+  // Filter buttons
+  var fb = document.getElementById('dash-act-btns');
+  if (fb) {
+    fb.innerHTML = ACT_TYPES.map(function(t){
+      return '<button class="dash-filt' + (actFilter===t.k?' on':'') + '" onclick="setActFilter(\''+t.k+'\')">'+t.l+'</button>';
+    }).join('');
+  }
+
+  var el = document.getElementById('dash-activity');
+  if (!el) return;
+  var list = actFilter === 'all' ? activityCache : activityCache.filter(function(a){ return a.type===actFilter; });
+  if (!list.length) { el.innerHTML = '<div class="dash-empty">No activity yet.</div>'; return; }
+
+  el.innerHTML = list.slice(0,40).map(function(a) {
+    var ic = ACT_ICONS[a.type] || {icon:'•',bg:'var(--s2)',c:'var(--sub)'};
+    var d = new Date(a.ts);
+    var timeStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    var detail = a.detail ? ' — <span style="color:var(--sub)">' + a.detail + '</span>' : '';
+    var clickable = a.taskId ? ' style="cursor:pointer" onclick="gotoTask(\''+a.taskId+'\')"' : '';
+    return '<div class="dash-act-item"' + clickable + '>' +
+      '<div class="dash-act-icon" style="background:' + ic.bg + ';color:' + ic.c + '">' + ic.icon + '</div>' +
+      '<div class="dash-act-body">' +
+        '<div class="dash-act-text"><b>' + (a.taskName||'') + '</b> ' + a.type + detail + '</div>' +
+        '<div class="dash-act-time">' + timeStr + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function setActFilter(f) {
+  actFilter = f;
+  renderDashActivity();
 }
 
 /* ── RENDER ── */

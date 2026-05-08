@@ -2304,7 +2304,7 @@ function renderDashTopActive() {
     .slice(0,6);
   if (!sorted.length) { el.innerHTML = '<div class="dash-empty">No active tasks.</div>'; return; }
   el.innerHTML = sorted.map(function(t) {
-    var lc = (t.logs||[]).length;
+    var lc = (t.logs||[]).filter(function(l){return l.type!=='created';}).length;
     var os = ownerStyle(t.owner||'');
     return '<div class="dash-task-item" onclick="gotoTask(\''+t.id+'\')">' +
       '<div class="dash-task-name">' + t.name + '</div>' +
@@ -2453,7 +2453,7 @@ function setActFilter(f) {
 
 /* ── BACKFILL createdAt for existing tasks ── */
 async function backfillCreatedAt() {
-  var FALLBACK_DATE = 1777161600000; /* Apr 26 2026 */
+  var FALLBACK = 1777161600000; /* Apr 26 2026 */
   var snap = await db.collection('tasks').get();
   var batch = db.batch();
   var count = 0;
@@ -2462,30 +2462,34 @@ async function backfillCreatedAt() {
     var data = d.data();
     var updates = {};
 
-    /* Fix createdAt: if missing, 0, or before 2024 (clearly wrong), set to Apr 26 2026 */
-    var needsDateFix = !data.createdAt || data.createdAt < 1700000000000;
-    if (needsDateFix) {
-      updates.createdAt = FALLBACK_DATE;
-    }
+    /* Fix createdAt: anything missing or before Jan 2025 is wrong */
+    var badDate = !data.createdAt || data.createdAt < 1735689600000;
+    if (badDate) updates.createdAt = FALLBACK;
 
-    /* Remove any existing 'created' type log entry then add correct one */
-    var existingLogs = (data.logs || []).filter(function(l){ return l.type !== 'created'; });
-    var createdTs = needsDateFix ? FALLBACK_DATE : data.createdAt;
+    /* Rebuild logs: strip any old 'created' entries (with or without type field)
+       then prepend a clean one with type field set */
+    var cleanLogs = (data.logs || []).filter(function(l) {
+      /* Remove any entry that looks like a creation marker */
+      return !(l.type === 'created' ||
+               (l.text && l.text.toLowerCase().indexOf('task created') !== -1));
+    });
+
+    var createdTs = badDate ? FALLBACK : (data.createdAt || FALLBACK);
     var d2 = new Date(createdTs);
     var ts = String(d2.getMonth()+1).padStart(2,'0') + '/' +
              String(d2.getDate()).padStart(2,'0') + '/' +
              d2.getFullYear() + ' ' +
              String(d2.getHours()).padStart(2,'0') + ':' +
              String(d2.getMinutes()).padStart(2,'0');
-    updates.logs = [{ text: 'Task created', time: ts, type: 'created' }].concat(existingLogs);
 
+    updates.logs = [{ text: 'Task created', time: ts, type: 'created' }].concat(cleanLogs);
     batch.update(d.ref, updates);
     count++;
   });
 
   if (count > 0) {
     await batch.commit();
-    console.log('Backfilled ' + count + ' tasks with creation date Apr 26 2026');
+    console.log('Backfilled ' + count + ' tasks. Creation date set to Apr 26 2026 for bad dates.');
   }
 }
 

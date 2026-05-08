@@ -913,6 +913,11 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
       </div>
       <div class="field ffull"><label>Link (optional)</label><input id="inp-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="field ffull" id="addCW" style="display:none"><label>Category</label><div class="catgrid" id="addCG"></div></div>
+      <div class="field ffull" id="addStWrap">
+        <label>Subtasks (optional)</label>
+        <div id="add-st-list"></div>
+        <input id="add-st-inp" class="st-addinp" placeholder="Type subtask and press Enter..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/>
+      </div>
       <div class="sbtns ffull">
         <button class="bs" onclick="closeAdd()">Cancel</button>
         <button class="bp" onclick="addTask()">Add Task</button>
@@ -1394,6 +1399,8 @@ function openAdd() {
   document.getElementById('inp-link').value = '';
   var sel = document.getElementById('inp-owner');
   sel.value = users.includes('Parking') ? 'Parking' : (users[0] || '');
+  pendingSubtasks = [];
+  renderAddStList();
   document.getElementById('addM').classList.add('open');
   setTimeout(function(){ document.getElementById('inp-name').focus(); }, 260);
 }
@@ -1416,6 +1423,7 @@ async function addTask() {
     done:     false,
     order:    Date.now(),
     createdAt:Date.now(),
+    subtasks: pendingSubtasks.slice(),
     logs:     []
   });
   closeAdd();
@@ -1888,6 +1896,7 @@ function renderSidebar() {
 
 /* Track which task panels are open on cards */
 var stOpen = {};
+var pendingSubtasks = [];
 
 /* ── Render subtask panel into a card ── */
 function renderStPanel(card, t) {
@@ -1995,6 +2004,36 @@ async function stAdd(taskId, text) {
 }
 
 /* ── Edit modal subtask helpers ── */
+
+/* ── Add modal subtask helpers ── */
+function renderAddStList() {
+  var list = document.getElementById('add-st-list');
+  if (!list) return;
+  if (!pendingSubtasks.length) { list.innerHTML = ''; return; }
+  list.innerHTML = '';
+  pendingSubtasks.forEach(function(s, i) {
+    var row = document.createElement('div');
+    row.className = 'st-item';
+    var cb = document.createElement('div');
+    cb.className = 'st-cb';
+    var lbl = document.createElement('div');
+    lbl.className = 'st-label';
+    lbl.textContent = s.text;
+    var del = document.createElement('button');
+    del.className = 'st-del';
+    del.textContent = '×';
+    del.type = 'button';
+    (function(idx){
+      del.addEventListener('click', function(){
+        pendingSubtasks.splice(idx, 1);
+        renderAddStList();
+      });
+    })(i);
+    row.appendChild(cb); row.appendChild(lbl); row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+
 function renderEstList() {
   var list = document.getElementById('est-list');
   if (!list || !editId) return;
@@ -2024,6 +2063,21 @@ function renderEstList() {
 
 /* wire est-inp */
 document.addEventListener('DOMContentLoaded', function(){
+  var asi = document.getElementById('add-st-inp');
+  if (asi) {
+    asi.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var txt = asi.value.trim();
+        if (!txt) return;
+        pendingSubtasks.push({ text:txt, done:false });
+        asi.value = '';
+        renderAddStList();
+      }
+      e.stopPropagation();
+    });
+    asi.addEventListener('click', function(e){ e.stopPropagation(); });
+  }
   var ei = document.getElementById('est-inp');
   if (!ei) return;
   ei.addEventListener('keydown', function(e){

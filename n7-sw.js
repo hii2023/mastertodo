@@ -3,7 +3,7 @@
    falls back to cache when offline. App refreshes every time it opens.
 */
 
-const CACHE = 'n7board-v1';
+const CACHE = 'n7board-v2';
 
 /* On install: activate immediately, no waiting */
 self.addEventListener('install', e => {
@@ -22,9 +22,21 @@ self.addEventListener('activate', e => {
 });
 
 /* Fetch: network-first for navigation (the HTML page itself),
-   cache-first for static assets (fonts, firebase scripts, etc.) */
+   cache-first for static assets (fonts, supabase scripts, etc.).
+
+   IMPORTANT: Firestore traffic is never cached. It matters less than it does
+   over plain REST because the SDK streams over its own channel, but a
+   cache-first rule has no business sitting in front of live data. Matching on
+   the hostname keeps fonts.googleapis.com and the gstatic-hosted SDK
+   cacheable, so the app still opens offline. */
 self.addEventListener('fetch', e => {
   const { request } = e;
+  const url = new URL(request.url);
+
+  /* Never touch Firestore or the Firebase SDK, and never cache writes */
+  if (/firestore|firebase/.test(url.hostname) || request.method !== 'GET') {
+    return; /* let the browser handle it directly */
+  }
 
   /* Navigation requests — always try network first so app stays fresh */
   if (request.mode === 'navigate') {

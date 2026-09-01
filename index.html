@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta name="description" content="Team task board for NOSH7."/>
+<meta name="robots" content="noindex, nofollow"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -10,7 +12,7 @@
 <link rel="apple-touch-icon" id="a-icon" href=""/>
 <link rel="manifest" id="app-manifest"/>
 <meta name="theme-color" id="theme-meta" content="#00e676"/>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2300e676%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%2300b0ff%22%2F%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23d500f9%22%2F%3E%0A%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22url%28%2523bg%29%22%2F%3E%0A%20%20%3Ctext%20x%3D%2232%22%20y%3D%2247%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%20Black%2C%20sans-serif%22%20font-size%3D%2238%22%20font-weight%3D%22900%22%20fill%3D%22%2523ffffff%22%20letter-spacing%3D%22-2%22%3E7%3C%2Ftext%3E%0A%3C%2Fsvg%3E"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2300e676%22%2F%3E%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%2300b0ff%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23d500f9%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22url%28%2523bg%29%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2247%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%20Black%2C%20sans-serif%22%20font-size%3D%2238%22%20font-weight%3D%22900%22%20fill%3D%22%2523ffffff%22%20letter-spacing%3D%22-2%22%3E7%3C%2Ftext%3E%3C%2Fsvg%3E"/>
 <title>N7 Board</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
@@ -21,6 +23,7 @@
   --tx:#edf2fb; --sub:#8fafc8; --dim:#3d6080;
   --ac:#00e676; --acbg:rgba(0,230,118,.1); --acgl:rgba(0,230,118,.35);
   --am:#ffb300; --rd:#ff5252; --bl:#448aff;
+  --rc:#22d3ee; --rcbg:rgba(34,211,238,.13); --rcbd:rgba(34,211,238,.34);
   --sh:rgba(0,0,0,.5); --sh1:rgba(255,255,255,.018);
   --sheet:#0c1a2e; --r:10px; --rs:7px;
 }
@@ -31,6 +34,7 @@ body.light {
   --tx:#0d1f2d; --sub:#3d5a73; --dim:#8aa0b5;
   --ac:#009e57; --acbg:rgba(0,158,87,.09); --acgl:rgba(0,158,87,.25);
   --am:#b76e00; --rd:#c62828; --bl:#1557b0;
+  --rc:#0e7490; --rcbg:rgba(14,116,144,.09); --rcbd:rgba(14,116,144,.28);
   --sh:rgba(0,0,0,.12); --sh1:rgba(0,0,0,0);
   --sheet:#fff;
 }
@@ -72,6 +76,182 @@ body.light .topbar { background:rgba(240,244,248,.97); }
 }
 .tbright { display:flex; align-items:center; gap:5px; }
 
+.brand {
+  font-size:12px; font-weight:800; letter-spacing:.6px;
+  color:var(--tx); white-space:nowrap;
+}
+
+
+/* TOAST */
+.toast {
+  position:fixed; left:50%; bottom:88px; z-index:900;
+  transform:translate(-50%,14px);
+  background:var(--s2); color:var(--tx);
+  border:1.5px solid var(--b2); border-radius:var(--r);
+  padding:10px 16px; font-size:12px; font-weight:700;
+  box-shadow:0 8px 26px var(--sh);
+  opacity:0; pointer-events:none;
+  transition:opacity .18s, transform .18s;
+  max-width:88vw; text-align:center;
+}
+.toast.show { opacity:1; transform:translate(-50%,0); }
+
+/* ── RECURRING ── */
+.card.recur { border-left:3px solid var(--rc); background:linear-gradient(90deg,var(--rcbg),transparent 42%); }
+.rbadge {
+  display:inline-flex; align-items:center; gap:3px;
+  background:var(--rcbg); color:var(--rc); border:1px solid var(--rcbd);
+  border-radius:20px; padding:1px 7px; font-size:10px; font-weight:700;
+  margin-left:6px; white-space:nowrap;
+}
+.donecard.recur { border-left:3px solid var(--rc); }
+
+.rc-body { max-width:900px; margin:0 auto; padding:16px 14px 90px; }
+.rc-item {
+  background:var(--s1); border:1.5px solid var(--b1); border-left:3px solid var(--rc);
+  border-radius:var(--r); padding:12px 14px; margin-bottom:10px;
+  display:flex; align-items:flex-start; gap:12px; cursor:pointer;
+  transition:border-color .15s, background .15s;
+}
+.rc-item:hover { border-color:var(--b2); }
+.rc-item.off { opacity:.5; border-left-color:var(--dim); }
+.rc-main { flex:1; min-width:0; }
+.rc-name { font-size:14px; font-weight:800; color:var(--tx); margin-bottom:5px; word-break:break-word; }
+.rc-meta { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.rc-sched {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:var(--rc); background:var(--rcbg); border:1px solid var(--rcbd);
+  border-radius:20px; padding:2px 8px;
+}
+.rc-next { font-size:10px; color:var(--sub); font-family:'JetBrains Mono',monospace; margin-top:6px; }
+.rc-toggle {
+  flex-shrink:0; width:42px; height:24px; border-radius:20px;
+  background:var(--s3); border:1.5px solid var(--b1); position:relative;
+  cursor:pointer; transition:background .18s, border-color .18s;
+}
+.rc-toggle.on { background:var(--rcbg); border-color:var(--rc); }
+.rc-toggle::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--dim); transition:transform .18s, background .18s;
+}
+.rc-toggle.on::after { transform:translateX(18px); background:var(--rc); }
+.rc-empty { text-align:center; color:var(--dim); padding:48px 20px; font-size:13px; }
+.rc-hint {
+  color:var(--sub); font-size:11px; line-height:1.6;
+  background:var(--s1); border:1px solid var(--b1); border-radius:var(--r);
+  padding:11px 13px; margin-bottom:16px; text-transform:none;
+}
+
+.daygrid { display:flex; gap:5px; flex-wrap:wrap; }
+.dayopt {
+  flex:1; min-width:38px; text-align:center;
+  padding:9px 4px; border-radius:var(--rs);
+  background:var(--s2); border:1.5px solid var(--b1);
+  color:var(--sub); font-size:11px; font-weight:700; cursor:pointer;
+  transition:all .15s;
+}
+.dayopt.sel { background:var(--rcbg); border-color:var(--rc); color:var(--rc); }
+.freqgrid { display:flex; gap:6px; }
+.freqopt {
+  flex:1; text-align:center; padding:10px 6px; border-radius:var(--rs);
+  background:var(--s2); border:1.5px solid var(--b1);
+  color:var(--sub); font-size:12px; font-weight:700; cursor:pointer;
+  transition:all .15s;
+}
+.freqopt.sel { background:var(--rcbg); border-color:var(--rc); color:var(--rc); }
+
+/* ── FILTER SHEET ── */
+.filtgrid { display:flex; flex-wrap:wrap; gap:7px; }
+.filtopt {
+  padding:12px 15px; border-radius:var(--rs);
+  background:var(--s2); border:1.5px solid var(--b1);
+  color:var(--sub); font-size:14px; font-weight:700; cursor:pointer;
+  transition:all .15s; user-select:none;
+}
+.filtopt.sel { background:var(--acbg); border-color:var(--ac); color:var(--ac); }
+.filtopt.dash { border-style:dashed; }
+.filtcount { opacity:.65; font-weight:600; }
+.filtempty { color:var(--dim); font-size:11px; }
+
+/* Filter chip in the bar, with a dot when something inside it is active */
+.chip.filt { position:relative; }
+.chip.filt.act { background:var(--acbg); border-color:var(--ac); color:var(--ac); }
+.chip.filt.act::after {
+  content:''; position:absolute; top:-3px; right:-3px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--ac); border:2px solid var(--bg);
+}
+
+/* ── TASK COMPLETION ── */
+@keyframes cardDone {
+  0%   { transform:scale(1);     opacity:1; }
+  30%  { transform:scale(1.018); opacity:1; box-shadow:0 0 0 3px var(--acgl); }
+  100% { transform:scale(.965);  opacity:.15; }
+}
+.card.completing { animation:cardDone .42s cubic-bezier(.4,0,.2,1) forwards; pointer-events:none; }
+
+@keyframes ringPop {
+  0%   { transform:scale(.6); opacity:.85; }
+  100% { transform:scale(2.3); opacity:0; }
+}
+.cradio { position:relative; }
+.cradio.burst { border-color:var(--ac); background:var(--acbg); }
+.cradio.burst::before {
+  content:''; position:absolute; inset:-2px;
+  border-radius:50%; border:2px solid var(--ac);
+  animation:ringPop .45s cubic-bezier(.2,.7,.3,1) forwards;
+}
+@keyframes tickIn {
+  0%   { transform:scale(0) rotate(-25deg); opacity:0; }
+  60%  { transform:scale(1.25) rotate(0);   opacity:1; }
+  100% { transform:scale(1) rotate(0);      opacity:1; }
+}
+.cradio.burst::after {
+  content:'\2713'; color:var(--ac);
+  font-size:17px; font-weight:900; line-height:1;
+  animation:tickIn .34s cubic-bezier(.3,1.4,.5,1) forwards;
+}
+
+/* ── COMPLIMENT ── */
+@keyframes compIn {
+  0%   { transform:translateY(10px) scale(.97); opacity:0; }
+  100% { transform:none; opacity:1; }
+}
+.compliment {
+  grid-column:1 / -1;
+  text-align:center; padding:34px 22px;
+  background:var(--s1); border:1.5px solid var(--b1);
+  border-radius:var(--r); margin-bottom:10px;
+  animation:compIn .38s cubic-bezier(.3,1.2,.5,1) both;
+}
+.comp-mark { font-size:34px; line-height:1; margin-bottom:12px; }
+.comp-text {
+  font-size:16px; font-weight:700; color:var(--ac);
+  line-height:1.45; max-width:34ch; margin:0 auto;
+}
+.comp-sub {
+  margin-top:9px; font-size:11px; color:var(--dim);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.rtogglerow { display:flex; align-items:center; gap:11px; }
+.rtoggle {
+  flex-shrink:0; width:44px; height:44px; border-radius:11px;
+  background:var(--s2); border:1.5px solid var(--b1); color:var(--dim);
+  font-family:'Outfit',sans-serif; font-size:18px; font-weight:800;
+  cursor:pointer; transition:all .15s;
+}
+.rtoggle:hover { border-color:var(--b2); color:var(--sub); }
+.rtoggle.on {
+  background:var(--rcbg); border-color:var(--rc); color:var(--rc);
+  box-shadow:0 0 0 3px var(--rcbg);
+}
+.rtoggletxt { min-width:0; }
+.rtoggletitle { font-size:13px; font-weight:700; color:var(--tx); }
+.rtogglesub { font-size:11px; color:var(--sub); margin-top:2px; }
+.rtoggle.on + .rtoggletxt .rtoggletitle { color:var(--rc); }
+
 
 
 .ibt {
@@ -84,11 +264,15 @@ body.light .topbar { background:rgba(240,244,248,.97); }
 }
 .ibt:hover { border-color:var(--b2); color:var(--tx); }
 .ibt.on { border-color:var(--ac); color:var(--ac); background:var(--acbg); }
-.ibt-sq { width:42px; padding:0; }
+.ibt-sq { width:42px; padding:0; font-size:15px; letter-spacing:0; }
+#recurBtn { color:var(--rc); border-color:var(--rcbd); background:var(--rcbg); }
+#recurBtn:hover { border-color:var(--rc); color:var(--rc); }
 
 /* FILTER BAR */
 .fb { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:2px 0; }
 .sep { width:1px; height:22px; background:var(--b1); flex-shrink:0; margin:0 3px; }
+/* Forces the following chips onto a fresh row in the wrapping flex bar. */
+.fbreak { flex:0 0 100%; height:0; margin:0; padding:0; }
 .chip {
   padding:10px 18px; border-radius:8px;
   font-size:14px; font-weight:700;
@@ -162,9 +346,13 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
 }
 .cbody { min-width:0; }
 .cname {
-  font-size:17px; font-weight:700; color:var(--tx);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  line-height:1.3; margin-bottom:0;
+  font-size:19px; font-weight:700; color:var(--tx);
+  line-height:1.28; margin-bottom:0;
+  overflow-wrap:anywhere;
+  /* Wrap to two lines instead of truncating, so the full task is readable and
+     the row is a bigger tap target. */
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 .card.done .cname {
   font-size:17px; font-weight:700; color:var(--tx);
@@ -331,6 +519,9 @@ body.light .chip.ac { border-color:rgba(0,158,87,.4); }
   transition:background .2s;
 }
 .mov.open { display:flex; background:rgba(0,0,0,.7); }
+/* The schedule editor opens on top of the Recurring page (z-index 600),
+   so it needs to sit above it rather than behind. */
+#recM { z-index:700; }
 .sheet {
   width:100%; background:var(--sheet);
   border:1px solid var(--b2); border-bottom:none;
@@ -652,7 +843,7 @@ body.light .field input[type="date"] { color-scheme:light; }
 /* ════ DASHBOARD ════ */
 .dash-topbar {
   position:sticky; top:0; z-index:10;
-  background:rgba(6,14,27,.97);
+  background:rgba(8,21,14,.97);
   backdrop-filter:blur(16px);
   border-bottom:1px solid var(--b1);
   padding:10px 16px;
@@ -818,6 +1009,77 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
 }
 .dash-avg-row:last-child { border-bottom:none; }
 
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE — kept last on purpose. Media queries add no
+   specificity, so these must come after the base rules they
+   override or the phone sizes are silently ignored.
+   ══════════════════════════════════════════════════════════ */
+/* ── PHONE: everything fits, nothing scrolls sideways ──
+   The action buttons are the one thing that must never be pushed off screen
+   (the settings gear used to disappear), so the brand and the stats pill give
+   up their space first and the buttons shrink to a comfortable tap size. */
+@media (max-width:560px) {
+  .topbar { padding:7px 8px 6px; }
+  .tb1 { gap:6px; }
+  .tbleft { flex:0 1 auto; min-width:0; overflow:hidden; }
+  .brand { display:none; }
+  .stats { font-size:9px; padding:3px 6px; }
+  .tbright { flex:0 0 auto; gap:4px; }
+  .ibt { height:38px; }
+  .ibt-sq { width:38px; font-size:14px; }
+  .fb { gap:5px; }
+  .chip { padding:10px 14px; font-size:15px; }
+  .chip.sm { padding:8px 11px; font-size:13px; }
+  .sep { margin:0 1px; }
+
+  /* Task cards run ~30% smaller than the filter chrome above them: the cards
+     are read, the chips are tapped. The tick circle and log button shrink less
+     than the text so they stay comfortable targets. */
+  /* Recurring needs to read as a different KIND of task at a glance on a
+     phone, so it gets a full tint and a thicker edge, not a faint gradient. */
+  .card.recur {
+    border-left:5px solid var(--rc);
+    border-top-color:var(--rcbd);
+    border-right-color:var(--rcbd);
+    border-bottom-color:var(--rcbd);
+    background:var(--rcbg);
+  }
+  .rbadge { font-size:10px; padding:2px 8px; }
+
+  .cname { font-size:16px; line-height:1.3; }
+  .crow { padding:10px 10px 5px 9px; grid-template-columns:34px 1fr auto; gap:0 9px; }
+  .cradio { width:30px; height:30px; border-width:2px; }
+  .card { margin-bottom:7px; }
+  .cpad { height:9px; }
+  .cdue { font-size:10px; margin-top:4px; }
+  .cwm { font-size:57px; }
+  .donename { font-size:14px; }
+  .clog { width:34px; height:34px; }
+  .ddesc { font-size:11px; }
+}
+/* Typical phones (375-430px) still have room for the count, so keep it.
+   Filter names are deliberately near body size — they are the main way people
+   move around the board on a phone, so they need to be readable and tappable. */
+@media (max-width:560px) {
+  .chip { padding:10px 14px; font-size:15px; }
+  .chip.sm { padding:8px 11px; font-size:13px; }
+  .filtopt { padding:13px 16px; font-size:15px; }
+  .setttl { font-size:12px; }
+}
+/* Only the genuinely narrow ones drop it rather than squeeze the buttons. */
+@media (max-width:339px) {
+  .stats { display:none; }
+  .tbright { gap:3px; }
+  .ibt-sq { width:35px; font-size:13px; }
+  .chip { padding:9px 12px; font-size:14px; }
+}
+
+/* Nothing in the app may scroll the page sideways. */
+html, body { max-width:100%; overflow-x:hidden; }
+.topbar, .tb1, .fb, .app-shell, .task-grid, .rc-body, .dash-body { max-width:100%; }
+.cname, .rc-name, .dash-task-name { overflow-wrap:anywhere; }
+
 </style>
 </head>
 <body>
@@ -826,15 +1088,17 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
 <div class="topbar">
   <div class="tb1">
     <div class="tbleft">
-      <div class="dot"></div>
+      <div class="dot" title="Connecting..."></div>
+      <div class="brand">N7 Board</div>
       <div class="stats" id="stats">-- tasks</div>
     </div>
     <div class="tbright">
-      <button class="ibt" onclick="openDash()" id="dashBtn">&#9783; Dashboard</button>
-      <button class="ibt" id="themeBtn" onclick="toggleTheme()">&#9788; Light</button>
-      <button class="ibt on" id="viewBtn" onclick="toggleView()">&#8803; Compact</button>
-      <button class="ibt ibt-sq" id="instBtn" onclick="openInst()" title="Install app">&#8659;</button>
-      <button class="ibt ibt-sq" onclick="openSet()">&#9881;</button>
+      <button class="ibt ibt-sq" onclick="openRecur()" id="recurBtn" title="Recurring tasks" aria-label="Recurring tasks">R</button>
+      <button class="ibt ibt-sq" onclick="openDash()" id="dashBtn" title="Dashboard" aria-label="Dashboard">D</button>
+      <button class="ibt ibt-sq on" id="viewBtn" onclick="toggleView()" title="Compact view" aria-label="Toggle compact view">C</button>
+      <button class="ibt ibt-sq" id="themeBtn" onclick="toggleTheme()" title="Theme" aria-label="Toggle theme">&#9788;</button>
+      <button class="ibt ibt-sq" id="instBtn" onclick="openInst()" title="Install app" aria-label="Install app">&#8659;</button>
+      <button class="ibt ibt-sq" onclick="openSet()" title="Settings" aria-label="Settings">&#9881;</button>
     </div>
   </div>
   <div class="fb" id="fb"></div>
@@ -848,6 +1112,7 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
   </div>
 </div>
 <div class="fab" onclick="openAdd()">+</div>
+<div class="toast" id="toast"></div>
 
 
 <!-- DASHBOARD -->
@@ -899,6 +1164,81 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
   </div>
 </div>
 
+<!-- FILTER (phone) -->
+<div class="mov" id="filterM">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div class="si">
+      <div class="shd">
+        <div><div class="sttl">Filter</div><div class="ssub" id="filt-sub">Date and category</div></div>
+        <button class="bdel" id="filt-clear" onclick="clearSheetFilters()" style="display:none">Clear</button>
+      </div>
+      <div class="setsec">
+        <div class="setttl">Date</div>
+        <div class="filtgrid" id="filt-dates"></div>
+      </div>
+      <div class="setsec">
+        <div class="setttl">Category</div>
+        <div class="filtgrid" id="filt-cats"></div>
+      </div>
+      <div class="sbtns"><button class="bp" onclick="closeFilter()">Done</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- RECURRING PAGE -->
+<div id="recurOverlay" style="display:none;position:fixed;inset:0;z-index:600;background:var(--bg);overflow-y:auto;">
+  <div class="dash-topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="dash-back" onclick="closeRecur()">&#8592; Back</button>
+      <span class="dash-title">Recurring Tasks</span>
+    </div>
+    <button class="ibt" onclick="openRecEdit(null)">+ New Schedule</button>
+  </div>
+  <div class="rc-body">
+    <div class="rc-hint">
+      A schedule creates a real task on the board on each of its dates, assigned to the person you pick.
+      Those tasks are marked with a &#8635; and a violet edge. Ticking one off does not affect the schedule,
+      and deleting one will not bring it back. Turn a schedule off to stop future tasks without losing history.
+    </div>
+    <div id="rc-list"></div>
+  </div>
+</div>
+
+<!-- RECURRING EDITOR -->
+<div class="mov" id="recM">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div class="si">
+      <div class="shd">
+        <div><div class="sttl" id="rec-title">New Schedule</div><div class="ssub" id="rec-sub">Repeats automatically</div></div>
+        <button class="bdel" id="rec-del" onclick="deleteRec()" style="display:none">Delete</button>
+      </div>
+      <div class="field ffull"><label>Task Name</label><input class="xl" id="rec-name" placeholder="What repeats?" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
+      <div class="field ffull"><label>Description</label><textarea id="rec-desc" placeholder="Optional details..." rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"></textarea></div>
+      <div class="field ffull"><label>Assign To</label><select id="rec-owner" autocomplete="off"></select></div>
+      <div class="field ffull"><label>Repeats</label><div class="freqgrid" id="rec-freq"></div></div>
+      <div class="field ffull" id="rec-days-wrap"><label>On These Days</label><div class="daygrid" id="rec-days"></div></div>
+      <div class="field ffull" id="rec-dom-wrap" style="display:none"><label>Day Of Month</label><input id="rec-dom" type="number" min="1" max="31" placeholder="1-31"/></div>
+      <div class="frow">
+        <div class="field"><label>Starts</label><input id="rec-start" type="date"/></div>
+        <div class="field"><label>Ends (optional)</label><input id="rec-end" type="date"/></div>
+      </div>
+      <div class="field ffull" id="recCW" style="display:none"><label>Category</label><div class="catgrid" id="recCG"></div></div>
+      <div class="field ffull">
+        <label>Subtasks On Each Occurrence</label>
+        <div id="rec-st-list"></div>
+        <input id="rec-st-inp" class="st-addinp" placeholder="Type subtask and press Enter..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/>
+      </div>
+      <div class="field ffull"><label>Link (optional)</label><input id="rec-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
+      <div class="sbtns ffull">
+        <button class="bs" onclick="closeRecEdit()">Cancel</button>
+        <button class="bp" onclick="saveRec()">Save Schedule</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ADD -->
 <div class="mov" id="addM">
   <div class="sheet" onclick="event.stopPropagation()">
@@ -911,13 +1251,34 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
         <div class="field"><label>Owner</label><select id="inp-owner" autocomplete="off"></select></div>
         <div class="field"><label>Due Date</label><input id="inp-due" type="date"/></div>
       </div>
-      <div class="field ffull"><label>Link (optional)</label><input id="inp-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="field ffull" id="addCW" style="display:none"><label>Category</label><div class="catgrid" id="addCG"></div></div>
       <div class="field ffull" id="addStWrap">
         <label>Subtasks (optional)</label>
         <div id="add-st-list"></div>
         <input id="add-st-inp" class="st-addinp" placeholder="Type subtask and press Enter..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/>
       </div>
+
+      <!-- Recurring: off by default, tapping R opens the schedule fields -->
+      <div class="field ffull">
+        <div class="rtogglerow">
+          <button type="button" class="rtoggle" id="add-rtoggle" onclick="toggleAddRecur()" title="Make this repeat">R</button>
+          <div class="rtoggletxt">
+            <div class="rtoggletitle" id="add-rtoggle-title">One-off task</div>
+            <div class="rtogglesub" id="add-rtoggle-sub">Tap R to make it repeat</div>
+          </div>
+        </div>
+      </div>
+      <div id="addRecWrap" style="display:none">
+        <div class="field ffull"><label>Repeats</label><div class="freqgrid" id="add-freq"></div></div>
+        <div class="field ffull" id="add-days-wrap"><label>On These Days</label><div class="daygrid" id="add-days"></div></div>
+        <div class="field ffull" id="add-dom-wrap" style="display:none"><label>Day Of Month</label><input id="add-dom" type="number" min="1" max="31" placeholder="1-31"/></div>
+        <div class="frow">
+          <div class="field"><label>Starts</label><input id="add-start" type="date"/></div>
+          <div class="field"><label>Ends (optional)</label><input id="add-end" type="date"/></div>
+        </div>
+      </div>
+
+      <div class="field ffull"><label>Link (optional)</label><input id="inp-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="sbtns ffull">
         <button class="bs" onclick="closeAdd()">Cancel</button>
         <button class="bp" onclick="addTask()">Add Task</button>
@@ -942,13 +1303,13 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
         <div class="field"><label>Owner</label><select id="edit-owner" autocomplete="off"></select></div>
         <div class="field"><label>Due Date</label><input id="edit-due" type="date"/></div>
       </div>
-      <div class="field ffull"><label>Link (optional)</label><input id="edit-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="field ffull" id="editCW" style="display:none"><label>Category</label><div class="catgrid" id="editCG"></div></div>
       <div class="field ffull">
         <label>Subtasks</label>
         <div id="est-list"></div>
         <input id="est-inp" class="st-addinp" placeholder="Type subtask and press Enter..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/>
       </div>
+      <div class="field ffull"><label>Link (optional)</label><input id="edit-link" type="url" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other"/></div>
       <div class="sbtns ffull">
         <button class="bs" onclick="closeEdit()">Cancel</button>
         <button class="bp" onclick="saveEdit()">Save Changes</button>
@@ -985,6 +1346,7 @@ body.light .dash-topbar { background:rgba(240,244,248,.97); }
         <div class="setttl">Appearance</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="ibt" id="themeBtn2" onclick="toggleTheme()" style="flex:1;min-width:120px">&#9788; Light</button>
+          <button class="ibt" id="soundBtn" onclick="toggleSound()" style="flex:1;min-width:120px">&#9834; Sound On</button>
           <button class="ibt" onclick="openInst();closeSet();" style="flex:1;min-width:120px">&#8659; Install App</button>
         </div>
       </div>
@@ -1036,6 +1398,183 @@ firebase.initializeApp({
   projectId:  "nosh7-2f0a3"
 });
 const db = firebase.firestore();
+const FV = firebase.firestore.FieldValue;
+
+/* Escape text before it goes into innerHTML. */
+function esc(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ── DATA OPS ──
+   Firestore already keeps `tasks`, `activity`, `config` and `recurring` live
+   through onSnapshot, so the reload* functions are just re-renders. They keep
+   the same names the rest of the app calls so nothing downstream changes. */
+async function reloadTasks()     { render(); stRefresh(); }
+async function reloadActivity()  { if (dashOpen) renderDashActivity(); }
+async function reloadRecurring() { renderRecList(); }
+async function reloadConfig() {
+  syncSelects();
+  buildCatGrid('add'); buildCatGrid('edit'); buildRecCatGrid();
+  document.getElementById('addCW').style.display  = categories.length ? '' : 'none';
+  document.getElementById('editCW').style.display = categories.length ? '' : 'none';
+  renderFilters(); renderSidebar(); renderTopbarOwners(); renderSettingsLists();
+}
+
+async function taskUpdate(id, patch) {
+  try { await db.collection('tasks').doc(id).update(patch); }
+  catch (e) { console.error('[N7 Board] Save', e); toast('Save failed'); }
+}
+
+/* Atomic append. arrayUnion is applied server-side, so two people commenting on
+   the same task at the same time cannot overwrite each other's entry. */
+async function appendLog(id, entry, done, completedAt) {
+  var patch = { logs: FV.arrayUnion(entry) };
+  if (done !== undefined && done !== null) {
+    patch.done = done;
+    patch.completedAt = done ? completedAt : null;
+  }
+  try { await db.collection('tasks').doc(id).update(patch); }
+  catch (e) { console.error('[N7 Board] Save', e); toast('Save failed'); }
+}
+
+async function saveConfig(key, list) {
+  try { await db.collection('config').doc(key).set({list: list}, {merge: true}); }
+  catch (e) { console.error('[N7 Board] Save settings', e); toast('Save failed'); }
+}
+
+async function logActivity(a) {
+  try {
+    await db.collection('activity').add({
+      type: a.type, taskId: a.taskId || null, taskName: a.taskName || '',
+      detail: a.detail || '', ts: a.ts || Date.now()
+    });
+  } catch (e) { /* the feed is a nicety, never block the action */ }
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+}
+
+/* ── COMPLETION SOUND ──
+   Generated with WebAudio rather than shipped as a file: it keeps the page
+   self-contained and lets the chime stay soft. Built lazily on the first tick,
+   which is always a real tap, so autoplay policy is satisfied. */
+var soundOn = localStorage.getItem('n7_sound') !== 'off';
+var audioCtx = null;
+
+function setSound(on) {
+  soundOn = on;
+  localStorage.setItem('n7_sound', on ? 'on' : 'off');
+  var b = document.getElementById('soundBtn');
+  if (b) b.innerHTML = on ? '&#9834; Sound On' : '&#9834; Sound Off';
+}
+function toggleSound() { setSound(!soundOn); if (soundOn) playDoneSound(); }
+
+function playDoneSound() {
+  if (!soundOn) return;
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    var t0 = audioCtx.currentTime;
+    var master = audioCtx.createGain();
+    master.gain.value = 0.19;
+    master.connect(audioCtx.destination);
+
+    /* A major triad, each note a little softer and later than the last:
+       reads as a resolved, calm "done" rather than an alert. */
+    [[523.25, 0], [659.25, 0.085], [783.99, 0.17]].forEach(function(pair, i) {
+      var freq = pair[0], delay = pair[1];
+      var osc = audioCtx.createOscillator();
+      var g   = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      var start = t0 + delay;
+      var peak  = 0.5 / (i + 1.5);
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.exponentialRampToValueAtTime(peak, start + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + 0.55);
+      osc.connect(g); g.connect(master);
+      osc.start(start);
+      osc.stop(start + 0.6);
+    });
+  } catch (e) { /* sound is a nicety, never break the tick */ }
+}
+
+function haptic(ms) {
+  try { if (navigator.vibrate) navigator.vibrate(ms || 18); } catch (e) {}
+}
+
+/* ── COMPLIMENTS ──
+   Shown when the person you are filtered to has nothing active left. */
+var COMPLIMENTS = [
+  '{n}, your board is completely clear. Beautifully done.',
+  'Nothing left for {n}. That is a proper clean sweep.',
+  'All caught up, {n}. The rest of us are taking notes.',
+  '{n} has zero pending tasks. Quietly impressive.',
+  'Empty list, {n}. You have earned the chai.',
+  '{n}, everything assigned to you is finished. Outstanding.',
+  'Not a single task left for {n}. Take a bow.',
+  '{n} cleared the lot. That is how it is done.',
+  'All done, {n}. Your future self says thank you.',
+  '{n}, your list is spotless. Genuinely excellent work.',
+  'Nothing pending for {n}. Consistency like that adds up.',
+  '{n}, you finished every last one. Brilliant.',
+  'Clean slate for {n}. Enjoy the quiet.',
+  '{n} is all clear. The board looks better for it.',
+  'Zero tasks, {n}. You made that look easy.',
+  '{n} has nothing left to do. Well and truly sorted.',
+  'Every task done, {n}. That is real momentum.',
+  '{n}, your corner of the board is immaculate.',
+  'All wrapped up, {n}. Reliable as ever.',
+  'Nothing outstanding for {n}. Superb effort.'
+];
+var COMP_MARKS = ['✨', '⭐', '🎉', '👏', '🌱'];
+var compCache = { owner: null, text: '', mark: '' };
+var lastCompIdx = -1;
+
+function pickCompliment(name) {
+  var i = Math.floor(Math.random() * COMPLIMENTS.length);
+  if (COMPLIMENTS.length > 1 && i === lastCompIdx) i = (i + 1) % COMPLIMENTS.length;
+  lastCompIdx = i;
+  return COMPLIMENTS[i].replace(/\{n\}/g, name);
+}
+
+function complimentEl(owner, doneCount) {
+  /* Keep the same wording while the state holds, pick a fresh one next time. */
+  if (compCache.owner !== owner) {
+    compCache.owner = owner;
+    compCache.text  = pickCompliment(owner);
+    compCache.mark  = COMP_MARKS[Math.floor(Math.random() * COMP_MARKS.length)];
+  }
+  var el = document.createElement('div');
+  el.className = 'compliment';
+  el.innerHTML =
+    '<div class="comp-mark">' + compCache.mark + '</div>' +
+    '<div class="comp-text">' + esc(compCache.text) + '</div>' +
+    (doneCount ? '<div class="comp-sub">' + doneCount + ' completed</div>' : '');
+  return el;
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+}
 
 /* ── PWA SETUP ── */
 (function() {
@@ -1129,7 +1668,10 @@ function setTheme(t) {
   document.body.className = (t === 'light') ? 'light' : '';
   document.getElementById('theme-meta').content = (t === 'light') ? '#f0f4f8' : '#00e676';
   var btn = document.getElementById('themeBtn');
-  if (btn) btn.innerHTML = (t === 'light') ? '&#9790; Dark' : '&#9788; Light';
+  if (btn) {
+    btn.innerHTML = (t === 'light') ? '&#9790;' : '&#9788;';
+    btn.title = (t === 'light') ? 'Switch to dark' : 'Switch to light';
+  }
   var btn2 = document.getElementById('themeBtn2');
   if (btn2) btn2.innerHTML = (t === 'light') ? '&#9790; Dark' : '&#9788; Light';
   render();
@@ -1144,7 +1686,10 @@ function toggleView() {
   isCompact = !isCompact;
   var btn = document.getElementById('viewBtn');
   btn.classList.toggle('on', isCompact);
-  btn.innerHTML = isCompact ? '&#8803; Compact' : '&#8801; Detailed';
+  /* Stays "C" in both states — flipping it to "D" would collide with the
+     Dashboard button. Whether compact is active is shown by the .on styling. */
+  btn.innerHTML = 'C';
+  btn.title = isCompact ? 'Compact view is on (tap for detailed)' : 'Detailed view is on (tap for compact)';
   render();
 }
 
@@ -1187,7 +1732,8 @@ var addSelCat = '', editSelCat = '';
 var logId = null, editId = null;
 var doneColl = true;
 
-/* ── CONFIG ── */
+/* ── CONFIG ──
+   Guarantees the two config docs exist on a fresh database. */
 async function initConfig() {
   var u = await db.collection('config').doc('users').get();
   if (!u.exists) await db.collection('config').doc('users').set({list:['Parking','Altaf','Sapna','Nope']});
@@ -1195,25 +1741,10 @@ async function initConfig() {
   if (!c.exists) await db.collection('config').doc('categories').set({list:[]});
 }
 
-db.collection('config').doc('users').onSnapshot(function(s) {
-  if (s.exists) {
-    users = s.data().list || [];
-    syncSelects();
-    renderFilters();
-  }
-});
-db.collection('config').doc('categories').onSnapshot(function(s) {
-  if (s.exists) {
-    categories = s.data().list || [];
-    buildCatGrid('add'); buildCatGrid('edit'); renderFilters();
-    document.getElementById('addCW').style.display = categories.length ? '' : 'none';
-    document.getElementById('editCW').style.display = categories.length ? '' : 'none';
-  }
-});
-
 function syncSelects() {
-  ['inp-owner','edit-owner'].forEach(function(id) {
+  ['inp-owner','edit-owner','rec-owner'].forEach(function(id) {
     var sel = document.getElementById(id);
+    if (!sel) return;
     var cur = sel.value;
     sel.innerHTML = users.map(function(u) {
       return '<option' + (u === cur ? ' selected' : '') + '>' + u + '</option>';
@@ -1244,26 +1775,31 @@ function renderSettingsLists() {
 
 async function addUser() {
   var n = document.getElementById('inp-nu').value.trim();
-  if (!n || users.includes(n)) return;
-  await db.collection('config').doc('users').update({list: users.concat([n])});
+  if (!n) return;
+  if (users.includes(n)) { toast('"' + n + '" already exists'); return; }
   document.getElementById('inp-nu').value = '';
-  renderSettingsLists();
+  await saveConfig('users', users.concat([n]));
+  toast('Added ' + n);
 }
 async function removeUser(n) {
-  if (users.length <= 1) return;
-  await db.collection('config').doc('users').update({list: users.filter(function(u){return u!==n;})});
-  renderSettingsLists();
+  if (users.length <= 1) { toast('Keep at least one user'); return; }
+  var owned = tasks.filter(function(t){ return t.owner === n; }).length;
+  if (owned && !confirm(n + ' still owns ' + owned + ' task' + (owned===1?'':'s') +
+      '. Remove from the user list anyway? The tasks stay, but you should reassign them.')) return;
+  if (ownerF === n) ownerF = '';
+  await saveConfig('users', users.filter(function(u){ return u !== n; }));
 }
 async function addCat() {
   var n = document.getElementById('inp-nc').value.trim();
-  if (!n || categories.includes(n)) return;
-  await db.collection('config').doc('categories').update({list: categories.concat([n])});
+  if (!n) return;
+  if (categories.includes(n)) { toast('"' + n + '" already exists'); return; }
   document.getElementById('inp-nc').value = '';
-  renderSettingsLists();
+  await saveConfig('categories', categories.concat([n]));
+  toast('Added ' + n);
 }
 async function removeCat(n) {
-  await db.collection('config').doc('categories').update({list: categories.filter(function(c){return c!==n;})});
-  renderSettingsLists();
+  if (catF === n) catF = '';
+  await saveConfig('categories', categories.filter(function(c){ return c !== n; }));
 }
 document.getElementById('inp-nu').addEventListener('keydown', function(e){ if(e.key==='Enter') addUser(); });
 document.getElementById('inp-nc').addEventListener('keydown', function(e){ if(e.key==='Enter') addCat(); });
@@ -1345,41 +1881,28 @@ function renderFilters() {
   tasks.forEach(function(t){ if (!t.done) oc[t.owner] = (oc[t.owner]||0) + 1; });
   var now2 = new Date(); now2.setHours(0,0,0,0);
   var hasOverdue = tasks.some(function(t){ return !t.done && t.dueDate && new Date(t.dueDate+'T00:00:00') < now2; });
-  var usedCats = [];
-  tasks.forEach(function(t){ if (t.category && !usedCats.includes(t.category)) usedCats.push(t.category); });
 
   var h = '';
 
-  // ── ROW 1: Category ──
-  if (categories.length || usedCats.length) {
-    usedCats.forEach(function(c) {
-      var cc = catColor(c);
-      var style = (c !== catF) ? ('color:' + cc + '90') : '';
-      h += '<span class="chip sm' + (c===catF ? ' ac' : '') + '" onclick="setCat(\'' + c + '\')" style="' + style + '">' + c + '</span>';
-    });
-    h += '<span class="chip sm dash' + (catF==='blank' ? ' ac' : '') + '" onclick="setCat(\'blank\')">No Cat</span>';
-    h += '<div class="sep"></div>';
-  }
-
-  // ── ROW 2: Date ──
+  /* Overdue and This Week stay inline as the two everyday shortcuts.
+     Next week, this month, no-date and category all live in the Filter sheet
+     so the bar stays short enough to fit a phone. */
   if (hasOverdue) {
-    h += '<span class="chip sm ar' + (dateF==='overdue' ? ' ad' : '') + '" onclick="setDate(\'overdue\')">Overdue</span>';
+    h += '<span class="chip ar' + (dateF==='overdue' ? ' ad' : '') + '" onclick="setDate(\'overdue\')">Overdue</span>';
   }
-  var dateOpts = [{k:'week',l:'This Wk',big:true},{k:'nextweek',l:'Nxt Wk'},{k:'month',l:'Month'},{k:'blank',l:'No Date',d:true}];
-  dateOpts.forEach(function(opt) {
-    var smClass = opt.big ? '' : ' sm';
-    h += '<span class="chip' + smClass + (dateF===opt.k ? ' ad' : '') + (opt.d ? ' dash' : '') + '" onclick="setDate(\'' + opt.k + '\')">' + opt.l + '</span>';
-  });
-  h += '<div class="sep"></div>';
+  h += '<span class="chip' + (dateF==='week' ? ' ad' : '') + '" onclick="setDate(\'week\')">This Wk</span>';
+  h += '<span class="chip filt' + (sheetFilterActive() ? ' act' : '') + '" onclick="openFilter()">&#9776; Filter</span>';
 
-  // ── ROW 3: Owner ──
-  h += '<span class="chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All</span>';
+  /* Names always start on their own line, below the date/filter row. */
+  h += '<div class="fbreak"></div>';
+
+  /* No "All" chip: tapping the selected name clears it again. */
   users.forEach(function(u) {
     var cnt = oc[u] || 0;
-    h += '<span class="chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? ' '+cnt : '') + '</span>';
+    h += '<span class="chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' +
+         u + (cnt ? ' (' + cnt + ')' : '') + '</span>';
   });
 
-  // ── CLEAR ALL (only if any filter active) ──
   if (ownerF || dateF || catF) {
     h += '<div class="sep"></div>';
     h += '<span class="chip sm" style="color:var(--rd);border-color:rgba(255,82,82,.3);background:rgba(255,82,82,.08)" onclick="clearAll()">&#10005; Clear</span>';
@@ -1387,10 +1910,111 @@ function renderFilters() {
 
   document.getElementById('fb').innerHTML = h;
 }
-function clearAll() { ownerF = ''; dateF = ''; catF = ''; render(); }
-function setOwner(o) { ownerF = o; render(); }
+
+/* True when a filter that lives inside the sheet is on. */
+function sheetFilterActive() {
+  var dateInSheet = (dateF === 'nextweek' || dateF === 'month' || dateF === 'blank');
+  return dateInSheet || !!catF;
+}
+
+/* ── FILTER SHEET ── */
+function openFilter() { renderFilterSheet(); document.getElementById('filterM').classList.add('open'); }
+function closeFilter() { document.getElementById('filterM').classList.remove('open'); }
+
+function renderFilterSheet() {
+  var now = new Date(); now.setHours(0,0,0,0);
+
+  var dates = [
+    {k:'nextweek', l:'Next Week'},
+    {k:'month',    l:'This Month'},
+    {k:'blank',    l:'No Due Date', dash:true}
+  ];
+  document.getElementById('filt-dates').innerHTML = dates.map(function(o) {
+    return '<div class="filtopt' + (dateF===o.k ? ' sel' : '') + (o.dash ? ' dash' : '') +
+           '" onclick="pickFilterDate(\'' + o.k + '\')">' + o.l + '</div>';
+  }).join('');
+
+  /* Every configured category, not just the ones already in use, plus a count
+     of active tasks so an empty pick is not a surprise. */
+  var el = document.getElementById('filt-cats');
+  var counts = {};
+  tasks.forEach(function(t){ if (!t.done) counts[t.category || ''] = (counts[t.category || '']||0) + 1; });
+
+  var cats = categories.slice();
+  tasks.forEach(function(t){ if (t.category && cats.indexOf(t.category) === -1) cats.push(t.category); });
+
+  var html = cats.map(function(c) {
+    var cc = catColor(c), sel = (catF === c), cnt = counts[c] || 0;
+    return '<div class="filtopt' + (sel ? ' sel' : '') + '" onclick="pickFilterCat(\'' + c + '\')" style="' +
+      (sel ? ('border-color:' + cc + ';color:' + cc + ';background:' + cc + '18') : ('color:' + cc)) + '">' +
+      esc(c) + (cnt ? ' <span class="filtcount">(' + cnt + ')</span>' : '') + '</div>';
+  }).join('');
+  var noCat = counts[''] || 0;
+  html += '<div class="filtopt dash' + (catF==='blank' ? ' sel' : '') + '" onclick="pickFilterCat(\'blank\')">No Category' +
+          (noCat ? ' <span class="filtcount">(' + noCat + ')</span>' : '') + '</div>';
+  el.innerHTML = html || '<span class="filtempty">No categories yet. Add them in Settings.</span>';
+
+  document.getElementById('filt-clear').style.display = sheetFilterActive() ? '' : 'none';
+  document.getElementById('filt-sub').textContent = sheetFilterActive() ? 'Filters applied' : 'Date and category';
+}
+
+function pickFilterDate(k) { dateF = (dateF === k) ? '' : k; render(); renderFilterSheet(); }
+function pickFilterCat(c)  { catF  = (catF  === c) ? '' : c; render(); renderFilterSheet(); }
+function clearSheetFilters() {
+  if (dateF === 'nextweek' || dateF === 'month' || dateF === 'blank') dateF = '';
+  catF = '';
+  render(); renderFilterSheet();
+}
+
+function clearAll() {
+  ownerF = ''; dateF = ''; catF = '';
+  render();
+  if (document.getElementById('filterM').classList.contains('open')) renderFilterSheet();
+}
+function setOwner(o) { ownerF = (ownerF === o) ? '' : o; render(); }
 function setDate(d)  { dateF = (dateF === d) ? '' : d; render(); }
 function setCat(c)   { catF  = (catF  === c) ? '' : c; render(); }
+
+/* ── ADD TASK: recurring toggle ── */
+var addRecOn = false, addFreq = 'weekly', addDays = [];
+
+function toggleAddRecur() {
+  addRecOn = !addRecOn;
+  if (addRecOn && !addDays.length) addDays = [new Date().getDay()];
+  syncAddRecur();
+}
+function syncAddRecur() {
+  var btn = document.getElementById('add-rtoggle');
+  btn.classList.toggle('on', addRecOn);
+  document.getElementById('addRecWrap').style.display = addRecOn ? '' : 'none';
+  document.getElementById('add-rtoggle-title').textContent = addRecOn ? 'Repeating task' : 'One-off task';
+  document.getElementById('add-rtoggle-sub').textContent   = addRecOn
+    ? 'Creates a task on every matching date'
+    : 'Tap R to make it repeat';
+  /* A repeating task takes its dates from the schedule, not a single due date. */
+  var dueWrap = document.getElementById('inp-due').closest('.field');
+  if (dueWrap) dueWrap.style.display = addRecOn ? 'none' : '';
+  if (addRecOn) { buildAddFreqGrid(); buildAddDayGrid(); }
+}
+function buildAddFreqGrid() {
+  document.getElementById('add-freq').innerHTML =
+    [{k:'daily',l:'Daily'},{k:'weekly',l:'Weekly'},{k:'monthly',l:'Monthly'}].map(function(o){
+      return '<div class="freqopt' + (addFreq===o.k?' sel':'') + '" onclick="pickAddFreq(\'' + o.k + '\')">' + o.l + '</div>';
+    }).join('');
+  document.getElementById('add-days-wrap').style.display = (addFreq === 'weekly') ? '' : 'none';
+  document.getElementById('add-dom-wrap').style.display  = (addFreq === 'monthly') ? '' : 'none';
+}
+function pickAddFreq(k) { addFreq = k; buildAddFreqGrid(); }
+function buildAddDayGrid() {
+  document.getElementById('add-days').innerHTML = DOW.map(function(d, i){
+    return '<div class="dayopt' + (addDays.indexOf(i)!==-1?' sel':'') + '" onclick="pickAddDay(' + i + ')">' + d + '</div>';
+  }).join('');
+}
+function pickAddDay(i) {
+  var at = addDays.indexOf(i);
+  if (at === -1) addDays.push(i); else addDays.splice(at, 1);
+  buildAddDayGrid();
+}
 
 /* ── ADD TASK ── */
 function openAdd() {
@@ -1398,6 +2022,11 @@ function openAdd() {
   buildCatGrid('add');
   document.getElementById('inp-due').value = new Date().toISOString().slice(0,10);
   document.getElementById('inp-link').value = '';
+  addRecOn = false; addFreq = 'weekly'; addDays = [new Date().getDay()];
+  document.getElementById('add-dom').value = '';
+  document.getElementById('add-start').value = new Date().toISOString().slice(0,10);
+  document.getElementById('add-end').value = '';
+  syncAddRecur();
   var sel = document.getElementById('inp-owner');
   sel.value = users.includes('Parking') ? 'Parking' : (users[0] || '');
   pendingSubtasks = [];
@@ -1413,6 +2042,10 @@ function closeAdd() {
 async function addTask() {
   var name = document.getElementById('inp-name').value.trim();
   if (!name) { document.getElementById('inp-name').focus(); return; }
+
+  /* Repeating: save a schedule instead of a single task, then let the
+     generator create whatever is already due. */
+  if (addRecOn) { await addRecurringTask(name); return; }
   var now = new Date();
   var ts = String(now.getMonth()+1).padStart(2,'0') + '/' +
            String(now.getDate()).padStart(2,'0') + '/' +
@@ -1421,28 +2054,55 @@ async function addTask() {
            String(now.getMinutes()).padStart(2,'0');
   var owner = document.getElementById('inp-owner').value;
   var createdLog = { text: 'Task created by ' + owner, time: ts, type: 'created' };
-  var ref = await db.collection('tasks').add({
-    name:     name,
-    desc:     document.getElementById('inp-desc').value.trim(),
-    owner:    owner,
-    category: addSelCat || '',
-    dueDate:  document.getElementById('inp-due').value || '',
-    link:     document.getElementById('inp-link').value.trim() || '',
-    done:     false,
-    order:    Date.now(),
-    createdAt:Date.now(),
-    subtasks: pendingSubtasks.slice(),
-    logs:     [createdLog]
-  });
-  /* Write to activity feed */
-  db.collection('activity').add({
-    type:     'added',
-    taskId:   ref.id,
-    taskName: name,
-    detail:   'by ' + owner,
-    ts:       Date.now()
-  });
+  var ref;
+  try {
+    ref = await db.collection('tasks').add({
+      name:        name,
+      desc:        document.getElementById('inp-desc').value.trim(),
+      owner:       owner,
+      category:    addSelCat || '',
+      dueDate:     document.getElementById('inp-due').value || '',
+      link:        document.getElementById('inp-link').value.trim() || '',
+      done:        false,
+      order:       Date.now(),
+      createdAt:   Date.now(),
+      subtasks:    pendingSubtasks.slice(),
+      logs:        [createdLog],
+      recurringId: null
+    });
+  } catch (e) { console.error('[N7 Board] Add task', e); toast('Could not add task'); return; }
+  logActivity({type:'added', taskId:ref.id, taskName:name, detail:'by ' + owner, ts:Date.now()});
   closeAdd();
+}
+
+async function addRecurringTask(name) {
+  if (addFreq === 'weekly' && !addDays.length) { toast('Pick at least one day'); return; }
+  var dom = parseInt(document.getElementById('add-dom').value, 10);
+  if (addFreq === 'monthly' && (!dom || dom < 1 || dom > 31)) { toast('Pick a day of month, 1 to 31'); return; }
+  var start = document.getElementById('add-start').value || new Date().toISOString().slice(0,10);
+  var end   = document.getElementById('add-end').value || null;
+  if (end && end < start) { toast('End date is before the start date'); return; }
+
+  try {
+    await db.collection('recurring').add({
+      name:       name,
+      desc:       document.getElementById('inp-desc').value.trim(),
+      owner:      document.getElementById('inp-owner').value,
+      category:   addSelCat || '',
+      link:       document.getElementById('inp-link').value.trim(),
+      subtasks:   pendingSubtasks.map(function(x){ return {text:x.text, done:false}; }),
+      freq:       addFreq,
+      weekdays:   addFreq === 'weekly' ? addDays.slice().sort(function(a,b){return a-b;}) : [],
+      dayOfMonth: addFreq === 'monthly' ? dom : null,
+      startDate:  start,
+      endDate:    end,
+      active:     true,
+      createdAt:  Date.now()
+    });
+  } catch (e) { console.error('[N7 Board] Add schedule', e); toast('Could not create schedule'); return; }
+  closeAdd();
+  var made = await generateRecurring();
+  if (!made) toast('Schedule created');
 }
 
 /* ── EDIT TASK ── */
@@ -1471,7 +2131,7 @@ async function saveEdit() {
   var name = document.getElementById('edit-name').value.trim();
   if (!name) { document.getElementById('edit-name').focus(); return; }
   var _editName = name; var _editId = editId;
-  await db.collection('tasks').doc(editId).update({
+  await taskUpdate(editId, {
     name:     name,
     desc:     document.getElementById('edit-desc').value.trim(),
     owner:    document.getElementById('edit-owner').value,
@@ -1479,13 +2139,17 @@ async function saveEdit() {
     dueDate:  document.getElementById('edit-due').value || '',
     link:     document.getElementById('edit-link').value.trim() || ''
   });
-  db.collection('activity').add({type:'edited',taskId:_editId,taskName:_editName,detail:'updated',ts:Date.now()});
+  logActivity({type:'edited', taskId:_editId, taskName:_editName, detail:'updated', ts:Date.now()});
   closeEdit();
 }
 async function deleteTask() {
   if (!editId) return;
   if (!confirm('Delete this task permanently?')) return;
-  await db.collection('tasks').doc(editId).delete();
+  var _t = tasks.find(function(x){ return x.id === editId; });
+  var _n = _t ? _t.name : '';
+  try { await db.collection('tasks').doc(editId).delete(); }
+  catch (e) { console.error('[N7 Board] Delete', e); toast('Could not delete'); return; }
+  logActivity({type:'deleted', taskName:_n, detail:'removed', ts:Date.now()});
   closeEdit();
 }
 document.getElementById('edit-name').addEventListener('keydown', function(e){
@@ -1495,41 +2159,36 @@ function toggleDone(id, cur) {
   var _t = tasks.find(function(x){return x.id===id;});
   var _tn = _t ? _t.name : id;
   var nowTs = Date.now();
-  var update = { done: !cur };
-  if (!cur) {
-    /* Marking done — save completedAt */
-    update.completedAt = nowTs;
-    /* Add a log entry too */
-    var now = new Date(nowTs);
-    var ts = String(now.getMonth()+1).padStart(2,'0') + '/' +
-             String(now.getDate()).padStart(2,'0') + '/' +
-             now.getFullYear() + ' ' +
-             String(now.getHours()).padStart(2,'0') + ':' +
-             String(now.getMinutes()).padStart(2,'0');
-    var logs = (_t && _t.logs) ? _t.logs.slice() : [];
-    logs.push({ text: 'Task marked done', time: ts, type: 'done' });
-    update.logs = logs;
-  } else {
-    /* Reopening — clear completedAt */
-    update.completedAt = null;
-    var now2 = new Date(nowTs);
-    var ts2 = String(now2.getMonth()+1).padStart(2,'0') + '/' +
-              String(now2.getDate()).padStart(2,'0') + '/' +
-              now2.getFullYear() + ' ' +
-              String(now2.getHours()).padStart(2,'0') + ':' +
-              String(now2.getMinutes()).padStart(2,'0');
-    var logs2 = (_t && _t.logs) ? _t.logs.slice() : [];
-    logs2.push({ text: 'Task reopened', time: ts2, type: 'reopened' });
-    update.logs = logs2;
+  var now = new Date(nowTs);
+  var ts = String(now.getMonth()+1).padStart(2,'0') + '/' +
+           String(now.getDate()).padStart(2,'0') + '/' +
+           now.getFullYear() + ' ' +
+           String(now.getHours()).padStart(2,'0') + ':' +
+           String(now.getMinutes()).padStart(2,'0');
+  var entry = cur ? { text:'Task reopened',    time:ts, type:'reopened' }
+                  : { text:'Task marked done', time:ts, type:'done' };
+
+  function commit() {
+    /* Optimistic flip so the row responds without waiting on the network */
+    if (_t) { _t.done = !cur; _t.completedAt = cur ? null : nowTs; render(); }
+    appendLog(id, entry, !cur, nowTs);
   }
-  db.collection('tasks').doc(id).update(update);
-  db.collection('activity').add({
-    type:     cur ? 'reopened' : 'done',
-    taskId:   id,
-    taskName: _tn,
-    detail:   '',
-    ts:       nowTs
-  });
+
+  if (cur) { commit(); return; }   /* reopening needs no ceremony */
+
+  /* Completing: chime, buzz, then let the card play out before it moves. */
+  playDoneSound();
+  haptic(22);
+  var card = document.querySelector('.card[data-id="' + id + '"]');
+  if (card) {
+    var radio = card.querySelector('.cradio');
+    if (radio) radio.classList.add('burst');
+    card.classList.add('completing');
+    setTimeout(commit, 430);
+  } else {
+    commit();
+  }
+  logActivity({type: cur ? 'reopened' : 'done', taskId:id, taskName:_tn, detail:'', ts:nowTs});
 }
 
 /* ── LOGS ── */
@@ -1575,18 +2234,20 @@ async function submitLog() {
   var text = document.getElementById('inp-log').value.trim();
   if (!text || !logId) return;
   var t = tasks.find(function(x){ return x.id===logId; });
-  var logs = (t.logs || []).slice();
   var now = new Date();
   var ts = String(now.getMonth()+1).padStart(2,'0') + '/' +
            String(now.getDate()).padStart(2,'0') + ' ' +
            String(now.getHours()).padStart(2,'0') + ':' +
            String(now.getMinutes()).padStart(2,'0');
-  logs.push({text: text, time: ts});
   var _logTaskName = t.name;
-  await db.collection('tasks').doc(logId).update({logs: logs});
-  db.collection('activity').add({type:'comment',taskId:logId,taskName:_logTaskName,detail:text,ts:Date.now()});
+  var _logId = logId;
   document.getElementById('inp-log').value = '';
-  renderLogs(logs);
+  await appendLog(_logId, {text: text, time: ts});
+  logActivity({type:'comment', taskId:_logId, taskName:_logTaskName, detail:text, ts:Date.now()});
+  /* Re-read from the reloaded task so we show what the server actually stored */
+  var t2 = tasks.find(function(x){ return x.id===_logId; });
+  var logs = (t2 && t2.logs) || [];
+  renderLogs(logs.filter(function(l){ return l.type !== 'created'; }));
   var realCount2 = logs.filter(function(l){return l.type!=='created';}).length;
   document.getElementById('log-count').textContent = realCount2 + ' update' + (realCount2===1?'':'s');
 }
@@ -1617,7 +2278,8 @@ async function commitOrder(newVisibleIds) {
   finalIds.forEach(function(id, i) {
     batch.update(db.collection('tasks').doc(id), {order: i * 1000});
   });
-  await batch.commit();
+  try { await batch.commit(); }
+  catch (e) { console.error('[N7 Board] Reorder', e); toast('Could not save new order'); }
 }
 
 function flipAnimate(cards, beforeTops) {
@@ -1726,7 +2388,7 @@ async function endDrag() {
 /* ── CREATE CARD ── */
 function createCard(t, rank) {
   var card = document.createElement('div');
-  card.className = 'card' + (t.done ? ' done' : '');
+  card.className = 'card' + (t.done ? ' done' : '') + (t.recurringId ? ' recur' : '');
   card.dataset.id = t.id;
   var due = fmtDue(t.dueDate);
   var os  = ownerStyle(t.owner || '');
@@ -1746,7 +2408,8 @@ function createCard(t, rank) {
   crow.className = 'crow';
   var dueLineHTML = due ? '<div class="cdue ' + due.cls + '" style="margin-top:3px">&#128197; ' + due.label + '</div>' : '';
   var catLineHTML = cc ? '<div class="ccat"><span class="ccatpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '30">' + t.category + '</span></div>' : '';
-  var ownerLineHTML = '<span class="ccatpill" style="background:' + os.bg + ';color:' + os.c + ';margin-left:' + (cc ? '6' : '0') + 'px">' + t.owner + '</span>';
+  var ownerLineHTML = '<span class="ccatpill" style="background:' + os.bg + ';color:' + os.c + ';margin-left:' + (cc ? '6' : '0') + 'px">' + t.owner + '</span>' +
+    (t.recurringId ? '<span class="rbadge" title="Created by a recurring schedule">&#8635; Recurring</span>' : '');
   crow.innerHTML =
     '<div class="cradio' + (t.done ? ' done' : '') + '"></div>' +
     '<div class="cbody">' +
@@ -1793,10 +2456,14 @@ function createCard(t, rank) {
   /* Radio click */
   crow.querySelector('.cradio').addEventListener('click', function(e) {
     e.stopPropagation();
-    var r = crow.querySelector('.cradio');
-    r.style.transform = 'scale(.78)';
-    setTimeout(function(){ r.style.transform = ''; }, 180);
-    toggleDone(t.id, t.done);
+    if (!t.done) {
+      toggleDone(t.id, t.done);   /* burst animation takes over from here */
+    } else {
+      var r = crow.querySelector('.cradio');
+      r.style.transform = 'scale(.78)';
+      setTimeout(function(){ r.style.transform = ''; }, 180);
+      toggleDone(t.id, t.done);
+    }
   });
 
   /* Log click */
@@ -1874,7 +2541,7 @@ function createCard(t, rank) {
 /* ── CREATE DONE CARD ── */
 function createDoneCard(t) {
   var card = document.createElement('div');
-  card.className = 'donecard';
+  card.className = 'donecard' + (t.recurringId ? ' recur' : '');
   card.dataset.id = t.id;
   var os = ownerStyle(t.owner || '');
   card.innerHTML =
@@ -1904,10 +2571,10 @@ function renderTopbarOwners() {
   if (!el) return;
   var oc = {};
   tasks.forEach(function(t){ if (!t.done) oc[t.owner] = (oc[t.owner]||0) + 1; });
-  var html = '<span class="tbo-chip' + (!ownerF ? ' ao' : '') + '" onclick="setOwner(\'\')">All</span>';
+  var html = '';
   users.forEach(function(u) {
     var cnt = oc[u] || 0;
-    html += '<span class="tbo-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? ' '+cnt : '') + '</span>';
+    html += '<span class="tbo-chip' + (u===ownerF ? ' ao' : '') + '" onclick="setOwner(\'' + u + '\')">' + u + (cnt ? ' (' + cnt + ')' : '') + '</span>';
   });
   el.innerHTML = html;
 }
@@ -2053,21 +2720,21 @@ async function stToggle(taskId, idx) {
   var subs = (t.subtasks || []).map(function(s,i){
     return i === idx ? { text:s.text, done:!s.done } : s;
   });
-  await db.collection('tasks').doc(taskId).update({ subtasks: subs });
+  await taskUpdate(taskId, { subtasks: subs });
 }
 
 async function stDelete(taskId, idx) {
   var t = tasks.find(function(x){ return x.id === taskId; });
   if (!t) return;
   var subs = (t.subtasks || []).filter(function(_,i){ return i !== idx; });
-  await db.collection('tasks').doc(taskId).update({ subtasks: subs });
+  await taskUpdate(taskId, { subtasks: subs });
 }
 
 async function stAdd(taskId, text) {
   var t = tasks.find(function(x){ return x.id === taskId; });
   if (!t) return;
   var subs = (t.subtasks || []).concat([{ text:text, done:false }]);
-  await db.collection('tasks').doc(taskId).update({ subtasks: subs });
+  await taskUpdate(taskId, { subtasks: subs });
 }
 
 /* ── Edit modal subtask helpers ── */
@@ -2145,6 +2812,24 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     asi.addEventListener('click', function(e){ e.stopPropagation(); });
   }
+  var rsi = document.getElementById('rec-st-inp');
+  if (rsi) {
+    rsi.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var txt = rsi.value.trim();
+        if (!txt) return;
+        recSubs.push({text:txt, done:false});
+        rsi.value = '';
+        renderRecStList();
+      }
+      e.stopPropagation();
+    });
+    rsi.addEventListener('click', function(e){ e.stopPropagation(); });
+  }
+  var rn = document.getElementById('rec-name');
+  if (rn) rn.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); saveRec(); } });
+
   var ei = document.getElementById('est-inp');
   if (!ei) return;
   ei.addEventListener('keydown', function(e){
@@ -2173,17 +2858,363 @@ function stRefresh() {
 
 
 /* ════════════════════════════════
+   RECURRING SCHEDULES
+════════════════════════════════ */
+var recurring = [];
+var recEditId = null, recSelCat = '', recFreq = 'weekly', recDays = [], recSubs = [];
+var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function fromRecRow(d) {
+  var r = d.data();
+  return {
+    id: d.id, name: r.name, desc: r.desc || '', owner: r.owner || '',
+    category: r.category || '', link: r.link || '', subtasks: r.subtasks || [],
+    freq: r.freq || 'weekly', weekdays: r.weekdays || [],
+    dayOfMonth: r.dayOfMonth, startDate: r.startDate, endDate: r.endDate,
+    active: !!r.active, createdAt: Number(r.createdAt || 0)
+  };
+}
+
+function ymd(d) {
+  return d.getFullYear() + '-' +
+         String(d.getMonth() + 1).padStart(2, '0') + '-' +
+         String(d.getDate()).padStart(2, '0');
+}
+
+/* Does this schedule fire on this date? */
+function firesOn(r, d) {
+  if (r.freq === 'daily') return true;
+  if (r.freq === 'weekly') return (r.weekdays || []).indexOf(d.getDay()) !== -1;
+  if (r.freq === 'monthly') {
+    /* Clamp to month length so "the 31st" still fires in February and never
+       skips a month. */
+    var last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    return d.getDate() === Math.min(r.dayOfMonth || 1, last);
+  }
+  return false;
+}
+
+/* Every date this schedule should have fired on, within the backfill window. */
+function dueOccurrences(r, lookbackDays) {
+  var out = [];
+  var today = new Date(); today.setHours(0,0,0,0);
+  var from = new Date(today); from.setDate(from.getDate() - lookbackDays);
+  var start = r.startDate ? new Date(r.startDate + 'T00:00:00') : from;
+  if (start > from) from = start;
+  var end = r.endDate ? new Date(r.endDate + 'T00:00:00') : null;
+  var d = new Date(from);
+  while (d <= today) {
+    if (end && d > end) break;
+    if (firesOn(r, d)) out.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return out;
+}
+
+/* Materialise due occurrences as real tasks.
+   Every board runs this on load, so it has to be safe to run concurrently.
+   The run document id is derived from the schedule and the date, and each
+   occurrence is created inside a transaction that first checks for that id.
+   That makes a duplicate impossible, and because the ledger is separate from
+   the task itself, deleting a generated task will not bring it back. */
+var RECUR_LOOKBACK_DAYS = 14;
+
+async function generateRecurring() {
+  var made = 0;
+  var active = recurring.filter(function(r){ return r.active; });
+
+  for (var i = 0; i < active.length; i++) {
+    var r = active[i];
+    var dates = dueOccurrences(r, RECUR_LOOKBACK_DAYS);
+
+    for (var j = 0; j < dates.length; j++) {
+      var d = dates[j];
+      var key = r.id + '__' + ymd(d);
+      try {
+        var created = await db.runTransaction((function(rr, dd, k) {
+          return function(t) {
+            var runRef = db.collection('recurringRuns').doc(k);
+            return t.get(runRef).then(function(snap) {
+              if (snap.exists) return false;
+              var taskRef = db.collection('tasks').doc();
+              var stamp = String(dd.getMonth()+1).padStart(2,'0') + '/' +
+                          String(dd.getDate()).padStart(2,'0') + '/' +
+                          dd.getFullYear() + ' 00:00';
+              t.set(taskRef, {
+                name:        rr.name,
+                desc:        rr.desc || '',
+                owner:       rr.owner || '',
+                category:    rr.category || '',
+                dueDate:     ymd(dd),
+                link:        rr.link || '',
+                done:        false,
+                order:       Date.now(),
+                createdAt:   dd.getTime(),
+                subtasks:    (rr.subtasks || []).map(function(x){ return {text:x.text, done:false}; }),
+                logs:        [{text:'Created from recurring schedule', time:stamp, type:'created'}],
+                recurringId: rr.id
+              });
+              t.set(runRef, {
+                recurringId: rr.id, occDate: ymd(dd),
+                taskId: taskRef.id, createdAt: Date.now()
+              });
+              return true;
+            });
+          };
+        })(r, d, key));
+        if (created) made++;
+      } catch (e) {
+        console.error('[N7 Board] Generate recurring', e);
+      }
+    }
+  }
+
+  if (made > 0) toast(made + ' recurring task' + (made === 1 ? '' : 's') + ' added');
+  return made;
+}
+
+/* ── Human-readable schedule ── */
+function schedLabel(r) {
+  if (r.freq === 'daily') return 'Every day';
+  if (r.freq === 'monthly') {
+    var d = r.dayOfMonth || 1;
+    var suf = (d===1||d===21||d===31)?'st':(d===2||d===22)?'nd':(d===3||d===23)?'rd':'th';
+    return 'Monthly on the ' + d + suf;
+  }
+  var ds = (r.weekdays || []).slice().sort(function(a,b){return a-b;});
+  if (!ds.length) return 'Weekly (no days picked)';
+  if (ds.length === 7) return 'Every day';
+  if (ds.length === 5 && ds.join() === '1,2,3,4,5') return 'Every weekday';
+  return 'Every ' + ds.map(function(d){ return DOW[d]; }).join(', ');
+}
+
+/* Next date this schedule fires, scanning forward up to ~14 months. */
+function nextOccurrence(r) {
+  if (!r.active) return null;
+  var d = new Date(); d.setHours(0,0,0,0);
+  var start = r.startDate ? new Date(r.startDate + 'T00:00:00') : d;
+  if (start > d) d = start;
+  var end = r.endDate ? new Date(r.endDate + 'T00:00:00') : null;
+  for (var i = 0; i < 430; i++) {
+    if (end && d > end) return null;
+    var hit = false;
+    if (r.freq === 'daily') hit = true;
+    else if (r.freq === 'weekly') hit = (r.weekdays || []).indexOf(d.getDay()) !== -1;
+    else if (r.freq === 'monthly') {
+      var last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      hit = d.getDate() === Math.min(r.dayOfMonth || 1, last);
+    }
+    if (hit) return new Date(d);
+    d.setDate(d.getDate() + 1);
+  }
+  return null;
+}
+
+/* ── Page ── */
+function openRecur() {
+  document.getElementById('recurOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  renderRecList();
+}
+function closeRecur() {
+  document.getElementById('recurOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function renderRecList() {
+  var el = document.getElementById('rc-list');
+  if (!el) return;
+  if (!recurring.length) {
+    el.innerHTML = '<div class="rc-empty">No schedules yet.<br/>Use <b>+ New Schedule</b> to set one up.</div>';
+    return;
+  }
+  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  el.innerHTML = recurring.map(function(r) {
+    var os = ownerStyle(r.owner || '');
+    var cc = r.category ? catColor(r.category) : null;
+    var nx = nextOccurrence(r);
+    var nxTxt = !r.active ? 'Paused' :
+                nx ? ('Next: ' + nx.getDate() + ' ' + M[nx.getMonth()] +
+                      (nx.getFullYear() !== new Date().getFullYear() ? ' ' + nx.getFullYear() : ''))
+                   : 'No future dates';
+    var stTxt = (r.subtasks || []).length ? ' &middot; ' + r.subtasks.length + ' subtask' + (r.subtasks.length===1?'':'s') : '';
+    return '<div class="rc-item' + (r.active ? '' : ' off') + '" onclick="openRecEdit(\'' + r.id + '\')">' +
+      '<div class="rc-main">' +
+        '<div class="rc-name">' + esc(r.name) + '</div>' +
+        '<div class="rc-meta">' +
+          '<span class="rc-sched">' + schedLabel(r) + '</span>' +
+          (cc ? '<span class="ccatpill" style="background:' + cc + '18;color:' + cc + ';border:1px solid ' + cc + '30">' + esc(r.category) + '</span>' : '') +
+          '<span class="ccatpill" style="background:' + os.bg + ';color:' + os.c + '">' + esc(r.owner || 'Unassigned') + '</span>' +
+        '</div>' +
+        '<div class="rc-next">' + nxTxt + stTxt + '</div>' +
+      '</div>' +
+      '<div class="rc-toggle' + (r.active ? ' on' : '') + '" title="' + (r.active ? 'Pause' : 'Resume') + '" onclick="event.stopPropagation();toggleRec(\'' + r.id + '\',' + r.active + ')"></div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── Editor ── */
+function buildFreqGrid() {
+  document.getElementById('rec-freq').innerHTML =
+    [{k:'daily',l:'Daily'},{k:'weekly',l:'Weekly'},{k:'monthly',l:'Monthly'}].map(function(o){
+      return '<div class="freqopt' + (recFreq===o.k?' sel':'') + '" onclick="pickFreq(\'' + o.k + '\')">' + o.l + '</div>';
+    }).join('');
+  document.getElementById('rec-days-wrap').style.display = (recFreq === 'weekly') ? '' : 'none';
+  document.getElementById('rec-dom-wrap').style.display  = (recFreq === 'monthly') ? '' : 'none';
+}
+function pickFreq(k) { recFreq = k; buildFreqGrid(); }
+function buildDayGrid() {
+  document.getElementById('rec-days').innerHTML = DOW.map(function(d, i){
+    return '<div class="dayopt' + (recDays.indexOf(i)!==-1?' sel':'') + '" onclick="pickDay(' + i + ')">' + d + '</div>';
+  }).join('');
+}
+function pickDay(i) {
+  var at = recDays.indexOf(i);
+  if (at === -1) recDays.push(i); else recDays.splice(at, 1);
+  buildDayGrid();
+}
+function buildRecCatGrid() {
+  var g = document.getElementById('recCG');
+  if (!g) return;
+  g.innerHTML = categories.map(function(c) {
+    var cc = catColor(c), sel = (recSelCat === c);
+    return '<div class="catopt' + (sel?' sel':'') + '" onclick="pickRecCat(\'' + c + '\')" style="' +
+      (sel ? ('border-color:' + cc + ';color:' + cc + ';background:' + cc + '18') : '') + '">' + c + '</div>';
+  }).join('');
+  document.getElementById('recCW').style.display = categories.length ? '' : 'none';
+}
+function pickRecCat(c) { recSelCat = (recSelCat === c) ? '' : c; buildRecCatGrid(); }
+
+function renderRecStList() {
+  var list = document.getElementById('rec-st-list');
+  if (!list) return;
+  list.innerHTML = '';
+  recSubs.forEach(function(sub, i) {
+    var row = document.createElement('div'); row.className = 'st-item';
+    var cb  = document.createElement('div'); cb.className = 'st-cb';
+    var lbl = document.createElement('div'); lbl.className = 'st-label'; lbl.textContent = sub.text;
+    var del = document.createElement('button'); del.className = 'st-del'; del.textContent = '\u00d7'; del.type = 'button';
+    del.addEventListener('click', function(){ recSubs.splice(i,1); renderRecStList(); });
+    row.appendChild(cb); row.appendChild(lbl); row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+
+function openRecEdit(id) {
+  recEditId = id;
+  var r = id ? recurring.find(function(x){ return x.id === id; }) : null;
+  document.getElementById('rec-title').textContent = r ? 'Edit Schedule' : 'New Schedule';
+  document.getElementById('rec-sub').textContent   = r ? schedLabel(r) : 'Repeats automatically';
+  document.getElementById('rec-del').style.display = r ? '' : 'none';
+
+  document.getElementById('rec-name').value  = r ? r.name : '';
+  document.getElementById('rec-desc').value  = r ? r.desc : '';
+  document.getElementById('rec-link').value  = r ? r.link : '';
+  document.getElementById('rec-start').value = r ? (r.startDate || '') : new Date().toISOString().slice(0,10);
+  document.getElementById('rec-end').value   = (r && r.endDate) ? r.endDate : '';
+  document.getElementById('rec-dom').value   = (r && r.dayOfMonth) ? r.dayOfMonth : '';
+
+  var sel = document.getElementById('rec-owner');
+  sel.innerHTML = users.map(function(u){
+    return '<option' + ((r && r.owner === u) ? ' selected' : '') + '>' + u + '</option>';
+  }).join('');
+  if (!r) sel.value = users.indexOf('Parking') !== -1 ? 'Parking' : (users[0] || '');
+
+  recFreq   = r ? r.freq : 'weekly';
+  recDays   = r ? (r.weekdays || []).slice() : [new Date().getDay()];
+  recSelCat = r ? r.category : '';
+  recSubs   = r ? (r.subtasks || []).map(function(x){ return {text:x.text, done:false}; }) : [];
+
+  buildFreqGrid(); buildDayGrid(); buildRecCatGrid(); renderRecStList();
+  document.getElementById('recM').classList.add('open');
+  setTimeout(function(){ document.getElementById('rec-name').focus(); }, 260);
+}
+function closeRecEdit() {
+  document.getElementById('recM').classList.remove('open');
+  recEditId = null;
+}
+
+async function saveRec() {
+  var name = document.getElementById('rec-name').value.trim();
+  if (!name) { toast('Give the schedule a name'); document.getElementById('rec-name').focus(); return; }
+  if (recFreq === 'weekly' && !recDays.length) { toast('Pick at least one day'); return; }
+
+  var dom = parseInt(document.getElementById('rec-dom').value, 10);
+  if (recFreq === 'monthly' && (!dom || dom < 1 || dom > 31)) { toast('Pick a day of month, 1 to 31'); return; }
+
+  var start = document.getElementById('rec-start').value || new Date().toISOString().slice(0,10);
+  var end   = document.getElementById('rec-end').value || null;
+  if (end && end < start) { toast('End date is before the start date'); return; }
+
+  var row = {
+    name:       name,
+    desc:       document.getElementById('rec-desc').value.trim(),
+    owner:      document.getElementById('rec-owner').value || '',
+    category:   recSelCat || '',
+    link:       document.getElementById('rec-link').value.trim(),
+    subtasks:   recSubs.map(function(x){ return {text:x.text, done:false}; }),
+    freq:       recFreq,
+    weekdays:   recFreq === 'weekly' ? recDays.slice().sort(function(a,b){return a-b;}) : [],
+    dayOfMonth: recFreq === 'monthly' ? dom : null,
+    startDate:  start,
+    endDate:    end
+  };
+
+  var wasEdit = !!recEditId;
+  try {
+    if (wasEdit) await db.collection('recurring').doc(recEditId).update(row);
+    else         await db.collection('recurring').add(Object.assign({active:true, createdAt:Date.now()}, row));
+  } catch (e) { console.error('[N7 Board] Save schedule', e); toast('Could not save schedule'); return; }
+
+  closeRecEdit();
+  await generateRecurring();
+  toast(wasEdit ? 'Schedule updated' : 'Schedule created');
+}
+
+async function toggleRec(id, cur) {
+  try { await db.collection('recurring').doc(id).update({active: !cur}); }
+  catch (e) { toast('Could not update schedule'); return; }
+  if (cur) toast('Schedule paused'); else { await generateRecurring(); toast('Schedule resumed'); }
+}
+
+async function deleteRec() {
+  if (!recEditId) return;
+  var r = recurring.find(function(x){ return x.id === recEditId; });
+  var made = tasks.filter(function(t){ return t.recurringId === recEditId; }).length;
+  if (!confirm('Delete this schedule?\n\nNo more tasks will be created from it.' +
+      (made ? ' The ' + made + ' task' + (made===1?'':'s') + ' already on the board stay, and lose the recurring marker.' : ''))) return;
+  var id = recEditId;
+  try {
+    /* Detach the tasks it already made so they survive as ordinary tasks,
+       then clear the ledger, then the schedule itself. */
+    var owned = tasks.filter(function(t){ return t.recurringId === id; });
+    for (var i = 0; i < owned.length; i += 400) {
+      var b = db.batch();
+      owned.slice(i, i + 400).forEach(function(t) {
+        b.update(db.collection('tasks').doc(t.id), {recurringId: null});
+      });
+      await b.commit();
+    }
+    var runs = await db.collection('recurringRuns').where('recurringId', '==', id).get();
+    for (var k = 0; k < runs.docs.length; k += 400) {
+      var rb = db.batch();
+      runs.docs.slice(k, k + 400).forEach(function(d){ rb.delete(d.ref); });
+      await rb.commit();
+    }
+    await db.collection('recurring').doc(id).delete();
+  } catch (e) { console.error('[N7 Board] Delete schedule', e); toast('Could not delete schedule'); return; }
+  closeRecEdit();
+  toast('Schedule deleted');
+}
+
+/* ════════════════════════════════
    DASHBOARD
 ════════════════════════════════ */
 var dashOpen = false;
 var actFilter = 'all';
 var activityCache = [];
 
-db.collection('activity').orderBy('ts','desc').limit(100)
-  .onSnapshot(function(snap){
-    activityCache = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-    if (dashOpen) renderDashActivity();
-  });
+
 
 function openDash() {
   dashOpen = true;
@@ -2406,6 +3437,7 @@ var ACT_TYPES = [
   {k:'edited',  l:'Edited'},
   {k:'comment', l:'Comments'},
   {k:'reopened',l:'Reopened'},
+  {k:'deleted', l:'Deleted'},
 ];
 var ACT_ICONS = {
   added:   {icon:'＋', bg:'rgba(0,230,118,.12)',    c:'var(--ac)'},
@@ -2413,6 +3445,7 @@ var ACT_ICONS = {
   edited:  {icon:'✏', bg:'rgba(68,138,255,.12)',   c:'var(--bl)'},
   comment: {icon:'✉', bg:'rgba(68,138,255,.12)',   c:'var(--bl)'},
   reopened:{icon:'↺',  bg:'rgba(255,179,0,.12)',    c:'var(--am)'},
+  deleted: {icon:'×',  bg:'rgba(248,113,113,.12)',  c:'var(--rd)'},
 };
 
 function renderDashActivity() {
@@ -2451,48 +3484,6 @@ function setActFilter(f) {
 }
 
 
-/* ── BACKFILL createdAt for existing tasks ── */
-async function backfillCreatedAt() {
-  var FALLBACK = 1777161600000; /* Apr 26 2026 */
-  var snap = await db.collection('tasks').get();
-  var batch = db.batch();
-  var count = 0;
-
-  snap.docs.forEach(function(d) {
-    var data = d.data();
-    var updates = {};
-
-    /* Fix createdAt: anything missing or before Jan 2025 is wrong */
-    var badDate = !data.createdAt || data.createdAt < 1735689600000;
-    if (badDate) updates.createdAt = FALLBACK;
-
-    /* Rebuild logs: strip any old 'created' entries (with or without type field)
-       then prepend a clean one with type field set */
-    var cleanLogs = (data.logs || []).filter(function(l) {
-      /* Remove any entry that looks like a creation marker */
-      return !(l.type === 'created' ||
-               (l.text && l.text.toLowerCase().indexOf('task created') !== -1));
-    });
-
-    var createdTs = badDate ? FALLBACK : (data.createdAt || FALLBACK);
-    var d2 = new Date(createdTs);
-    var ts = String(d2.getMonth()+1).padStart(2,'0') + '/' +
-             String(d2.getDate()).padStart(2,'0') + '/' +
-             d2.getFullYear() + ' ' +
-             String(d2.getHours()).padStart(2,'0') + ':' +
-             String(d2.getMinutes()).padStart(2,'0');
-
-    updates.logs = [{ text: 'Task created', time: ts, type: 'created' }].concat(cleanLogs);
-    batch.update(d.ref, updates);
-    count++;
-  });
-
-  if (count > 0) {
-    await batch.commit();
-    console.log('Backfilled ' + count + ' tasks. Creation date set to Apr 26 2026 for bad dates.');
-  }
-}
-
 /* ── RENDER ── */
 function render() {
   renderFilters();
@@ -2511,9 +3502,15 @@ function render() {
   document.getElementById('stats').textContent =
     active.length + ' active' + (done.length ? ' / ' + done.length + ' done' : '');
 
-  if (!f.length) {
-    list.innerHTML = '<div class="empty">No tasks. Press N or + to add one.</div>';
-    return;
+  /* Someone is selected and has nothing left: say so properly. */
+  if (ownerF && active.length === 0) {
+    list.appendChild(complimentEl(ownerF, done.length));
+  } else {
+    if (ownerF) compCache.owner = null;   /* so the next clear-out gets fresh words */
+    if (!f.length) {
+      list.innerHTML = '<div class="empty">No tasks. Press N or + to add one.</div>';
+      return;
+    }
   }
 
   active.forEach(function(t, i) { list.appendChild(createCard(t, i + 1)); });
@@ -2534,22 +3531,69 @@ function render() {
   }
 }
 
-/* ── REALTIME LISTENER ── */
+/* ── REALTIME ──
+   Firestore pushes changes to every open board, so these snapshots are the
+   single source of truth and the render functions just react to them. */
+var recurBooted = false;
+
+db.collection('config').doc('users').onSnapshot(function(d) {
+  if (!d.exists) return;
+  users = d.data().list || [];
+  syncSelects();
+  renderFilters(); renderSidebar(); renderTopbarOwners(); renderSettingsLists();
+});
+
+db.collection('config').doc('categories').onSnapshot(function(d) {
+  if (!d.exists) return;
+  categories = d.data().list || [];
+  buildCatGrid('add'); buildCatGrid('edit'); buildRecCatGrid();
+  document.getElementById('addCW').style.display  = categories.length ? '' : 'none';
+  document.getElementById('editCW').style.display = categories.length ? '' : 'none';
+  renderFilters(); renderSidebar(); renderSettingsLists();
+});
+
 db.collection('tasks').onSnapshot(function(snap) {
   tasks = snap.docs.map(function(d) { return Object.assign({id: d.id}, d.data()); });
   render();
   stRefresh();
 });
 
+db.collection('activity').orderBy('ts', 'desc').limit(100).onSnapshot(function(snap) {
+  activityCache = snap.docs.map(function(d) { return Object.assign({id: d.id}, d.data()); });
+  if (dashOpen) renderDashActivity();
+});
+
+db.collection('recurring').onSnapshot(function(snap) {
+  recurring = snap.docs.map(fromRecRow).sort(function(a,b){ return a.createdAt - b.createdAt; });
+  renderRecList();
+  render();
+  /* First time the schedules land, create anything already due. */
+  if (!recurBooted) { recurBooted = true; generateRecurring(); }
+});
+
+/* A board left open overnight should pick up the new day's tasks. Throttled,
+   because focus events fire in bursts when switching apps. */
+var RESYNC_MIN_MS = 15000;
+var lastResync = Date.now();
+function resync(force) {
+  if (!force && Date.now() - lastResync < RESYNC_MIN_MS) return;
+  lastResync = Date.now();
+  generateRecurring();
+}
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) resync(false);
+});
+window.addEventListener('online', function(){ resync(true); });
+
+/* ── BOOT ── */
 initConfig();
-backfillCreatedAt();
 
 /* ── KEYBOARD ── */
 document.addEventListener('keydown', function(e) {
   var a = document.activeElement;
   var typing = a.isContentEditable || ['INPUT','SELECT','TEXTAREA'].includes(a.tagName);
   if (e.key === 'Escape') {
-    ['addM','editM','logM','setM','instM'].forEach(function(id) {
+    ['addM','editM','logM','setM','instM','recM','filterM'].forEach(function(id) {
       document.getElementById(id).classList.remove('open');
     });
   }
@@ -2560,7 +3604,7 @@ document.getElementById('inp-name').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') { e.preventDefault(); addTask(); }
 });
 
-['addM','editM','logM','setM','instM'].forEach(function(id) {
+['addM','editM','logM','setM','instM','recM','filterM'].forEach(function(id) {
   document.getElementById(id).addEventListener('click', function() {
     document.getElementById(id).classList.remove('open');
   });
@@ -2568,6 +3612,7 @@ document.getElementById('inp-name').addEventListener('keydown', function(e) {
 
 /* ── INIT: called last so all vars are declared ── */
 setTheme(currentTheme);
+setSound(soundOn);
 
 </script>
 </body>

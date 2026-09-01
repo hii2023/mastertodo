@@ -117,3 +117,14 @@ pushed off the right edge.
 **When editing the CSS:** the responsive rules live in one block at the very end of the
 `<style>` tag and must stay there. Media queries add no specificity, so a phone rule
 placed before the base rule it overrides is silently ignored.
+
+## Desktop column order
+
+The two-column task list on desktop reads **down the left column, then continues down the
+right** (1 to n on the left, n+1 onward on the right), rather than zig-zagging left-right
+across each row.
+
+That is why it uses CSS multi-column rather than a grid: a grid fills row-major, which puts
+2 next to 1 instead of under it. Multi-column also balances the two column heights on its
+own. Full-width rows (the Done separator, the compliment, the empty state) use
+`column-span: all` to break out and start a fresh pair of columns below.
